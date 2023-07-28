@@ -1,0 +1,28 @@
+<project name="Jexad">
+  <target name="clean">
+    <delete dir="classes" />
+  </target>
+
+  <target name="compile" depends="clean">
+    <mkdir dir="classes" />
+    <javac srcdir="src" destdir="classes" debug="true" includeantruntime="false" />
+  </target>
+
+  <target name="jar" depends="compile">
+    <mkdir dir="jar" />
+    <jar destfile="jar/Jexad.jar" basedir="classes">
+      <manifest>
+        <attribute name="Main-Class" value="com.jexad.Jexad" />
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="test" depends="compile">
+    <javac srcdir="test" destdir="classes" debug="true" includeantruntime="false" />
+    <java classpath="classes" classname="com.jexad.test.Cases" failonerror="true" fork="true" />
+  </target>
+
+  <target name="run" depends="jar">
+    <java jar="jar/Jexad.jar" fork="true" />
+  </target>
+</project>
