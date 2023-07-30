@@ -18,13 +18,9 @@ import java.util.zip.ZipFile;
 class Jexad extends Frame {
 
     public Jexad(Buf content) {
-        View t = new TextView();
+        View t = new HexView();
         t.setContent(content);
         add(t);
-
-        //View h = new HexView();
-        //h.setContent(content);
-        //add(h);
 
         //setLayout(new FlowLayout());
         setSize(640, 480);
