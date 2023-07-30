@@ -2,7 +2,10 @@ package com.jexad;
 
 import com.jexad.base.Buf;
 import com.jexad.ops.File;
+import com.jexad.views.HexView;
 import com.jexad.views.TextView;
+import com.jexad.views.View;
+import java.awt.FlowLayout;
 import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
@@ -15,10 +18,15 @@ import java.util.zip.ZipFile;
 class Jexad extends Frame {
 
     public Jexad(Buf content) {
-        TextView t = new TextView();
-        add(t.comp);
-        t.updateContent(content);
+        View t = new TextView();
+        t.setContent(content);
+        add(t);
 
+        //View h = new HexView();
+        //h.setContent(content);
+        //add(h);
+
+        //setLayout(new FlowLayout());
         setSize(640, 480);
         setTitle("hi :3");
         setVisible(true);
@@ -28,6 +36,8 @@ class Jexad extends Frame {
                 dispose();
             }
         });
+
+        t.requestFocusInWindow();
     }
 
     public static void main(String[] args) {
@@ -36,11 +46,15 @@ class Jexad extends Frame {
             switch (args[0]) {
                 case "-h":
                 case "--help":
-                    System.out.println("Usage (temp): <prog> --help|--font-list|--zip|<filename>");
+                    System.out.println("Usage (temp): <prog> --help|--font-list|--props-list|--zip|<filename>");
                     return;
 
                 case "--font-list":
                     System.out.println("Font list: " + Arrays.toString(Toolkit.getDefaultToolkit().getFontList()));
+                    return;
+
+                case "--props-list":
+                    System.getProperties().list(System.out);
                     return;
 
                 case "--zip":
