@@ -1,6 +1,8 @@
 package com.jexad.views;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentSampleModel;
@@ -13,6 +15,7 @@ import java.awt.image.WritableRaster;
 public class ImgView extends View {
 
     BufferedImage img;
+    AffineTransform tr;
     int w;
     int h;
 
@@ -31,12 +34,17 @@ public class ImgView extends View {
 
         img = new BufferedImage(w, h, BufferedImage.TYPE_3BYTE_BGR);
         img.setData(raster);
+
+        tr = new AffineTransform(
+            10, 0,
+            0, 10,
+            0, 0); // rem: transposed because ctor arg order
     }
 
     @Override
     protected void render(Graphics2D g) {
         g.translate(-scroll.hz*scroll.unitHz, -scroll.ve*scroll.unitVe);
-        g.drawImage(img, null, 0, 0);
+        g.drawImage(img, new AffineTransformOp(tr, AffineTransformOp.TYPE_NEAREST_NEIGHBOR), 0, 0);
     }
 
 }
