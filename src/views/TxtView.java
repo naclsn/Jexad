@@ -3,7 +3,7 @@ package com.jexad.views;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
-public class TextView extends View {
+public class TxtView extends View {
 
     ArrayList<String> lines = new ArrayList();
     int longest;

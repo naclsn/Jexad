@@ -69,7 +69,7 @@ public class HexView extends View {
         g.setColor(getForeground());
         g.fillRect(0, getHeight()-(int)scroll.unitVe, getWidth(), (int)scroll.unitVe);
         g.setColor(getBackground());
-        g.drawString(" /" + line_count + " (" + content.raw.length + " B)", 0, getHeight()-(int)scroll.unitVe/3);
+        g.drawString(" /" + Integer.toHexString(line_count*16-16) + " (" + content.raw.length + " B)", 0, getHeight()-(int)scroll.unitVe/3);
     }
 
 }

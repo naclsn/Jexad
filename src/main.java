@@ -3,7 +3,8 @@ package com.jexad;
 import com.jexad.base.Buf;
 import com.jexad.ops.File;
 import com.jexad.views.HexView;
-import com.jexad.views.TextView;
+import com.jexad.views.ImgView;
+import com.jexad.views.TxtView;
 import com.jexad.views.View;
 import java.awt.FlowLayout;
 import java.awt.Frame;
@@ -18,11 +19,10 @@ import java.util.zip.ZipFile;
 class Jexad extends Frame {
 
     public Jexad(Buf content) {
-        View t = new HexView();
+        View t = new ImgView();
         t.setContent(content);
         add(t);
 
-        //setLayout(new FlowLayout());
         setSize(640, 480);
         setTitle("hi :3");
         setVisible(true);

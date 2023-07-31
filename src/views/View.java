@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.image.BufferStrategy;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Map;
@@ -111,9 +112,7 @@ public abstract class View extends Canvas implements
 
     @Override
     public void paint(Graphics g0) {
-        // TODO: double buffering would be nice..
-        //BufferStrategy bs = getBufferStrategy();
-        //if (null == bs) createBufferStrategy(2);
+        if (null == getBufferStrategy()) createBufferStrategy(2);
 
         Graphics2D g = (Graphics2D)g0;
         if (null != desktophints) g.addRenderingHints(desktophints);
@@ -128,6 +127,7 @@ public abstract class View extends Canvas implements
     @Override
     public void keyPressed(KeyEvent e) {
         boolean shift = 0 != (InputEvent.SHIFT_DOWN_MASK & e.getModifiersEx());
+        boolean ctrl = 0 != (InputEvent.CTRL_DOWN_MASK & e.getModifiersEx());
 
         switch (e.getKeyCode()) {
             case KeyEvent.VK_PAGE_UP:
@@ -136,7 +136,6 @@ public abstract class View extends Canvas implements
                     : scroll.addVe(1-scroll.pageVe)
                     ) repaint();
                 break;
-
             case KeyEvent.VK_PAGE_DOWN:
                 if (shift
                     ? scroll.addHz(scroll.pageHz-1)
@@ -144,8 +143,43 @@ public abstract class View extends Canvas implements
                     ) repaint();
                 break;
 
-            default:
-                System.out.println(e);
+            case KeyEvent.VK_B:
+                if (scroll.addVe(1-scroll.pageVe)) repaint();
+                break;
+            case KeyEvent.VK_F:
+                if (scroll.addVe(scroll.pageVe-1)) repaint();
+                break;
+
+            case KeyEvent.VK_U:
+                if (scroll.addVe(1-scroll.pageVe/2)) repaint();
+                break;
+            case KeyEvent.VK_D:
+                if (scroll.addVe(scroll.pageVe/2-1)) repaint();
+                break;
+
+            case KeyEvent.VK_UP:
+            case KeyEvent.VK_K:
+            case KeyEvent.VK_P:
+                if (scroll.addVe(-1)) repaint();
+                break;
+            case KeyEvent.VK_DOWN:
+            case KeyEvent.VK_J:
+            case KeyEvent.VK_N:
+                if (scroll.addVe(+1)) repaint();
+                break;
+
+            case KeyEvent.VK_LEFT:
+            case KeyEvent.VK_H:
+                if (scroll.addHz(-1)) repaint();
+                break;
+            case KeyEvent.VK_RIGHT:
+            case KeyEvent.VK_L:
+                if (scroll.addHz(+1)) repaint();
+                break;
+
+            case KeyEvent.VK_Q:
+                if (ctrl) System.exit(0); //dispose(); // ZZZ: (whatever)
+                break;
         }
     }
 
