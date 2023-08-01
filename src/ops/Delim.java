@@ -2,6 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Ops;
+import com.jexad.base.Util;
 
 public class Delim extends Buf implements Ops {
 
@@ -52,6 +53,15 @@ public class Delim extends Buf implements Ops {
         }
 
         raw = u; // delim not found
+    }
+
+    public static boolean test() {
+        Buf u = new Buf(new byte[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9});
+        return Util.cmpBuf(new Delim(u), new Buf(new byte[0]))
+            && Util.cmpBuf(new Delim(u, new Buf(new byte[] {6, 7})), new Buf(new byte[] {0, 1, 2, 3, 4, 5}))
+            && Util.cmpBuf(new Delim(u, new Buf(new byte[] {4, 5}), Bound.INCLUSIVE), new Buf(new byte[] {0, 1, 2, 3, 4, 5}))
+            && Util.cmpBuf(new Delim(u, new Buf(new byte[] {8, 3})), u)
+            ;
     }
 
 }

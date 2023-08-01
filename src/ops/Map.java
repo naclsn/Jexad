@@ -7,6 +7,7 @@ import com.jexad.base.Obj;
 import com.jexad.base.Ops;
 import java.lang.reflect.Constructor;
 
+import com.jexad.base.Util;
 @SuppressWarnings("unchecked")
 public class Map<Out extends Obj> extends Lst<Out> implements Ops {
 
@@ -68,6 +69,10 @@ public class Map<Out extends Obj> extends Lst<Out> implements Ops {
                 return; // XXX: errs and such...
             }
         }
+    }
+
+    public static boolean notest() {
+        return false; // TODO: test
     }
 
 }

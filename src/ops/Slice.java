@@ -3,6 +3,7 @@ package com.jexad.ops;
 import com.jexad.base.Buf;
 import com.jexad.base.Num;
 import com.jexad.base.Ops;
+import com.jexad.base.Util;
 
 public class Slice extends Buf implements Ops {
 
@@ -35,6 +36,10 @@ public class Slice extends Buf implements Ops {
 
         raw = new byte[len];
         System.arraycopy(under.raw, begin.val, raw, 0, len);
+    }
+
+    public static boolean notest() {
+        return false; // TODO: test
     }
 
 }

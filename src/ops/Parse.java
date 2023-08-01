@@ -3,6 +3,7 @@ package com.jexad.ops;
 import com.jexad.base.Buf;
 import com.jexad.base.Num;
 import com.jexad.base.Ops;
+import com.jexad.base.Util;
 
 public class Parse extends Num implements Ops {
 
@@ -47,6 +48,10 @@ public class Parse extends Num implements Ops {
     // half(2) float(4) double(8)
     float toFloat() {
         return Float.intBitsToFloat(toInt());
+    }
+
+    public static boolean notest() {
+        return false; // TODO: test
     }
 
 }

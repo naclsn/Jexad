@@ -3,10 +3,11 @@ package com.jexad.ops;
 import com.jexad.base.Buf;
 import com.jexad.base.Lst;
 import com.jexad.base.Ops;
+import com.jexad.base.Util;
 
 public class Join extends Buf implements Ops {
 
-    public String getHelp() { return "join with separator (default empty)"; }
+    public String getHelp() { return "join with separator; default is {'\\0'} ie C-string"; }
 
     Lst<Buf> list;
     Buf sep;
@@ -16,7 +17,7 @@ public class Join extends Buf implements Ops {
         this.sep = sep;
     }
 
-    public Join(Lst<Buf> list) { this(list, new Buf(new byte[0])); }
+    public Join(Lst<Buf> list) { this(list, new Buf(new byte[] {0})); }
 
     @Override
     public void update() {
@@ -55,6 +56,36 @@ public class Join extends Buf implements Ops {
             System.arraycopy(it.raw, 0, raw, at, len);
             at+= len;
         }
+    }
+
+    public static boolean test() {
+        return Util.cmpBuf
+                ( new Join(new Lst(Buf.class, new Buf[]
+                    { new Buf(new byte[] {1, 2, 3})
+                    , new Buf(new byte[] {4, 5})
+                    , new Buf(new byte[] {6, 7, 8})
+                    , new Buf(new byte[] {9})
+                    }))
+                , new Buf(new byte[] {1, 2, 3, 0, 4, 5, 0, 6, 7, 8, 0, 9})
+                )
+            && Util.cmpBuf
+                ( new Join(new Lst(Buf.class, new Buf[]
+                    { new Buf(new byte[0])
+                    , new Buf(new byte[0])
+                    , new Buf(new byte[0])
+                    , new Buf(new byte[0])
+                    }), new Buf(new byte[] {42, 12}))
+                , new Buf(new byte[] {42, 12, 42, 12, 42, 12})
+                )
+            && Util.cmpBuf
+                ( new Join(new Lst(Buf.class, new Buf[0]))
+                , new Buf(new byte[0])
+                )
+            && Util.cmpBuf
+                ( new Join(new Lst(Buf.class, new Buf[] { new Buf(new byte[0]) }))
+                , new Buf(new byte[0])
+                )
+            ;
     }
 
 }

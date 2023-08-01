@@ -2,6 +2,7 @@ package com.jexad.test;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.Comparator;
 
@@ -11,17 +12,6 @@ import com.jexad.ops.*;
 //import ... png.*;
 
 class Cases {
-
-    static <T extends Obj> T show(T obj) {
-        obj.update();
-        if (obj instanceof Lst) {
-            Lst lst = (Lst)obj;
-            for (int k = 0; k < lst.arr.length; k++)
-                lst.arr[k].update();
-        }
-        System.out.println("-> " + obj);
-        return obj;
-    }
 
     static String readFile(String filename) {
         Buf b = new Read(Buf.encode(filename));
@@ -54,6 +44,11 @@ class Cases {
             String name = all[k].getName();
             if (!name.startsWith(startsWith)) continue;
 
+            if (0 == (Modifier.STATIC & all[k].getModifiers())) {
+                System.out.printf("%s#%s: not static\n", gname, name);
+                continue;
+            }
+
             done++;
             try {
                 if ((boolean)all[k].invoke(null)) {
@@ -63,7 +58,8 @@ class Cases {
                     fails++;
                 }
             } catch (Exception e) {
-                System.out.printf("%s#%s: caught: '%s'\n", gname, name, e.toString());
+                System.out.printf("%s#%s: caught:\n", gname, name);
+                e.printStackTrace(System.out);
                 fails++;
             }
         }

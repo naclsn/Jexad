@@ -6,6 +6,7 @@ import com.jexad.base.Num;
 import com.jexad.base.Obj;
 import com.jexad.base.Ops;
 
+import com.jexad.base.Util;
 @SuppressWarnings("unchecked")
 public class Repeat<T extends Obj> extends Lst<T> implements Ops {
 
@@ -35,6 +36,10 @@ public class Repeat<T extends Obj> extends Lst<T> implements Ops {
         for (int k = 0; k < arr.length; k++) {
             arr[k] = under;
         }
+    }
+
+    public static boolean notest() {
+        return false; // TODO: test
     }
 
 }

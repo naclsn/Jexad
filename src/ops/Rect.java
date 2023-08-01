@@ -5,6 +5,7 @@ import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Ops;
 import com.jexad.ops.Slice;
+import com.jexad.base.Util;
 
 public class Rect extends Lst<Buf> implements Ops {
 
@@ -33,6 +34,10 @@ public class Rect extends Lst<Buf> implements Ops {
         for (int k = 0; k < count; k++) {
             arr[k] = new Slice(under, new Num(k * len), new Num((k+1) * len));
         }
+    }
+
+    public static boolean notest() {
+        return false; // TODO: test
     }
 
 }

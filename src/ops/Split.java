@@ -2,6 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Lst;
+import com.jexad.base.Util;
 import java.util.ArrayList;
 
 public class Split extends Lst<Buf> {
@@ -26,15 +27,19 @@ public class Split extends Lst<Buf> {
         uptodate = true;
 
         under.update();
-        sep.update();
-
         byte[] u = under.raw;
+        if (0 == u.length) {
+            arr = new Buf[0];
+            return;
+        }
+
+        sep.update();
         byte[] d = sep.raw;
 
         al.clear();
         int last = 0;
 
-        for (int i = 0; i < u.length - d.length; i++) {
+        for (int i = 0; i < u.length - d.length + 1; i++) {
             boolean found = true;
             for (int j = 0; j < d.length; j++) {
                 if (u[i+j] != d[j]) {
@@ -47,23 +52,47 @@ public class Split extends Lst<Buf> {
                 int len = i - last;
                 Buf b = new Buf(new byte[len]);
                 System.arraycopy(u, last, b.raw, 0, len);
+
                 al.add(b);
                 i+= d.length;
                 last = i;
+                i--;
             }
         }
 
-        int len = d.length - last;
-        Buf b = new Buf(new byte[len]);
-        System.arraycopy(u, last, b.raw, 0, len);
-        al.add(b);
-
-        arr = new Buf[al.size()];
+        int size = al.size();
+        arr = new Buf[size+1];
         al.toArray(arr);
+
+        int len = u.length - last;
+        arr[size] = new Buf(new byte[len]);
+        System.arraycopy(u, last, arr[size].raw, 0, len);
     }
 
     public static boolean test() {
-        return true;
+        return Util.cmpLst
+                ( new Split(new Buf(new byte[] {1, 2, 3, 0, 4, 5, 0, 6, 7, 8, 0, 9}))
+                , new Lst(Buf.class, new Buf[]
+                    { new Buf(new byte[] {1, 2, 3})
+                    , new Buf(new byte[] {4, 5})
+                    , new Buf(new byte[] {6, 7, 8})
+                    , new Buf(new byte[] {9})
+                    })
+                )
+            && Util.cmpLst
+                ( new Split(new Buf(new byte[] {42, 12, 42, 12, 42, 12}), new Buf(new byte[] {42, 12}))
+                , new Lst(Buf.class, new Buf[]
+                    { new Buf(new byte[0])
+                    , new Buf(new byte[0])
+                    , new Buf(new byte[0])
+                    , new Buf(new byte[0])
+                    })
+                )
+            && Util.cmpLst
+                ( new Split(new Buf(new byte[0]))
+                , new Lst(Buf.class, new Buf[0])
+                )
+            ;
     }
 
 }

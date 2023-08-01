@@ -5,6 +5,7 @@ import com.jexad.base.Ops;
 import java.io.IOException;
 import java.io.File;
 import java.io.FileInputStream;
+import com.jexad.base.Util;
 
 public class Read extends Buf implements Ops {
 
@@ -32,6 +33,10 @@ public class Read extends Buf implements Ops {
         } catch (IOException e) {
             System.err.println("Read: " + e);
         }
+    }
+
+    public static boolean notest() {
+        return false; // TODO: test
     }
 
 }
