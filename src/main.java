@@ -1,7 +1,7 @@
 package com.jexad;
 
 import com.jexad.base.Buf;
-import com.jexad.ops.File;
+import com.jexad.ops.Read;
 import com.jexad.views.HexView;
 import com.jexad.views.ImgView;
 import com.jexad.views.TxtView;
@@ -62,7 +62,7 @@ class Jexad extends Frame {
             }
         }
 
-        new Jexad(new File(Buf.encode(filename)));
+        new Jexad(new Read(Buf.encode(filename)));
     }
 
     public static void mainZip(String[] args) {

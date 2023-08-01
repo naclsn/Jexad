@@ -7,6 +7,8 @@ import java.util.Comparator;
 
 import com.jexad.base.*;
 import com.jexad.ops.*;
+//import ... zip.*;
+//import ... png.*;
 
 class Cases {
 
@@ -19,6 +21,12 @@ class Cases {
         }
         System.out.println("-> " + obj);
         return obj;
+    }
+
+    static String readFile(String filename) {
+        Buf b = new Read(Buf.encode(filename));
+        b.update();
+        return b.decode();
     }
 
     static <T> T[] sortNamed(T[] arr) {
@@ -102,7 +110,7 @@ class Cases {
         final int list_off = 0x42;
         final int list_len = 3;
 
-        Buf binfile_buf = new com.jexad.ops.File(Buf.encode(filename));
+        Buf binfile_buf = new Read(Buf.encode(filename));
 
         // to make an editable copy:
         //binfile_buf.update();
@@ -135,8 +143,26 @@ class Cases {
     //  - extract the bytes for "res/image.png"
     //  - decode the PNG image into bytes
     //  - for each channel, select only its bytes
-    static boolean caseB() {
-        return false;
-    }
+    static boolean caseB() { return false; } /*{
+        final String filename = "test/B/some.zip";
+        final String respath = "res/image.png";
+        final String r_txt = readFile("test/B/r.txt");
+        final String g_txt = readFile("test/B/g.txt");
+        final String b_txt = readFile("test/B/b.txt");
+
+        Buf zipfilebytes = new Read(Buf.encode(filename));
+        Lst<Buf> zipbufs = new ZipDecode(zipfilebytes);
+        Buf pngfilebytes = new ZipEntry(zipbufs, Buf.encode(respath));
+        Buf pngbuf = new PngDecode(pngfilebytes);
+        Lst<Buf> rgbbufs = new PngRGB(pngbuf);
+        Buf r = new Nth(rgbbufs, new Num(0));
+        Buf g = new Nth(rgbbufs, new Num(1));
+        Buf b = new Nth(rgbbufs, new Num(2));
+
+        return r_txt.equals(r.decode())
+            && g_txt.equals(g.decode())
+            && b_txt.equals(b.decode())
+            ;
+    }/*-*/
 
 }
