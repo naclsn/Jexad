@@ -36,12 +36,16 @@ public class Map<Out extends Obj> extends Lst<Out> implements Ops {
         try {
             ctor = op.getConstructor(args_zip_classes);
         } catch (Exception e) {
+            System.err.println("Map: " + e);
             return; // XXX: errs and such...
         }
     }
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         args_one.update();
         for (int j = 0; j < more_args_zip.length; j++)
             more_args_zip[j].update();
@@ -60,6 +64,7 @@ public class Map<Out extends Obj> extends Lst<Out> implements Ops {
             try {
                 arr[i] = (Out)ctor.newInstance((Object[])args);
             } catch (Exception e) {
+                System.err.println("Map: " + e);
                 return; // XXX: errs and such...
             }
         }

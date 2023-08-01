@@ -25,6 +25,9 @@ public class Delim extends Buf implements Ops {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         under.update();
         delim.update();
 

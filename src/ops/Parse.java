@@ -23,6 +23,9 @@ public class Parse extends Num implements Ops {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         under.update();
         val = toInt();
     }

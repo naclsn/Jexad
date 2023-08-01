@@ -20,6 +20,9 @@ public class Join extends Buf implements Ops {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         list.update();
         int list_len = list.length();
 

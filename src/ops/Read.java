@@ -17,15 +17,15 @@ public class Read extends Buf implements Ops {
         this.raw = new byte[0];
     }
 
-    // TODO: this shows that it is not good as-is, either it needs a
-    // `invalidate` of some sort, or smarter calls to `update`
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         filename.update();
 
         try {
             FileInputStream f = new FileInputStream(new File(filename.decode()));
-            System.out.println(filename.decode() + " size: " + f.available());
             raw = new byte[f.available()]; // == file size in case of actual on-disk file
             f.read(raw);
             f.close();

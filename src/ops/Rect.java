@@ -21,6 +21,9 @@ public class Rect extends Lst<Buf> implements Ops {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         it_len.update();
         under.update();
 

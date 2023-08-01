@@ -23,6 +23,9 @@ public class Slice extends Buf implements Ops {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         begin.update();
         end.update();
         under.update();

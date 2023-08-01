@@ -25,6 +25,9 @@ public class Repeat<T extends Obj> extends Lst<T> implements Ops {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         under.update();
         count.update();
 

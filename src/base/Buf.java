@@ -18,6 +18,7 @@ public class Buf extends Obj {
         try {
             return new Buf(str.getBytes("UTF-8"));
         } catch (UnsupportedEncodingException e) {
+            System.err.println("Buf.encode: " + e);
             return new Buf(str.getBytes());
         }
     }
@@ -26,6 +27,7 @@ public class Buf extends Obj {
         try {
             return new String(raw, "UTF-8");
         } catch (UnsupportedEncodingException e) {
+            System.err.println("Buf.decode: " + e);
             return new String(raw);
         }
     }

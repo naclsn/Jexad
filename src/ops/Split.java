@@ -22,6 +22,9 @@ public class Split extends Lst<Buf> {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         under.update();
         sep.update();
 
