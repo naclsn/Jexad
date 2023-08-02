@@ -35,8 +35,11 @@ public class Read extends Buf implements Ops {
         }
     }
 
-    public static boolean notest() {
-        return false; // TODO: test
+    public static boolean test() {
+        Read b = new Read(Buf.encode("build.xml"));
+        return Util.cmpBuf(b, 0, Buf.encode("<project name=\"Jexad\">\n"), 0, 23)
+            && Util.cmpBuf(b, b.raw.length-11, Buf.encode("</project>\n"), 0, 11)
+            ;
     }
 
 }

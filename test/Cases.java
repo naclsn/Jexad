@@ -59,7 +59,9 @@ class Cases {
                 }
             } catch (Exception e) {
                 System.out.printf("%s#%s: caught:\n", gname, name);
-                e.printStackTrace(System.out);
+                Throwable t = e;
+                while (null != t.getCause()) t = t.getCause();
+                t.printStackTrace(System.out);
                 fails++;
             }
         }

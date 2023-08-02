@@ -18,8 +18,12 @@ public class Util {
         l.update();
         r.update();
         int l_len = l.raw.length-l_st, r_len = r.raw.length-r_st;
-        if (l_len != len || r_len != len) {
-            System.out.printf("buffer lengths differ: %d != %d\n", l_len, r_len);
+        if (l_len < len) {
+            System.out.printf("buffer left too short: %d (+%d) < %d\n", l_len, l_st, len);
+            return false;
+        }
+        if (r_len < len) {
+            System.out.printf("buffer right too short: %d (+%d) < %d\n", r_len, r_st, len);
             return false;
         }
         for (int k = 0; k < len; k++) {

@@ -29,17 +29,15 @@ public class Repeat<T extends Obj> extends Lst<T> implements Ops {
         if (uptodate) return;
         uptodate = true;
 
-        under.update();
+        //under.update();
         count.update();
 
         arr = (T[])new Obj[count.val];
-        for (int k = 0; k < arr.length; k++) {
-            arr[k] = under;
-        }
+        for (int k = 0; k < arr.length; k++) arr[k] = under;
     }
 
-    public static boolean notest() {
-        return false; // TODO: test
+    public static boolean test() {
+        return true;
     }
 
 }

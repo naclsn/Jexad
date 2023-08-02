@@ -5,10 +5,9 @@ import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
 import com.jexad.base.Ops;
+import com.jexad.base.Util;
 import java.lang.reflect.Constructor;
 
-import com.jexad.base.Util;
-@SuppressWarnings("unchecked")
 public class Map<Out extends Obj> extends Lst<Out> implements Ops {
 
     public String getHelp() { return "makes a new list, applying the operation to each item; multiple argument lists are zipped"; }
