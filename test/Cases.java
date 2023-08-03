@@ -4,9 +4,11 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Comparator;
 
 import com.jexad.base.*;
+import com.jexad.inter.*;
 import com.jexad.ops.*;
 //import ... zip.*;
 //import ... png.*;
@@ -131,6 +133,40 @@ class Cases {
         //log("result:\n'''\n" + result.decode() + "\n'''");
 
         return "that's\nall\nfolks".equals(res);
+    }
+
+    static boolean caseAScript() throws Lang.LangException {
+        //String s
+        //    = "f = read \"test/A/some.bin\";\n"
+        //    + "return = slice f 0x42 (0x42 + 3*4)\n"
+        //    + "    rect _ 4\n"
+        //    + "    map parse _\n"
+        //    + "    map slice (repeat f 4) _\n"
+        //    + "    map delim _\n"
+        //    + "    join\n"
+        //    + "view_txt return\n"
+        //    + "assert (\"that's\\nall\\nfolks\" == return)\n"
+        //    ;
+        HashMap scope = new HashMap();
+        scope.put("filename", Buf.encode("test/A/some.bin"));
+        scope.put("list_off", new Num(0x42));
+        scope.put("list_len", new Num(3));
+        scope.put("list_end", new Num(0x42 + 3*4));
+        String script
+            = "filebuf = read filename;\n"
+            + "ptrs = map parse (rect (slice filebuf list_off list_end) 4);\n"
+            + "starts = map slice (repeat filebuf 4) ptrs;\n"
+            + "strs = map delim starts;\n"
+            + "return = join strs;\n"
+            + "view_txt return;\n"
+            ;
+        Lang.Lookup lookup = new Lang.Lookup() {
+            public Class lookup(String name) {
+                return null;
+            }
+        };
+        Lang res = new Lang(script, new Lang.Lookup[] {lookup}, scope);
+        return "that's\nall\nfolks".equals(((Buf)res.obj).decode());
     }
 
     // B)
