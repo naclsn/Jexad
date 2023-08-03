@@ -18,12 +18,19 @@ public class Lang {
         LangException(String message, char[] s, int i) {
             super(message);
             this.s = s;
-            this.i = i;
+            this.i = i < s.length ? i : s.length;
         }
 
         int[] getLineCol() {
-            System.err.println("NIY: get line and col from source and index");
-            return new int[] {0, 0};
+            int l = 1, c = 1;
+            for (int k = 0; k < i; k++) {
+                c++;
+                if ('\n' == s[k]) {
+                    l++;
+                    c = 1;
+                }
+            }
+            return new int[] {l, c};
         }
 
     }
@@ -43,6 +50,14 @@ public class Lang {
 
         processScript();
         obj = scope.get("return");
+    }
+
+    public Class tryLookup(String name) {
+        for (int k = lookups.length-1; k >= 0; k--) {
+            Class r = lookups[k].lookup(name);
+            if (null != r) return r;
+        }
+        return null;
     }
 
     char[] s;
@@ -156,7 +171,7 @@ public class Lang {
     //   | <lst>
     //   | <name>
     //   | '(' <expr> ')'
-    Obj scanAtom() throws LangException {
+    Object scanAtom() throws LangException {
         if (i >= s.length) fail("expected atom");
         char c = s[i];
         switch (s[i]) {
@@ -165,30 +180,32 @@ public class Lang {
             case '(':
                 Obj r = processExpr();
                 skipBlanks();
-                if (i >= s.length || ')' != s[i]) fail("missing matching closing () in atom");
+                if (i >= s.length || ')' != s[i])
+                    fail("missing matching closing () in atom");
                 return r;
         }
         if ('0' <= c && c <= '9') return scanNum();
         if ('_' == c || 'a' <= c && c <= 'z') {
             String n = scanName();
-            Obj r = scope.get(n);
-            if (null == r) fail("name not in scope: '"+n+"'");
-            return r;
+            Obj r1 = scope.get(n);
+            if (null != r1) return r1;
+            Class r2 = tryLookup(n);
+            if (null != r2) return r2;
+            fail("unknown name: '"+n+"'");
         }
         fail("expected atom, got '"+c+"'");
         return null;
     }
 
-    // <name> ::= /[a-z_]+/
-    String scanName() {
-        int a = 0;
-        while (i < s.length) {
-            char c = s[i];
-            System.out.println("char: " + c);
-            if ('_' != c || c < 'a' || 'z' < c) break;
-            i++;
-        }
-        return new String(s, a, i);
+    // <name> ::= /[a-z_][0-9a-z_]+/
+    String scanName() throws LangException {
+        int a = i;
+        char c;
+        if (i >= s.length) fail("expected name");
+        if ('_' != (c = s[i]) && (c < 'a' || 'z' < c))
+            fail("expected name to start with a-z_, got '"+c+"'");
+        while (++i < s.length && ('_' == (c = s[i]) || 'a' <= c && c <= 'z')) ;
+        return new String(s, a, i-a);
     }
 
     // <unop> ::= '+' | '-' | '!' | '~'
@@ -253,7 +270,7 @@ public class Lang {
             l.add(processExpr());
             skipBlanks();
         }
-        fail("NIY: call " + n + " with " + l.size() + " argument+s");
+        fail("NIY: call " + n + " with " + l.size() + " argument/s");
     }
 
     // <expr> ::
@@ -265,8 +282,10 @@ public class Lang {
     Obj processExpr() throws LangException {
         if (i >= s.length) fail("expected expression");
         int a = i;
-        try { return scanAtom(); }
-        catch (LangException e) { }
+        try {
+            Object r = scanAtom();
+            if (r instanceof Obj) return (Obj)r;
+        } catch (LangException e) { }
         i = a;
         int c = s[i];
         if ('_' == c || 'a' <= c && c <= 'z') {
@@ -277,7 +296,7 @@ public class Lang {
                 l.add(processExpr());
                 skipBlanks();
             }
-            fail("NIY: call " + n + " with " + l.size() + " argument+s");
+            fail("NIY: call " + n + " with " + l.size() + " argument/s");
         }
         fail("expected expression, got '"+c+"'");
         return null;
