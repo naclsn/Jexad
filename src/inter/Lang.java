@@ -121,7 +121,7 @@ public class Lang {
     }
 
     // <num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/
-    Num scanNum() throws LangException { // XXX: int
+    Num scanNum() throws LangException {
         int b = 10;
         if ('\'' == s[i]) {
             if (i+2 < s.length || '\'' != s[i+2])
@@ -130,7 +130,7 @@ public class Lang {
             return new Num(s[i-1]);
         }
         if ('0' == s[i]) {
-            if (++i < s.length) return new Num(0);
+            if (++i >= s.length) return new Num(0);
             char c = s[i];
             if (c < '0' || '9' < c) {
                 switch (c) {
@@ -139,7 +139,7 @@ public class Lang {
                     case 'b': b =  2; break;
                     default: return new Num(0);
                 }
-                if (++i < s.length)
+                if (++i >= s.length)
                     fail("missing digit after base hint '0"+s[i-1]+s[i]+"'");
             }
         }
@@ -166,6 +166,7 @@ public class Lang {
                 i++;
             }
         }
+        // TODO: handle '_'s (maybe?) and floats
         return new Num(Integer.parseInt(new String(s, a, i-a), b));
     }
 
