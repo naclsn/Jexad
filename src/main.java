@@ -124,27 +124,27 @@ class Jexad extends Frame {
             do {
                 System.out.print(prompt);
                 if (line.isEmpty()) continue;
-                switch (line.charAt(0)) {
-                    case '?':
-                        if (1 == line.length()) {
-                            Object[] names = globalScope.keySet().toArray();
-                            System.out.println("(global scope)");
-                            for (int k = 0; k < names.length; k++)
-                                System.out.println(names[k]);
-                        } else {
-                            Obj obj = globalScope.get(line.substring(1));
-                            Util.show(obj);
-                        }
-                        break;
 
-                    default:
-                        try {
-                            Lang res = new Lang(line, globalNames, globalScope);
-                            if (null != res.obj) Util.show(res.obj);
-                        } catch (Lang.LangException e) {
-                            System.err.println(e);
-                        }
+                if ('?' == line.charAt(0)) {
+                    if (1 == line.length()) {
+                        Object[] names = globalScope.keySet().toArray();
+                        System.out.println("(global scope)");
+                        for (int k = 0; k < names.length; k++)
+                            System.out.println(names[k]);
+                    } else {
+                        Obj obj = globalScope.get(line.substring(1));
+                        Util.show(obj);
+                    }
+
+                } else {
+                    try {
+                        Lang res = new Lang(line, globalNames, globalScope);
+                        if (null != res.obj) Util.show(res.obj);
+                    } catch (Lang.LangException e) {
+                        System.err.println(e);
+                    }
                 }
+
             } while ((line = br.readLine()) != null);
         } catch (Exception e) {
             e.printStackTrace(System.out);
