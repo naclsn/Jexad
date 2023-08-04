@@ -112,11 +112,8 @@ class Jexad extends Frame {
 
     public static void mainLang(String[] args) {
         String prompt = 2 == args.length ? args[1] : "";
-
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        String line;
-        StringBuilder script = new StringBuilder();
-        String prevScript = "";
+        String line = "";
 
         HashMap<String, Obj> globalScope = new HashMap();
         Lang.Lookup[] globalNames = new Lang.Lookup[] {
@@ -124,43 +121,14 @@ class Jexad extends Frame {
         };
 
         try {
-            System.out.print(prompt);
-            while ((line = br.readLine()) != null) {
+            do {
+                System.out.print(prompt);
                 if (line.isEmpty()) continue;
                 switch (line.charAt(0)) {
-                    case '.':
-                        try {
-                            script.append(line.substring(1));
-                            prevScript = script.toString();
-                            Lang res = new Lang(prevScript, globalNames, globalScope);
-                            Obj obj = res.obj;
-                            Util.show(obj);
-                        } catch (Lang.LangException e) {
-                            System.err.println(e);
-                        }
-
-                    case '!':
-                        script = new StringBuilder();
-                        break;
-
-                    case '&':
-                        script.append(prevScript);
-                        break;
-
-                    case '%':
-                        System.out.print(script);
-                        break;
-
-                    case '/':
-                        int sep = 1;
-                        do sep = line.indexOf('/', sep);
-                        while (0 < sep && '\\' == line.charAt(sep-1));
-                        script = new StringBuilder(script.toString().replaceFirst(line.substring(1, sep), line.substring(sep)));
-                        break;
-
-                    case '=':
+                    case '?':
                         if (1 == line.length()) {
                             Object[] names = globalScope.keySet().toArray();
+                            System.out.println("(global scope)");
                             for (int k = 0; k < names.length; k++)
                                 System.out.println(names[k]);
                         } else {
@@ -169,23 +137,15 @@ class Jexad extends Frame {
                         }
                         break;
 
-                    case '?':
-                        System.out.println
-                            ( "special leader characters:\n"
-                            + " '.' - execute the written script, makes it previous\n"
-                            + " '!' - abort (erase the written script)\n"
-                            + " '&' - insert the previous script\n"
-                            + " '%' - print the written script\n"
-                            + " '/' - perform `replaceFirst` on the written script\n"
-                            + " '=' - show the value for a given name\n"
-                            );
-                        break;
-
                     default:
-                        script.append(line+"\n");
+                        try {
+                            Lang res = new Lang(line, globalNames, globalScope);
+                            if (null != res.obj) Util.show(res.obj);
+                        } catch (Lang.LangException e) {
+                            System.err.println(e);
+                        }
                 }
-                System.out.print(prompt);
-            }
+            } while ((line = br.readLine()) != null);
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
