@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class Lang {
 
-    public class LangException extends Exception {
+    public static class LangException extends Exception {
 
         char[] s;
         int i;
@@ -35,7 +35,32 @@ public class Lang {
 
     }
 
-    public interface Lookup { public Class lookup(String name); }
+    public static interface Lookup { public Class lookup(String name); }
+
+    public static class LookupJavaClassesUnder implements Lookup {
+        String base;
+        public LookupJavaClassesUnder(String base) { this.base = base + "."; }
+        public Class lookup(String name) {
+            char[] a = name.toCharArray();
+            boolean f = true;
+            int w = 0;
+            for (int k = 0; k < a.length-w; k++) {
+                char c = a[k];
+                if (f) {
+                    if ('a' <= c && c <= 'z') a[k]-= 'a'-'A';
+                    f = false;
+                } else if ('_' == c) {
+                    w++;
+                    System.arraycopy(a, k+1, a, k, a.length-k-1);
+                    k--;
+                    f = true;
+                }
+            }
+            System.out.println(name + " -> " + new String(a, 0, a.length-w));
+            try { return Class.forName(base + new String(a, 0, a.length-w)); }
+            catch (Exception e) { return null; }
+        }
+    }
 
     public Map<String, Obj> scope;
     public Lookup[] lookups;
@@ -80,7 +105,7 @@ public class Lang {
         while (i < s.length) {
             if ('\\' == s[i]) i++;
             else if ('"' == s[i])
-                return Buf.encode(new String(s, a, i++)
+                return Buf.encode(new String(s, a, i++-a)
                     .replace("\\t", "\t")
                     .replace("\\n", "\n")
                     .replace("\\r", "\r")
@@ -141,7 +166,7 @@ public class Lang {
                 i++;
             }
         }
-        return new Num(Integer.parseInt(new String(s, a, i), b));
+        return new Num(Integer.parseInt(new String(s, a, i-a), b));
     }
 
     // <lst> ::= '{' {<expr> ','} '}'
@@ -163,6 +188,17 @@ public class Lang {
             : Num.class.isAssignableFrom(o) ? Num.class
             : Lst.class.isAssignableFrom(o) ? Lst.class
             : null, r);
+    }
+
+    // <name> ::= /[a-z_][0-9a-z_]+/
+    String scanName() throws LangException {
+        int a = i;
+        char c;
+        if (i >= s.length) fail("expected name");
+        if ('_' != (c = s[i]) && (c < 'a' || 'z' < c))
+            fail("expected name to start with a-z_, got '"+c+"'");
+        while (++i < s.length && ('_' == (c = s[i]) || 'a' <= c && c <= 'z')) ;
+        return new String(s, a, i-a);
     }
 
     // <atom> ::
@@ -197,19 +233,9 @@ public class Lang {
         return null;
     }
 
-    // <name> ::= /[a-z_][0-9a-z_]+/
-    String scanName() throws LangException {
-        int a = i;
-        char c;
-        if (i >= s.length) fail("expected name");
-        if ('_' != (c = s[i]) && (c < 'a' || 'z' < c))
-            fail("expected name to start with a-z_, got '"+c+"'");
-        while (++i < s.length && ('_' == (c = s[i]) || 'a' <= c && c <= 'z')) ;
-        return new String(s, a, i-a);
-    }
-
     // <unop> ::= '+' | '-' | '!' | '~'
     // <binop> ::= ',' | '+' | '-' | '*' | '/' | '**' | '//' | '%' | '&' | '|' | '^' | '&&' | '||' | '^^' | '==' | '!=' | '<=' | '>=' | '<' | '>'
+    // YYY: dead code
     int scanOp() throws LangException {
         char c = s[i++];
         switch (c) {
@@ -241,64 +267,40 @@ public class Lang {
         return 0;
     }
 
-    // <script> ::= {statement ';'}
+    // <script> ::= {<name> '=' <expr> ';'}
     void processScript() throws LangException {
         skipBlanks();
         do {
-            processStatement();
+            String n = scanName();
             skipBlanks();
-            if (i >= s.length || ';' != s[i]) fail("expected ';' after statement");
-            skipBlanks();
-        } while (i < s.length);
-    }
-
-    // <statement> ::
-    //   = <name> '=' <expr>
-    //   | <call>
-    // <call> ::= <name> ['.' <name>] {<expr>}
-    void processStatement() throws LangException {
-        String n = scanName();
-        skipBlanks();
-        if (i < s.length && '=' == s[i]) {
+            if (i >= s.length || '=' != s[i]) fail("expected '=' after name in statement");
             i++;
             skipBlanks();
             scope.put(n, processExpr());
-            return;
-        }
-        ArrayList<Obj> l = new ArrayList();
-        while (i < s.length && ';' != s[i]) {
-            l.add(processExpr());
+            if (i >= s.length || ';' != s[i]) fail("expected ';' after statement");
+            i++;
             skipBlanks();
-        }
-        fail("NIY: call " + n + " with " + l.size() + " argument/s");
+        } while (i < s.length);
     }
 
     // <expr> ::
     //   = <atom>
     //   | <call>
-    //   //| <unop> <expr>
-    //   //| <expr> <binop> <expr>
     // <call> ::= <name> {<expr>}
     Obj processExpr() throws LangException {
         if (i >= s.length) fail("expected expression");
         int a = i;
-        try {
-            Object r = scanAtom();
-            if (r instanceof Obj) return (Obj)r;
-        } catch (LangException e) { }
-        i = a;
-        int c = s[i];
-        if ('_' == c || 'a' <= c && c <= 'z') {
-            String n = scanName();
+        Object r = scanAtom();
+        if (r instanceof Obj) return (Obj)r;
+        // else Class
+        skipBlanks();
+        ArrayList<Obj> l = new ArrayList();
+        char c;
+        while (i < s.length && ';' != (c = s[i]) && ')' != c && ',' != c && '}' != c) {
+            l.add(processExpr());
             skipBlanks();
-            ArrayList<Obj> l = new ArrayList();
-            while (i < s.length && ';' != (c = s[i]) && ')' != c && ',' != c && '}' != c) {
-                l.add(processExpr());
-                skipBlanks();
-            }
-            fail("NIY: call " + n + " with " + l.size() + " argument/s");
         }
-        fail("expected expression, got '"+c+"'");
+        fail("NIY: call " + r + " with " + l.size() + " argument/s");
         return null;
     }
 

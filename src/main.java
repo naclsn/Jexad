@@ -1,6 +1,9 @@
 package com.jexad;
 
 import com.jexad.base.Buf;
+import com.jexad.base.Obj;
+import com.jexad.base.Util;
+import com.jexad.inter.Lang;
 import com.jexad.ops.Read;
 import com.jexad.views.HexView;
 import com.jexad.views.ImgView;
@@ -11,8 +14,11 @@ import java.awt.Frame;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -42,7 +48,7 @@ class Jexad extends Frame {
             switch (args[0]) {
                 case "-h":
                 case "--help":
-                    System.out.println("Usage (temp): <prog> --help|--font-list|--props-list|--zip|<filename>");
+                    System.out.println("Usage (temp): <prog> --help|--font-list|--props-list|--zip|--lang|<filename>");
                     return;
 
                 case "--font-list":
@@ -55,6 +61,10 @@ class Jexad extends Frame {
 
                 case "--zip":
                     mainZip(args);
+                    return;
+
+                case "--lang":
+                    mainLang(args);
                     return;
 
                 default:
@@ -97,6 +107,80 @@ class Jexad extends Frame {
             f.close();
         } catch (Exception e) {
             System.out.println("error: " + e);
+        }
+    }
+
+    public static void mainLang(String[] args) {
+        String prompt = 2 == args.length ? args[1] : ">> ";
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        String line;
+        StringBuilder script = new StringBuilder();
+        String prevScript = "";
+
+        HashMap<String, Obj> globalScope = new HashMap();
+        Lang.Lookup[] globalNames = new Lang.Lookup[] {
+            new Lang.LookupJavaClassesUnder("com.jexad.ops"),
+        };
+
+        try {
+            System.out.print(prompt);
+            while ((line = br.readLine()) != null) {
+                switch (line.charAt(0)) {
+                    case '.':
+                        try {
+                            prevScript = script.toString();
+                            Lang res = new Lang(prevScript, globalNames, globalScope);
+                            Util.show(res.obj);
+                        } catch (Lang.LangException e) {
+                            System.err.println(e);
+                        }
+
+                    case '!':
+                        script = new StringBuilder();
+                        break;
+
+                    case '&':
+                        script.append(prevScript);
+                        break;
+
+                    case '%':
+                        System.out.println("```");
+                        System.out.println(script);
+                        System.out.println("```");
+                        break;
+
+                    case '/':
+                        int sep = 1;
+                        do sep = line.indexOf('/', sep);
+                        while (0 < sep && '\\' == line.charAt(sep-1));
+                        script = new StringBuilder(script.toString().replaceFirst(line.substring(1, sep), line.substring(sep)));
+                        break;
+
+                    case '=':
+                        Obj obj = globalScope.get(line.substring(1));
+                        if (null != obj) Util.show(obj);
+                        break;
+
+                    case '?':
+                        System.out.println
+                            ( "special leader characters:\n"
+                            + " '.' - execute the written script, makes it previous\n"
+                            + " '!' - abort (erase the written script)\n"
+                            + " '&' - insert the previous script\n"
+                            + " '%' - print the written script\n"
+                            + " '/' - perform `replaceFirst` on the written script\n"
+                            + " '=' - show the value for a given name\n"
+                            );
+                        break;
+
+                    default:
+                        script.append(line+"\n");
+                }
+                System.out.print(prompt);
+            }
+        } catch (Exception e) {
+            e.printStackTrace(System.out);
         }
     }
 

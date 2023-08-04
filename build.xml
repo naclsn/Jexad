@@ -1,10 +1,10 @@
 <project name="Jexad">
-  <target name="compile">
+  <target name="classes">
     <mkdir dir="classes" />
     <javac srcdir="src" destdir="classes" debug="true" includeantruntime="false" />
   </target>
 
-  <target name="jar" depends="compile">
+  <target name="jar" depends="classes">
     <mkdir dir="jar" />
     <jar destfile="jar/Jexad.jar" basedir="classes">
       <manifest>
@@ -13,7 +13,7 @@
     </jar>
   </target>
 
-  <target name="test" depends="compile">
+  <target name="test" depends="classes">
     <javac srcdir="test" destdir="classes" debug="true" includeantruntime="false" />
     <java classpath="classes" classname="com.jexad.test.Cases" failonerror="true" fork="true" />
   </target>
