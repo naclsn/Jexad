@@ -4,13 +4,18 @@ package com.jexad.base;
 public class Util {
 
     public static <T extends Obj> T show(T obj) {
+        if (null == obj) {
+            System.out.println("(show null)");
+            return null;
+        }
         obj.update();
         if (obj instanceof Lst) {
             Lst lst = (Lst)obj;
             for (int k = 0; k < lst.arr.length; k++)
                 lst.arr[k].update();
         }
-        System.out.println("(show " + obj.getClass().toString().substring(21) + ") " + obj);
+        String cln = obj.getClass().toString();
+        System.out.println("(show " + cln.substring(cln.lastIndexOf('.')+1) + ") " + obj);
         return obj;
     }
 

@@ -300,7 +300,22 @@ public class Lang {
             l.add(processExpr());
             skipBlanks();
         }
-        fail("NIY: call " + r + " with " + l.size() + " argument/s");
+        //for (int k = 0; k < l.size(); k++) System.out.println(" - " + l.get(k));
+        Object[] g = new Object[l.size()];
+        l.toArray(g);
+        Class[] gcl = new Class[g.length];
+        for (int k = 0; k < g.length; k++) {
+            gcl[k]
+                = g[k] instanceof Buf ? Buf.class
+                : g[k] instanceof Num ? Num.class
+                : g[k] instanceof Lst ? Lst.class
+                : null;
+        }
+        try {
+            return (Obj)((Class)r).getConstructor(gcl).newInstance((Object[])g);
+        } catch (Exception e) {
+            fail("java exception in call expression: " + e);
+        }
         return null;
     }
 

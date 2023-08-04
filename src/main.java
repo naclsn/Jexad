@@ -111,7 +111,7 @@ class Jexad extends Frame {
     }
 
     public static void mainLang(String[] args) {
-        String prompt = 2 == args.length ? args[1] : ">> ";
+        String prompt = 2 == args.length ? args[1] : "";
 
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String line;
@@ -126,12 +126,15 @@ class Jexad extends Frame {
         try {
             System.out.print(prompt);
             while ((line = br.readLine()) != null) {
+                if (line.isEmpty()) continue;
                 switch (line.charAt(0)) {
                     case '.':
                         try {
+                            script.append(line.substring(1));
                             prevScript = script.toString();
                             Lang res = new Lang(prevScript, globalNames, globalScope);
-                            Util.show(res.obj);
+                            Obj obj = res.obj;
+                            Util.show(obj);
                         } catch (Lang.LangException e) {
                             System.err.println(e);
                         }
@@ -145,9 +148,7 @@ class Jexad extends Frame {
                         break;
 
                     case '%':
-                        System.out.println("```");
-                        System.out.println(script);
-                        System.out.println("```");
+                        System.out.print(script);
                         break;
 
                     case '/':
@@ -158,8 +159,14 @@ class Jexad extends Frame {
                         break;
 
                     case '=':
-                        Obj obj = globalScope.get(line.substring(1));
-                        if (null != obj) Util.show(obj);
+                        if (1 == line.length()) {
+                            Object[] names = globalScope.keySet().toArray();
+                            for (int k = 0; k < names.length; k++)
+                                System.out.println(names[k]);
+                        } else {
+                            Obj obj = globalScope.get(line.substring(1));
+                            Util.show(obj);
+                        }
                         break;
 
                     case '?':
