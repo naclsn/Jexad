@@ -268,7 +268,7 @@ public class Lang {
         return 0;
     }
 
-    // <script> ::= {<name> '=' <expr> ';'}
+    // <script> ::= <name> '=' <expr> {';' <name> '=' <expr>}
     void processScript() throws LangException {
         skipBlanks();
         do {
@@ -278,7 +278,8 @@ public class Lang {
             i++;
             skipBlanks();
             scope.put(n, processExpr());
-            if (i >= s.length || ';' != s[i]) fail("expected ';' after statement");
+            if (i >= s.length) break;
+            if (';' != s[i]) fail("expected ';' after statement");
             i++;
             skipBlanks();
         } while (i < s.length);
