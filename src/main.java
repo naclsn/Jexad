@@ -125,24 +125,33 @@ class Jexad extends Frame {
                 System.out.print(prompt);
                 if (line.isEmpty()) continue;
 
-                if ('?' == line.charAt(0)) {
-                    if (1 == line.length()) {
-                        Object[] names = globalScope.keySet().toArray();
-                        System.out.println("(global scope)");
-                        for (int k = 0; k < names.length; k++)
-                            System.out.println(names[k]);
-                    } else {
-                        Obj obj = globalScope.get(line.substring(1));
-                        Util.show(obj);
-                    }
+                switch (line.charAt(0)) {
+                    case '?':
+                        if (1 == line.length()) {
+                            Object[] names = globalScope.keySet().toArray();
+                            System.out.println("(global scope)");
+                            for (int k = 0; k < names.length; k++)
+                                System.out.println(names[k]);
+                        } else {
+                            Obj obj = globalScope.get(line.substring(1).trim());
+                            Util.show(obj);
+                        }
+                        break;
 
-                } else {
-                    try {
-                        Lang res = new Lang(line, globalNames, globalScope);
-                        if (null != res.obj) Util.show(res.obj);
-                    } catch (Lang.LangException e) {
-                        System.err.println(e);
-                    }
+                    case '.':
+                        Buf b = new Read(Buf.encode(line.substring(1).trim()));
+                        b.update();
+                        line = b.decode();
+                        System.out.println(line);
+
+                    default:
+                        try {
+                            Lang res = new Lang(line, globalNames, globalScope);
+                            if (null != res.obj) Util.show(res.obj);
+                        } catch (Lang.LangException e) {
+                            //System.err.println(e);
+                            e.printStackTrace(System.err);
+                        }
                 }
 
             } while ((line = br.readLine()) != null);

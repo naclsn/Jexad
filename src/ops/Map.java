@@ -41,6 +41,11 @@ public class Map<Out extends Obj> extends Lst<Out> implements Ops {
         }
     }
 
+    // needed for `getConstructor` resolutions...
+    public Map(Class op, Lst a) { this(op, a, new Lst[0]); }
+    public Map(Class op, Lst a, Lst b) { this(op, a, new Lst[] {b}); }
+    public Map(Class op, Lst a, Lst b, Lst c) { this(op, a, new Lst[] {b, c}); }
+
     @Override
     public void update() {
         if (uptodate) return;

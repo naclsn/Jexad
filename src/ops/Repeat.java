@@ -24,6 +24,11 @@ public class Repeat<T extends Obj> extends Lst<T> implements Ops {
         this.count = count;
     }
 
+    // needed for `getConstructor` resolutions...
+    public Repeat(Buf under, Num count) { this((T)under, count); }
+    public Repeat(Num under, Num count) { this((T)under, count); }
+    public Repeat(Lst under, Num count) { this((T)under, count); }
+
     @Override
     public void update() {
         if (uptodate) return;

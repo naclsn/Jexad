@@ -174,7 +174,9 @@ public class Lang {
     Lst scanLst() throws LangException {
         ArrayList<Obj> l = new ArrayList();
         while (i < s.length && '}' != s[i]) {
-            l.add(processExpr());
+            Object w = processExpr(true);
+            if (w instanceof Obj) l.add((Obj)w);
+            else fail("lists of other than objects are not supported");
             skipBlanks();
             if (i >= s.length || ',' != s[i]) break;
             skipBlanks();
@@ -215,10 +217,12 @@ public class Lang {
             case '"': return scanStr();
             case '{': return scanLst();
             case '(':
-                Obj r = processExpr();
+                i++;
+                Object r = processExpr(true);
                 skipBlanks();
                 if (i >= s.length || ')' != s[i])
                     fail("missing matching closing () in atom");
+                i++;
                 return r;
         }
         if ('0' <= c && c <= '9') return scanNum();
@@ -268,7 +272,7 @@ public class Lang {
         return 0;
     }
 
-    // <script> ::= <name> '=' <expr> {';' <name> '=' <expr>}
+    // <script> ::= <name> '=' <expr> {';' <name> '=' <expr>} [';']
     void processScript() throws LangException {
         skipBlanks();
         do {
@@ -277,8 +281,11 @@ public class Lang {
             if (i >= s.length || '=' != s[i]) fail("expected '=' after name in statement");
             i++;
             skipBlanks();
-            scope.put(n, processExpr());
+            Object w = processExpr(true);
+            if (w instanceof Obj) scope.put(n, (Obj)w);
+            else fail("storing other than object is not supported");
             if (i >= s.length) break;
+            skipBlanks();
             if (';' != s[i]) fail("expected ';' after statement");
             i++;
             skipBlanks();
@@ -289,32 +296,34 @@ public class Lang {
     //   = <atom>
     //   | <call>
     // <call> ::= <name> {<expr>}
-    Obj processExpr() throws LangException {
+    Object processExpr(boolean exprStart) throws LangException {
         if (i >= s.length) fail("expected expression");
         int a = i;
         Object r = scanAtom();
-        if (r instanceof Obj) return (Obj)r;
+        if (r instanceof Obj || !exprStart) return r;
         // else Class
         skipBlanks();
-        ArrayList<Obj> l = new ArrayList();
+        ArrayList<Object> l = new ArrayList();
         char c;
         while (i < s.length && ';' != (c = s[i]) && ')' != c && ',' != c && '}' != c) {
-            l.add(processExpr());
+            l.add(processExpr(false));
             skipBlanks();
         }
         //for (int k = 0; k < l.size(); k++) System.out.println(" - " + l.get(k));
         Object[] g = new Object[l.size()];
         l.toArray(g);
         Class[] gcl = new Class[g.length];
+        System.out.println("calling: " + r + ", args:");
         for (int k = 0; k < g.length; k++) {
             gcl[k]
                 = g[k] instanceof Buf ? Buf.class
                 : g[k] instanceof Num ? Num.class
                 : g[k] instanceof Lst ? Lst.class
-                : null;
+                : Class.class;
+            System.out.printf("  %d %s (-> %s)\n", k, g[k].getClass(), gcl[k]);
         }
         try {
-            return (Obj)((Class)r).getConstructor(gcl).newInstance((Object[])g);
+            return ((Class)r).getConstructor(gcl).newInstance((Object[])g);
         } catch (Exception e) {
             fail("java exception in call expression: " + e);
         }

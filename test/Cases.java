@@ -143,9 +143,9 @@ class Cases {
         //    + "    map parse _\n"
         //    + "    map slice (repeat f 4) _\n"
         //    + "    map delim _\n"
-        //    + "    join\n"
-        //    + "view_txt return\n"
-        //    + "assert (\"that's\\nall\\nfolks\" == return)\n"
+        //    + "    join;\n"
+        //    + "view_txt return;\n"
+        //    + "assert (\"that's\\nall\\nfolks\" == return);\n"
         //    ;
         HashMap scope = new HashMap();
         scope.put("filename", Buf.encode("test/A/some.bin"));
