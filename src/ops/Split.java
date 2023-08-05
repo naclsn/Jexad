@@ -2,6 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Lst;
+import com.jexad.base.Obj;
 import com.jexad.base.Util;
 import java.util.ArrayList;
 
@@ -20,6 +21,9 @@ public class Split extends Lst<Buf> {
     }
 
     public Split(Buf under) { this(under, new Buf(new byte[] {0})); }
+
+    @Override
+    public Obj[] arguments() { return new Obj[] {under, sep}; }
 
     @Override
     public void update() {

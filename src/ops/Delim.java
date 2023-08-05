@@ -1,6 +1,7 @@
 package com.jexad.ops;
 
 import com.jexad.base.Buf;
+import com.jexad.base.Obj;
 import com.jexad.base.Ops;
 import com.jexad.base.Util;
 
@@ -23,6 +24,9 @@ public class Delim extends Buf implements Ops {
     // XXX: argument type is not Obj (ie. Buf/Num/Lst)
     public Delim(Buf under, Buf delim) { this(under, delim, Bound.EXCLUSIVE); }
     public Delim(Buf under) { this(under, new Buf(new byte[] {0})); }
+
+    @Override
+    public Obj[] arguments() { return new Obj[] {under, delim}; }
 
     @Override
     public void update() {

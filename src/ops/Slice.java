@@ -2,6 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Num;
+import com.jexad.base.Obj;
 import com.jexad.base.Ops;
 import com.jexad.base.Util;
 
@@ -21,6 +22,14 @@ public class Slice extends Buf implements Ops {
 
     public Slice(Buf under, Num begin) { this(under, begin, null); }
     public Slice(Buf under) { this(under, new Num(0)); }
+
+    @Override
+    public Obj[] arguments() {
+        return null == end
+            ? new Obj[] {under, begin}
+            : new Obj[] {under, begin, end}
+            ;
+    }
 
     @Override
     public void update() {

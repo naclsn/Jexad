@@ -5,7 +5,9 @@ import java.awt.Graphics2D;
 
 public class HexView extends View<Buf> {
 
-    public HexView(Buf b) { super(b); }
+    public HexView(Buf content, String title) { super(content, title); }
+    public HexView(Buf content, Buf title) { super(content, title.decode()); }
+    public HexView(Buf content) { super(content, null); }
 
     int line_count;
 
@@ -59,20 +61,16 @@ public class HexView extends View<Buf> {
         g.translate(-scroll.hz*scroll.unitHz, 0);
         g.setColor(getBackground());
         for (int k = 0; k < 16; k++) {
-            g.drawString(new String(new byte[] {
-                ' ',
-                (byte)((9 < k ? 'A'-10 : '0') + k),
-            }), nroff + bw * k, scroll.unitVe*2/3);
-            g.drawString(new String(new byte[] {
-                (byte)((9 < k ? 'A'-10 : '0') + k),
-            }), nroff + bw*17 + (bw*k)/2, scroll.unitVe*2/3);
+            byte n = (byte)((9 < k ? 'A'-10 : '0') + k);
+            g.drawString(new String(new byte[] {' ', n}), nroff + bw * k, scroll.unitVe*2/3);
+            g.drawString(new String(new byte[] {n}), nroff + bw*17 + (bw*k)/2, scroll.unitVe*2/3);
         }
 
         g.translate(scroll.hz*scroll.unitHz, 0);
         g.setColor(getForeground());
         g.fillRect(0, getHeight()-(int)scroll.unitVe, getWidth(), (int)scroll.unitVe);
         g.setColor(getBackground());
-        g.drawString(" /" + Integer.toHexString(line_count*16-16) + " (" + content.raw.length + " B)", 0, getHeight()-(int)scroll.unitVe/3);
+        g.drawString(" /" + Integer.toHexString(line_count*16-16).toUpperCase() + " (" + content.raw.length + " B)", 0, getHeight()-(int)scroll.unitVe/3);
     }
 
 }

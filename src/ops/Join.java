@@ -2,6 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Lst;
+import com.jexad.base.Obj;
 import com.jexad.base.Ops;
 import com.jexad.base.Util;
 
@@ -18,6 +19,9 @@ public class Join extends Buf implements Ops {
     }
 
     public Join(Lst<Buf> list) { this(list, new Buf(new byte[] {0})); }
+
+    @Override
+    public Obj[] arguments() { return new Obj[] {list, sep}; }
 
     @Override
     public void update() {

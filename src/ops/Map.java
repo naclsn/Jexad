@@ -47,6 +47,15 @@ public class Map<Out extends Obj> extends Lst<Out> implements Ops {
     public Map(Class op, Lst a, Lst b, Lst c) { this(op, a, new Lst[] {b, c}); }
 
     @Override
+    public Obj[] arguments() {
+        Obj[] r = new Obj[1 + more_args_zip.length];
+        r[0] = args_one;
+        for (int j = 1; j < r.length; j++)
+            r[j] = more_args_zip[j-1];
+        return r;
+    }
+
+    @Override
     public void update() {
         if (uptodate) return;
         uptodate = true;

@@ -2,6 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Num;
+import com.jexad.base.Obj;
 import com.jexad.base.Ops;
 
 public class Parse extends Num implements Ops {
@@ -22,6 +23,9 @@ public class Parse extends Num implements Ops {
     }
 
     public Parse(Buf under) { this(under, Endian.LITTLE); }
+
+    @Override
+    public Obj[] arguments() { return new Obj[] {under}; }
 
     @Override
     public void update() {

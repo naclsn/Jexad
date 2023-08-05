@@ -3,6 +3,7 @@ package com.jexad.ops;
 import com.jexad.base.Buf;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
+import com.jexad.base.Obj;
 import com.jexad.base.Ops;
 import com.jexad.base.Util;
 
@@ -22,6 +23,9 @@ public class Rect extends Lst<Buf> implements Ops {
     }
 
     public Rect(Buf under, Num it_len) { this(under, it_len, new Num(0)); }
+
+    @Override
+    public Obj[] arguments() { return new Obj[] {under, it_len, it_pad}; }
 
     @Override
     public void update() {

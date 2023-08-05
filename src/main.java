@@ -25,24 +25,6 @@ import java.util.zip.ZipFile;
 
 class Jexad extends Frame {
 
-    public Jexad(Buf content) {
-        View t = new ImgView();
-        t.setContent(content);
-        add(t);
-
-        setSize(640, 480);
-        setTitle("hi :3");
-        setVisible(true);
-
-        addWindowListener(new WindowAdapter() {
-            public void windowClosing(WindowEvent _we) {
-                dispose();
-            }
-        });
-
-        t.requestFocusInWindow();
-    }
-
     public static void main(String[] args) {
         String filename = "build.xml";
         if (0 < args.length) {
@@ -73,7 +55,11 @@ class Jexad extends Frame {
             }
         }
 
-        new Jexad(new Read(Buf.encode(filename)));
+        //new Jexad(new Read(Buf.encode(filename)));
+        Buf filebuf = new Read(Buf.encode(filename));
+        new HexView(filebuf);
+        new ImgView(filebuf);
+        new TxtView(filebuf);
     }
 
     public static void mainZip(String[] args) {
@@ -102,7 +88,10 @@ class Jexad extends Frame {
                 byte[] b = new byte[(int)it.getSize()];
                 f.getInputStream(it).read(b);
 
-                new Jexad(new Buf(b));
+                Buf contentbuf = new Buf(b);
+                new HexView(contentbuf);
+                new ImgView(contentbuf);
+                new TxtView(contentbuf);
             }
 
             f.close();

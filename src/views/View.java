@@ -11,6 +11,9 @@ import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowAdapter;
@@ -23,6 +26,8 @@ import java.util.prefs.Preferences;
 
 public abstract class View<T extends Obj> extends Canvas implements
     KeyListener,
+    MouseListener,
+    MouseMotionListener,
     MouseWheelListener,
     PropertyChangeListener
 {
@@ -73,6 +78,7 @@ public abstract class View<T extends Obj> extends Canvas implements
     // (anti-aliasing and such)
     private Map desktophints;
 
+    // create the view, empty of content and as an `add`-abble component
     public View() {
         prefs = Preferences.userNodeForPackage(getClass()); // yes, this is child's class
 
@@ -84,25 +90,38 @@ public abstract class View<T extends Obj> extends Canvas implements
         reloadPrefs();
 
         addKeyListener(this);
+        addMouseListener(this);
+        addMouseMotionListener(this);
         addMouseWheelListener(this);
     }
 
-    // XXX: temp
-    public View(T content) {
+    static int unnamed_view_counter = 0;
+    protected String title;
+
+    // create a `Frame` for the view with the (maybe) content and (maybe) title
+    protected View(T content, String title) {
         this();
+
         Frame f = new Frame();
         f.addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent _e) {
-                View.this.setContent(content);
+                if (null != content) View.this.setContent(content);
             }
             public void windowClosing(WindowEvent _e) {
                 f.dispose();
             }
         });
         f.add(this);
+
+        if (null == title) {
+            String full = this.getClass().getName();
+            title = full.substring(full.lastIndexOf('.')+1) + unnamed_view_counter++;
+        }
+
         f.setSize(640, 480);
-        f.setTitle("hi :3");
+        f.setTitle(this.title = title);
         f.setVisible(true);
+
         requestFocusInWindow();
     }
 
@@ -122,12 +141,14 @@ public abstract class View<T extends Obj> extends Canvas implements
         if (null != fg) setForeground(fg);
     }
 
+    // USL: track uses
     public void setContent(T nullIfKeep) {
         if (null != nullIfKeep) content = nullIfKeep;
         content.update();
         update();
     }
 
+    // USL: track uses
     public T getContent() {
         return content;
     }
@@ -211,6 +232,34 @@ public abstract class View<T extends Obj> extends Canvas implements
 
     @Override
     public void keyTyped(KeyEvent e) {
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
     }
 
     @Override

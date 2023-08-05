@@ -1,11 +1,12 @@
 package com.jexad.ops;
 
 import com.jexad.base.Buf;
+import com.jexad.base.Obj;
 import com.jexad.base.Ops;
-import java.io.IOException;
+import com.jexad.base.Util;
 import java.io.File;
 import java.io.FileInputStream;
-import com.jexad.base.Util;
+import java.io.IOException;
 
 public class Read extends Buf implements Ops {
 
@@ -17,6 +18,9 @@ public class Read extends Buf implements Ops {
         this.filename = filename;
         this.raw = new byte[0];
     }
+
+    @Override
+    public Obj[] arguments() { return new Obj[] {filename}; }
 
     @Override
     public void update() {

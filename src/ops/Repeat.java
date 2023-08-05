@@ -30,6 +30,9 @@ public class Repeat<T extends Obj> extends Lst<T> implements Ops {
     public Repeat(Lst under, Num count) { this((T)under, count); }
 
     @Override
+    public Obj[] arguments() { return new Obj[] {under, count}; }
+
+    @Override
     public void update() {
         if (uptodate) return;
         uptodate = true;
