@@ -54,13 +54,13 @@ class Cases {
             done++;
             try {
                 if ((boolean)all[k].invoke(null)) {
-                    System.out.printf("%s#%s: ok\n", gname, name);
+                    System.out.printf("%s#%s: \033[32mok\033[m\n", gname, name);
                 } else {
-                    System.out.printf("%s#%s: failed!\n", gname, name);
+                    System.out.printf("%s#%s: \033[31mfailed!\033[m\n", gname, name);
                     fails++;
                 }
             } catch (Exception e) {
-                System.out.printf("%s#%s: caught:\n", gname, name);
+                System.out.printf("%s#%s: \033[31mcaught:\033[m\n", gname, name);
                 Throwable t = e;
                 while (null != t.getCause()) t = t.getCause();
                 t.printStackTrace(System.out);
@@ -69,7 +69,7 @@ class Cases {
         }
 
         if (0 == done)
-            System.out.printf("%s: no test\n", gname);
+            System.out.printf("%s: \033[33mno test\033[m\n", gname);
 
         return fails;
     }
@@ -136,36 +136,33 @@ class Cases {
     }
 
     static boolean caseAScript() throws Lang.LangException {
-        //String s
-        //    = "f = read \"test/A/some.bin\";\n"
-        //    + "return = slice f 0x42 (0x42 + 3*4)\n"
-        //    + "    rect _ 4\n"
-        //    + "    map parse _\n"
-        //    + "    map slice (repeat f 4) _\n"
-        //    + "    map delim _\n"
-        //    + "    join;\n"
-        //    + "view_txt return;\n"
-        //    + "assert (\"that's\\nall\\nfolks\" == return);\n"
-        //    ;
-        HashMap scope = new HashMap();
+        HashMap<String, Obj> scope = new HashMap();
         scope.put("filename", Buf.encode("test/A/some.bin"));
         scope.put("list_off", new Num(0x42));
         scope.put("list_len", new Num(3));
         scope.put("list_end", new Num(0x42 + 3*4));
+
         String script
             = "filebuf = read filename;\n"
-            + "ptrs = map parse (rect (slice filebuf list_off list_end) 4);\n"
-            + "starts = map slice (repeat filebuf 4) ptrs;\n"
+            + "lst = rect (slice filebuf list_off list_end) 4;\n"
+            + "ptrs = map parse lst;\n"
+            + "\n"
+            + "starts = map slice (repeat filebuf list_len) ptrs;\n"
             + "strs = map delim starts;\n"
-            + "return = join strs;\n"
-            + "view_txt return;\n"
+            + "\n"
+            + "return = join strs \"\\n\";\n"
+            + "#_ = view_txt return;\n"
             ;
-        Lang.Lookup lookup = new Lang.Lookup() {
-            public Class lookup(String name) {
-                return null;
-            }
-        };
-        Lang res = new Lang(script, new Lang.Lookup[] {lookup}, scope);
+
+        Lang.Lookup ops = new Lang.LookupClassesUnder("com.jexad.ops");
+        Lang res = new Lang(script, new Lang.Lookup[] {ops}, scope);
+
+        if (null == res.obj) {
+            System.out.println("script result is null");
+            return false;
+        }
+
+        res.obj.update();
         return "that's\nall\nfolks".equals(((Buf)res.obj).decode());
     }
 

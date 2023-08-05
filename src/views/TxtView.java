@@ -1,9 +1,12 @@
 package com.jexad.views;
 
+import com.jexad.base.Buf;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
 public class TxtView extends View {
+
+    public TxtView(Buf b) { super(b); }
 
     ArrayList<String> lines = new ArrayList();
     int longest;

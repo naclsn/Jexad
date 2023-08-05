@@ -15,7 +15,7 @@ public class Repeat<T extends Obj> extends Lst<T> implements Ops {
     T under;
     Num count;
 
-    public Repeat(T under, Num count) {
+    Repeat(T under, Num count) {
         super(under instanceof Buf ? Buf.class
             : under instanceof Num ? Num.class
             : under instanceof Lst ? Lst.class

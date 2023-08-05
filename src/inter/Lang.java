@@ -37,9 +37,9 @@ public class Lang {
 
     public static interface Lookup { public Class lookup(String name); }
 
-    public static class LookupJavaClassesUnder implements Lookup {
+    public static class LookupClassesUnder implements Lookup {
         String base;
-        public LookupJavaClassesUnder(String base) { this.base = base + "."; }
+        public LookupClassesUnder(String base) { this.base = base + "."; }
         public Class lookup(String name) {
             char[] a = name.toCharArray();
             boolean f = true;
@@ -56,7 +56,6 @@ public class Lang {
                     f = true;
                 }
             }
-            System.out.println(name + " -> " + new String(a, 0, a.length-w));
             try { return Class.forName(base + new String(a, 0, a.length-w)); }
             catch (Exception e) { return null; }
         }
@@ -313,21 +312,23 @@ public class Lang {
         Object[] g = new Object[l.size()];
         l.toArray(g);
         Class[] gcl = new Class[g.length];
-        System.out.println("calling: " + r + ", args:");
         for (int k = 0; k < g.length; k++) {
             gcl[k]
                 = g[k] instanceof Buf ? Buf.class
                 : g[k] instanceof Num ? Num.class
                 : g[k] instanceof Lst ? Lst.class
                 : Class.class;
-            System.out.printf("  %d %s (-> %s)\n", k, g[k].getClass(), gcl[k]);
         }
         try {
-            return ((Class)r).getConstructor(gcl).newInstance((Object[])g);
+            Object o = ((Class)r).getConstructor(gcl).newInstance((Object[])g);
+            if (o instanceof Obj) return o;
+            return new Num(0);
         } catch (Exception e) {
-            fail("java exception in call expression: " + e);
+            Throwable t = e;
+            while (null != t.getCause()) t = t.getCause();
+            fail("java exception in call expression: " + t);
         }
-        return null;
+        return null; // unreachable
     }
 
 }

@@ -1,6 +1,7 @@
 package com.jexad;
 
 import com.jexad.base.Buf;
+import com.jexad.base.Num;
 import com.jexad.base.Obj;
 import com.jexad.base.Util;
 import com.jexad.inter.Lang;
@@ -117,7 +118,8 @@ class Jexad extends Frame {
 
         HashMap<String, Obj> globalScope = new HashMap();
         Lang.Lookup[] globalNames = new Lang.Lookup[] {
-            new Lang.LookupJavaClassesUnder("com.jexad.ops"),
+            new Lang.LookupClassesUnder("com.jexad.ops"),
+            new Lang.LookupClassesUnder("com.jexad.views"),
         };
 
         try {

@@ -4,6 +4,7 @@ import com.jexad.base.Buf;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
 import java.awt.Toolkit;
@@ -12,6 +13,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -82,6 +85,25 @@ public abstract class View extends Canvas implements
 
         addKeyListener(this);
         addMouseWheelListener(this);
+    }
+
+    // XXX: temp
+    public View(Buf content) {
+        this();
+        Frame f = new Frame();
+        f.addWindowListener(new WindowAdapter() {
+            public void windowOpened(WindowEvent _e) {
+                View.this.setContent(content);
+            }
+            public void windowClosing(WindowEvent _e) {
+                f.dispose();
+            }
+        });
+        f.add(this);
+        f.setSize(640, 480);
+        f.setTitle("hi :3");
+        f.setVisible(true);
+        requestFocusInWindow();
     }
 
     public void reloadPrefs() {

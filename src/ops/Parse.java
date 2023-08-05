@@ -65,7 +65,7 @@ public class Parse extends Num implements Ops {
             | ((0xff&four[3]) << (8*3))
             ;
     }
-    public static boolean testToInteger() {
+    public static boolean testToInt() {
         return Integer.MAX_VALUE == toInt(new byte[] {(byte)0xff, (byte)0xff, (byte)0xff, (byte)0x7f}, Endian.LITTLE)
             && Integer.MAX_VALUE == toInt(new byte[] {(byte)0x7f, (byte)0xff, (byte)0xff, (byte)0xff}, Endian.BIG)
             && Integer.MIN_VALUE == toInt(new byte[] {(byte)0x00, (byte)0x00, (byte)0x00, (byte)0x80}, Endian.LITTLE)
