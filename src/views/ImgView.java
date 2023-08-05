@@ -1,5 +1,6 @@
 package com.jexad.views;
 
+import com.jexad.base.Buf;
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
@@ -12,7 +13,10 @@ import java.awt.image.Raster;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 
-public class ImgView extends View {
+public class ImgView extends View<Buf> {
+
+    public ImgView() { super(); }
+    public ImgView(Buf b) { super(b); }
 
     BufferedImage img;
     AffineTransform tr;

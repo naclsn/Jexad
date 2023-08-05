@@ -4,7 +4,7 @@ import com.jexad.base.Buf;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 
-public class TxtView extends View {
+public class TxtView extends View<Buf> {
 
     public TxtView(Buf b) { super(b); }
 

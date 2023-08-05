@@ -300,7 +300,7 @@ public class Lang {
         int a = i;
         Object r = scanAtom();
         if (r instanceof Obj || !exprStart) return r;
-        // else Class
+        Class f = (Class)r;
         skipBlanks();
         ArrayList<Object> l = new ArrayList();
         char c;
@@ -308,7 +308,6 @@ public class Lang {
             l.add(processExpr(false));
             skipBlanks();
         }
-        //for (int k = 0; k < l.size(); k++) System.out.println(" - " + l.get(k));
         Object[] g = new Object[l.size()];
         l.toArray(g);
         Class[] gcl = new Class[g.length];
@@ -320,9 +319,14 @@ public class Lang {
                 : Class.class;
         }
         try {
-            Object o = ((Class)r).getConstructor(gcl).newInstance((Object[])g);
+            Object o = f.getConstructor(gcl).newInstance((Object[])g);
             if (o instanceof Obj) return o;
             return new Num(0);
+        } catch (NoSuchMethodException e) {
+            String args = "";
+            for (int k = 0; k < gcl.length; k++)
+                args+= (0 == k ? "" : ", ") + gcl[k].getName().substring(15);
+            fail("no overload for '" + f.getName() + "' for arguments: " + args);
         } catch (Exception e) {
             Throwable t = e;
             while (null != t.getCause()) t = t.getCause();

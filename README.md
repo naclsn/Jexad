@@ -19,6 +19,7 @@ $ ant jar  # to simply generate jar/Jexad.jar
 ## title
 
 - `src/base/`: basic (`update()`-able) objects, eg. `Buf`
+- `src/inter/`: interaction with the tool, eg. front-end script, list defined objects
 - `src/ops/`: operations that can be performed on object, eg. `Slice`
 - `src/views/`: different presentations of objects, eg. `TextView`
 - `test/`: you get the idea
@@ -28,6 +29,29 @@ $ ant jar  # to simply generate jar/Jexad.jar
 - `Buf`: a buffer on raw bytes
 - `Lst`: a list of `Buf` or `Num` (or `Lst`)
 - `Num`: a number from bytes (eg. 4 bytes little-endian int)
+
+### Script Front-End
+
+A tiny DSL is hacked together to define objects; this is the full syntax:
+```plaintext
+<script> ::= <name> '=' <expr> {';' <name> '=' <expr>} [';']
+<expr> ::= <atom> | <name> {<expr>}
+<atom> ::= <str> | <num> | <lst> | <name> | '(' <expr> ')'
+
+<comment> ::= '#' /./ '\n'
+
+<str> ::= '"' /[^"]/ '"'
+<num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/
+<lst> ::= '{' {<expr> ','} '}'
+<name> ::= /[a-z_][0-9a-z_]+/
+```
+
+Example:
+```plaintext
+filebuf = read filename;
+lst = rect (slice filebuf list_off list_end) 4;
+ptrs = map parse lst;
+```
 
 ### Operations
 

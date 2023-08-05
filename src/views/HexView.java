@@ -1,8 +1,11 @@
 package com.jexad.views;
 
+import com.jexad.base.Buf;
 import java.awt.Graphics2D;
 
-public class HexView extends View {
+public class HexView extends View<Buf> {
+
+    public HexView(Buf b) { super(b); }
 
     int line_count;
 

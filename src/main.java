@@ -151,8 +151,8 @@ class Jexad extends Frame {
                             Lang res = new Lang(line, globalNames, globalScope);
                             if (null != res.obj) Util.show(res.obj);
                         } catch (Lang.LangException e) {
-                            //System.err.println(e);
-                            e.printStackTrace(System.err);
+                            System.err.println(e);
+                            //e.printStackTrace(System.err);
                         }
                 }
 

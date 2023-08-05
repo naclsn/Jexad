@@ -1,6 +1,6 @@
 package com.jexad.views;
 
-import com.jexad.base.Buf;
+import com.jexad.base.Obj;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
@@ -21,13 +21,13 @@ import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-public abstract class View extends Canvas implements
+public abstract class View<T extends Obj> extends Canvas implements
     KeyListener,
     MouseWheelListener,
     PropertyChangeListener
 {
 
-    protected Buf content;
+    protected T content;
     protected Preferences prefs;
 
     protected class ScrollInfo {
@@ -88,7 +88,7 @@ public abstract class View extends Canvas implements
     }
 
     // XXX: temp
-    public View(Buf content) {
+    public View(T content) {
         this();
         Frame f = new Frame();
         f.addWindowListener(new WindowAdapter() {
@@ -122,13 +122,13 @@ public abstract class View extends Canvas implements
         if (null != fg) setForeground(fg);
     }
 
-    public void setContent(Buf nullIfKeep) {
+    public void setContent(T nullIfKeep) {
         if (null != nullIfKeep) content = nullIfKeep;
         content.update();
         update();
     }
 
-    public Buf getContent() {
+    public T getContent() {
         return content;
     }
 
