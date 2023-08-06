@@ -1,6 +1,7 @@
 package com.jexad.views;
 
 import com.jexad.base.Buf;
+import com.jexad.base.Fun;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
@@ -17,10 +18,14 @@ public class ArgsTreeView extends View {
     public ArgsTreeView(Buf content, Buf title) { super(content, title.decode()); }
     public ArgsTreeView(Lst content, Buf title) { super(content, title.decode()); }
     public ArgsTreeView(Num content, Buf title) { super(content, title.decode()); }
+    public ArgsTreeView(Buf content) { super(content, null); }
+    public ArgsTreeView(Lst content) { super(content, null); }
+    public ArgsTreeView(Num content) { super(content, null); }
 
     class Node {
 
         Kind kind;
+        boolean raw; // does not apply to FUN
         String text;
         Node[] chld;
         Obj obj;
@@ -28,15 +33,18 @@ public class ArgsTreeView extends View {
         Rectangle2D area;
         boolean hover;
 
-        static enum Kind { BUF, NUM, LST }
+        static enum Kind { BUF, NUM, LST, FUN }
 
         Node(Obj o) {
             kind= o instanceof Buf ? Kind.BUF
                 : o instanceof Num ? Kind.NUM
                 : o instanceof Lst ? Kind.LST
-                : null;
+                : o instanceof Fun ? Kind.FUN
+                : null; // idealy unreachable
+            Class cl = o.getClass();
+            raw = cl == Buf.class || cl == Num.class || cl == Lst.class;
 
-            text = o.getClass().getName();
+            text = cl.getName();
             text = text.substring(text.lastIndexOf('.')+1);
 
             chld = null;
@@ -63,7 +71,7 @@ public class ArgsTreeView extends View {
 
         void render(Graphics2D g) {
             g.setColor(getForeground());
-            g.drawString(folded ? "+" : "-", 0, 0);
+            g.drawString(raw ? "=" : folded ? "+" : "-", 0, 0);
 
             switch (kind) {
                 case BUF: g.drawString("B", scroll.unitVe/2, 0); break;

@@ -181,11 +181,11 @@ public class Lang {
         return new Num(Integer.parseInt(new String(s, a, i-a), b));
     }
 
-    // <lst> ::= '{' {<expr> ','} '}'
+    // <lst> ::= '{' {<atom> ','} '}'
     Lst scanLst() throws LangException {
         ArrayList<Obj> l = new ArrayList();
         while (i < s.length && '}' != s[i]) {
-            Obj w = processExpr(true);
+            Obj w = scanAtom();
             // XXX: maybe remove idk
             if (w instanceof Fun) fail("lists of functions are not supported");
             l.add(w);
@@ -308,6 +308,7 @@ public class Lang {
     // <expr> ::
     //   = <atom>
     //   | <call>
+    //   | <expr> ',' <expr>
     // <call> ::= <name> {<expr>}
     Obj processExpr(boolean exprStart) throws LangException {
         if (i >= s.length) fail("expected expression");
@@ -317,7 +318,7 @@ public class Lang {
         Fun f = (Fun)r;
         skipBlanks();
         ArrayList<Obj> l = new ArrayList();
-        char c;
+        char c = 0;
         while (i < s.length && ';' != (c = s[i]) && ')' != c && ',' != c && '}' != c) {
             l.add(processExpr(false));
             skipBlanks();
@@ -335,6 +336,12 @@ public class Lang {
         }
         try {
             Obj o = f.make(g);
+            if (',' == c) {
+                scope.put("_", o);
+                i++;
+                skipBlanks();
+                return processExpr(true);
+            }
             return o;
         } catch (Fun.InvokeException e) { // TODO: properly bubble whatever this is
             String args = "";

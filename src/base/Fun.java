@@ -38,7 +38,8 @@ public interface Fun extends Obj {
                     : null; // idealy unreachable
             }
             try {
-                return (Obj)cl.getConstructor(clargs).newInstance((Object[])args);
+                Object r = cl.getConstructor(clargs).newInstance((Object[])args);
+                return r instanceof Obj ? (Obj)r : new Buf(new byte[0]);
             } catch (Exception e) {
                 throw new InvokeException(e.toString()); // TODO: make it the cause
             }
