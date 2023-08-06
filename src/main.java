@@ -115,18 +115,36 @@ class Jexad extends Frame {
                     Num a, b, c;
                     public Add(Num a, Num b, Num c) { this.a = a; this.b = b; this.c = c; }
                     public Add(Num a, Num b) { this(a, b, new Num(0)); }
-                    public void update() {
-                        if (uptodate) return; uptodate = true;
-                        val = a.val + b.val + c.val;
-                    }
+                    public void update() { if (uptodate) return; uptodate = true; val = a.val + b.val + c.val; }
                 }
                 Fun add = new Fun.ForClass(Add.class, "");
+                static class Sub extends Num {
+                    Num a, b, c;
+                    public Sub(Num a, Num b, Num c) { this.a = a; this.b = b; this.c = c; }
+                    public Sub(Num a, Num b) { this(a, b, new Num(0)); }
+                    public void update() { if (uptodate) return; uptodate = true; val = a.val - b.val - c.val; }
+                }
+                Fun sub = new Fun.ForClass(Sub.class, "");
+                static class Mul extends Num {
+                    Num a, b, c;
+                    public Mul(Num a, Num b, Num c) { this.a = a; this.b = b; this.c = c; }
+                    public Mul(Num a, Num b) { this(a, b, new Num(1)); }
+                    public void update() { if (uptodate) return; uptodate = true; val = a.val * b.val * c.val; }
+                }
+                Fun mul = new Fun.ForClass(Mul.class, "");
+                static class Div extends Num {
+                    Num a, b, c;
+                    public Div(Num a, Num b, Num c) { this.a = a; this.b = b; this.c = c; }
+                    public Div(Num a, Num b) { this(a, b, new Num(1)); }
+                    public void update() { if (uptodate) return; uptodate = true; val = a.val / b.val / c.val; }
+                }
+                Fun div = new Fun.ForClass(Div.class, "");
                 public Fun lookup(String name) {
                     switch (name) {
                         case "add": return add;
-                        //case "sub": return sub;
-                        //case "mul": return mul;
-                        //case "div": return div;
+                        case "sub": return sub;
+                        case "mul": return mul;
+                        case "div": return div;
                     }
                     return null;
                 }
@@ -151,6 +169,12 @@ class Jexad extends Frame {
                         }
                         break;
 
+                    //case '@':
+                    //    globalScope.clear();
+                    //    System.gc();
+                    //    System.runFinalization();
+                    //    break;
+
                     case '.':
                         Buf b = new Read(Buf.encode(line.substring(1).trim()));
                         b.update();
@@ -160,7 +184,7 @@ class Jexad extends Frame {
                     default:
                         try {
                             Lang res = new Lang(line, globalNames, globalScope);
-                            if (null != res.obj) Util.show(res.obj);
+                            //if (null != res.obj) Util.show(res.obj);
                         } catch (Lang.LangException e) {
                             System.err.println(e);
                             //e.printStackTrace(System.err);

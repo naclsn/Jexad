@@ -1,11 +1,6 @@
 package com.jexad.base;
 
-public class Num implements Obj {
-
-    public Obj[] arguments() { return new Obj[0]; }
-    protected boolean uptodate;
-    public void outdated() { uptodate = false; }
-    public void update() { }
+public class Num extends Obj {
 
     // for now everything is `int` (ie. 32 bits signed integer)
     public int val; // readonly

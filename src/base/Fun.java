@@ -1,16 +1,16 @@
 package com.jexad.base;
 
-public interface Fun extends Obj {
+public abstract class Fun extends Obj {
 
     public static class InvokeException extends Exception {
         public InvokeException(String message) { super(message); }
     }
 
-    String help();
-    Obj make(Obj... args) throws InvokeException;
-    Class ret();
+    public String help() { return "no help for this function..."; }
+    public abstract Obj call(Obj... args) throws InvokeException;
+    public abstract Class ret();
 
-    public static class ForClass implements Fun {
+    public static class ForClass extends Fun {
 
         Class cl;
         String doc;
@@ -20,14 +20,11 @@ public interface Fun extends Obj {
             this.doc = doc;
         }
 
-        public Obj[] arguments() { return new Obj[0]; }
-        protected boolean uptodate;
-        public void outdated() { uptodate = false; }
-        public void update() { }
-
+        @Override
         public String help() { return doc; }
 
-        public Obj make(Obj... args) throws InvokeException {
+        @Override
+        public Obj call(Obj... args) throws InvokeException {
             Class[] clargs = new Class[args.length];
             for (int k = 0; k < args.length; k++) {
                 clargs[k]
@@ -45,6 +42,7 @@ public interface Fun extends Obj {
             }
         }
 
+        @Override
         public Class ret() {
             Class r
                 = Buf.class.isAssignableFrom(cl) ? Buf.class

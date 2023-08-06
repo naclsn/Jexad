@@ -63,7 +63,7 @@ public class Map<Out extends Obj> extends Lst<Out> {
             }
 
             try {
-                arr[i] = (Out)op.make(args);
+                arr[i] = (Out)op.call(args);
             } catch (Exception e) {
                 System.err.println("Map: " + e);
                 return; // XXX: errs and such...

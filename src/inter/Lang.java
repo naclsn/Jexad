@@ -335,7 +335,7 @@ public class Lang {
                 : null; // idealy unreachable
         }
         try {
-            Obj o = f.make(g);
+            Obj o = f.call(g);
             if (',' == c) {
                 scope.put("_", o);
                 i++;

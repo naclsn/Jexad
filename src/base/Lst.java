@@ -1,11 +1,6 @@
 package com.jexad.base;
 
-public class Lst<T extends Obj> implements Obj {
-
-    public Obj[] arguments() { return new Obj[0]; }
-    protected boolean uptodate;
-    public void outdated() { uptodate = false; }
-    public void update() { }
+public class Lst<T extends Obj> extends Obj {
 
     public T[] arr; // readonly
     public Lst(Class item_class, T[] arr) {
