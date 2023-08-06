@@ -4,10 +4,9 @@ import com.jexad.base.Buf;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
-import com.jexad.base.Ops;
 import com.jexad.base.Util;
 
-public class Rect extends Lst<Buf> implements Ops {
+public class Rect extends Lst<Buf> {
 
     public String getHelp() { return "slices at regular interval into a list of same-size buffers with optional padding"; }
 

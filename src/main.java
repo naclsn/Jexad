@@ -1,6 +1,7 @@
 package com.jexad;
 
 import com.jexad.base.Buf;
+import com.jexad.base.Fun;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
 import com.jexad.base.Util;
@@ -109,6 +110,27 @@ class Jexad extends Frame {
         Lang.Lookup[] globalNames = new Lang.Lookup[] {
             new Lang.Lookup.ClassesUnder("com.jexad.ops"),
             new Lang.Lookup.ClassesUnder("com.jexad.views"),
+            new Lang.Lookup() {
+                static class Add extends Num {
+                    Num a, b, c;
+                    public Add(Num a, Num b, Num c) { this.a = a; this.b = b; this.c = c; }
+                    public Add(Num a, Num b) { this(a, b, new Num(0)); }
+                    public void update() {
+                        if (uptodate) return; uptodate = true;
+                        val = a.val + b.val + c.val;
+                    }
+                }
+                Fun add = new Fun.ForClass(Add.class, "");
+                public Fun lookup(String name) {
+                    switch (name) {
+                        case "add": return add;
+                        //case "sub": return sub;
+                        //case "mul": return mul;
+                        //case "div": return div;
+                    }
+                    return null;
+                }
+            }
         };
 
         try {

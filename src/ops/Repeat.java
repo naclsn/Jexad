@@ -4,11 +4,10 @@ import com.jexad.base.Buf;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
-import com.jexad.base.Ops;
 
 import com.jexad.base.Util;
 @SuppressWarnings("unchecked")
-public class Repeat<T extends Obj> extends Lst<T> implements Ops {
+public class Repeat<T extends Obj> extends Lst<T> {
 
     public String getHelp() { return "repeat the object"; }
 
