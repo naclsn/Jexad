@@ -118,10 +118,10 @@ class Cases {
 
         Buf list_buf = new Slice(binfile_buf, new Num(list_off), new Num(list_off + list_len*4));
         Lst<Buf> list_32b = new Rect(list_buf, new Num(4));
-        Lst<Num> pointers = new Map<Num>(Parse.class, list_32b);
+        Lst<Num> pointers = new Map<Num>(new Fun.ForClass(Parse.class, "doc"), list_32b);
 
-        Lst<Buf> strings_starts = new Map<Buf>(Slice.class, new Repeat<Buf>(binfile_buf, new Num(list_len)), pointers);
-        Lst<Buf> strings = new Map<Buf>(Delim.class, strings_starts); // new Repeat<Buf>(new Buf(new byte[] {0}), new Num(list_len)));
+        Lst<Buf> strings_starts = new Map<Buf>(new Fun.ForClass(Slice.class, "doc"), new Repeat<Buf>(binfile_buf, new Num(list_len)), pointers);
+        Lst<Buf> strings = new Map<Buf>(new Fun.ForClass(Delim.class, "doc"), strings_starts); // new Repeat<Buf>(new Buf(new byte[] {0}), new Num(list_len)));
 
         Buf result = new Join(strings, new Buf(new byte[] {'\n'}));
 
@@ -154,7 +154,7 @@ class Cases {
             + "#_ = view_txt return;\n"
             ;
 
-        Lang.Lookup ops = new Lang.LookupClassesUnder("com.jexad.ops");
+        Lang.Lookup ops = new Lang.Lookup.ClassesUnder("com.jexad.ops");
         Lang res = new Lang(script, new Lang.Lookup[] {ops}, scope);
 
         if (null == res.obj) {

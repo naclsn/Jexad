@@ -107,8 +107,8 @@ class Jexad extends Frame {
 
         HashMap<String, Obj> globalScope = new HashMap();
         Lang.Lookup[] globalNames = new Lang.Lookup[] {
-            new Lang.LookupClassesUnder("com.jexad.ops"),
-            new Lang.LookupClassesUnder("com.jexad.views"),
+            new Lang.Lookup.ClassesUnder("com.jexad.ops"),
+            new Lang.Lookup.ClassesUnder("com.jexad.views"),
         };
 
         try {

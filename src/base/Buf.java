@@ -3,7 +3,12 @@ package com.jexad.base;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
-public class Buf extends Obj {
+public class Buf implements Obj {
+
+    public Obj[] arguments() { return new Obj[0]; }
+    protected boolean uptodate;
+    public void outdated() { uptodate = false; }
+    public void update() { }
 
     public byte[] raw; // readonly
     public Buf(byte[] raw) { this.raw = raw; }

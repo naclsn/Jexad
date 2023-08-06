@@ -1,6 +1,7 @@
 package com.jexad.inter;
 
 import com.jexad.base.Buf;
+import com.jexad.base.Fun;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
@@ -35,31 +36,42 @@ public class Lang {
 
     }
 
-    public static interface Lookup { public Class lookup(String name); }
+    public static interface Lookup {
 
-    public static class LookupClassesUnder implements Lookup {
-        String base;
-        public LookupClassesUnder(String base) { this.base = base + "."; }
-        public Class lookup(String name) {
-            char[] a = name.toCharArray();
-            boolean f = true;
-            int w = 0;
-            for (int k = 0; k < a.length-w; k++) {
-                char c = a[k];
-                if (f) {
-                    if ('a' <= c && c <= 'z') a[k]-= 'a'-'A';
-                    f = false;
-                } else if ('_' == c) {
-                    w++;
-                    System.arraycopy(a, k+1, a, k, a.length-k-1);
-                    k--;
-                    f = true;
+        Fun lookup(String name);
+        //Fun[] known();
+
+        public static class ClassesUnder implements Lookup {
+
+            String base;
+
+            public ClassesUnder(String base) { this.base = base + "."; }
+
+            public Fun lookup(String name) {
+                char[] a = name.toCharArray();
+                boolean f = true;
+                int w = 0;
+                for (int k = 0; k < a.length-w; k++) {
+                    char c = a[k];
+                    if (f) {
+                        if ('a' <= c && c <= 'z') a[k]-= 'a'-'A';
+                        f = false;
+                    } else if ('_' == c) {
+                        w++;
+                        System.arraycopy(a, k+1, a, k, a.length-k-1);
+                        k--;
+                        f = true;
+                    }
                 }
+                try {
+                    Class cl = Class.forName(base + new String(a, 0, a.length-w));
+                    return new Fun.ForClass(cl, "doc");
+                } catch (Exception e) { return null; }
             }
-            try { return Class.forName(base + new String(a, 0, a.length-w)); }
-            catch (Exception e) { return null; }
-        }
-    }
+
+        } // class ClassesUnder
+
+    } // interface Lookup
 
     public Map<String, Obj> scope;
     public Lookup[] lookups;
@@ -76,9 +88,9 @@ public class Lang {
         obj = scope.get("return");
     }
 
-    public Class tryLookup(String name) {
+    public Obj tryLookup(String name) {
         for (int k = lookups.length-1; k >= 0; k--) {
-            Class r = lookups[k].lookup(name);
+            Obj r = lookups[k].lookup(name);
             if (null != r) return r;
         }
         return null;
@@ -173,9 +185,10 @@ public class Lang {
     Lst scanLst() throws LangException {
         ArrayList<Obj> l = new ArrayList();
         while (i < s.length && '}' != s[i]) {
-            Object w = processExpr(true);
-            if (w instanceof Obj) l.add((Obj)w);
-            else fail("lists of other than objects are not supported");
+            Obj w = processExpr(true);
+            // XXX: maybe remove idk
+            if (w instanceof Fun) fail("lists of functions are not supported");
+            l.add(w);
             skipBlanks();
             if (i >= s.length || ',' != s[i]) break;
             skipBlanks();
@@ -209,7 +222,7 @@ public class Lang {
     //   | <lst>
     //   | <name>
     //   | '(' <expr> ')'
-    Object scanAtom() throws LangException {
+    Obj scanAtom() throws LangException {
         if (i >= s.length) fail("expected atom");
         char c = s[i];
         switch (s[i]) {
@@ -217,7 +230,7 @@ public class Lang {
             case '{': return scanLst();
             case '(':
                 i++;
-                Object r = processExpr(true);
+                Obj r = processExpr(true);
                 skipBlanks();
                 if (i >= s.length || ')' != s[i])
                     fail("missing matching closing () in atom");
@@ -227,10 +240,10 @@ public class Lang {
         if ('0' <= c && c <= '9') return scanNum();
         if ('_' == c || 'a' <= c && c <= 'z') {
             String n = scanName();
-            Obj r1 = scope.get(n);
-            if (null != r1) return r1;
-            Class r2 = tryLookup(n);
-            if (null != r2) return r2;
+            Obj r = scope.get(n);
+            if (null != r) return r;
+            r = tryLookup(n);
+            if (null != r) return r;
             fail("unknown name: '"+n+"'");
         }
         fail("expected atom, got '"+c+"'");
@@ -280,9 +293,10 @@ public class Lang {
             if (i >= s.length || '=' != s[i]) fail("expected '=' after name in statement");
             i++;
             skipBlanks();
-            Object w = processExpr(true);
-            if (w instanceof Obj) scope.put(n, (Obj)w);
-            else fail("storing other than object is not supported");
+            Obj w = processExpr(true);
+            // XXX: remove maybe idk
+            if (w instanceof Fun) fail("storing functions is not supported");
+            scope.put(n, w);
             if (i >= s.length) break;
             skipBlanks();
             if (';' != s[i]) fail("expected ';' after statement");
@@ -295,20 +309,20 @@ public class Lang {
     //   = <atom>
     //   | <call>
     // <call> ::= <name> {<expr>}
-    Object processExpr(boolean exprStart) throws LangException {
+    Obj processExpr(boolean exprStart) throws LangException {
         if (i >= s.length) fail("expected expression");
         int a = i;
-        Object r = scanAtom();
-        if (r instanceof Obj || !exprStart) return r;
-        Class f = (Class)r;
+        Obj r = scanAtom();
+        if (!exprStart || !(r instanceof Fun)) return r;
+        Fun f = (Fun)r;
         skipBlanks();
-        ArrayList<Object> l = new ArrayList();
+        ArrayList<Obj> l = new ArrayList();
         char c;
         while (i < s.length && ';' != (c = s[i]) && ')' != c && ',' != c && '}' != c) {
             l.add(processExpr(false));
             skipBlanks();
         }
-        Object[] g = new Object[l.size()];
+        Obj[] g = new Obj[l.size()];
         l.toArray(g);
         Class[] gcl = new Class[g.length];
         for (int k = 0; k < g.length; k++) {
@@ -316,23 +330,19 @@ public class Lang {
                 = g[k] instanceof Buf ? Buf.class
                 : g[k] instanceof Num ? Num.class
                 : g[k] instanceof Lst ? Lst.class
-                : Class.class;
+                : g[k] instanceof Fun ? Fun.class
+                : null; // idealy unreachable
         }
         try {
-            Object o = f.getConstructor(gcl).newInstance((Object[])g);
-            if (o instanceof Obj) return o;
-            return new Num(0);
-        } catch (NoSuchMethodException e) {
+            Obj o = f.make(g);
+            return o;
+        } catch (Fun.InvokeException e) { // TODO: properly bubble whatever this is
             String args = "";
             for (int k = 0; k < gcl.length; k++)
                 args+= (0 == k ? "" : ", ") + gcl[k].getName().substring(15);
-            fail("no overload for '" + f.getName() + "' for arguments: " + args);
-        } catch (Exception e) {
-            Throwable t = e;
-            while (null != t.getCause()) t = t.getCause();
-            fail("java exception in call expression: " + t);
+            fail("cannot apply function to arguments: "+args);
+            return null; // unreachable
         }
-        return null; // unreachable
     }
 
 }

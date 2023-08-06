@@ -55,7 +55,8 @@ ptrs = map parse lst;
 
 ### Operations
 
-..
+Operations are java classes that you can make `Fun` of.. uh...
+(For example the class `Split` is the function `split` in script.)
 
 ### Views on a Buffer
 
