@@ -22,9 +22,11 @@ public class ArgsTreeView extends View {
     public ArgsTreeView(Lst content) { super(content, null); }
     public ArgsTreeView(Num content) { super(content, null); }
 
+    static enum NodeKind { BUF, NUM, LST, FUN }
+
     class Node {
 
-        Kind kind;
+        NodeKind kind;
         boolean raw; // does not apply to FUN
         String text;
         Node[] chld;
@@ -33,13 +35,11 @@ public class ArgsTreeView extends View {
         Rectangle2D area;
         boolean hover;
 
-        static enum Kind { BUF, NUM, LST, FUN }
-
         Node(Obj o) {
-            kind= o instanceof Buf ? Kind.BUF
-                : o instanceof Num ? Kind.NUM
-                : o instanceof Lst ? Kind.LST
-                : o instanceof Fun ? Kind.FUN
+            kind= o instanceof Buf ? NodeKind.BUF
+                : o instanceof Num ? NodeKind.NUM
+                : o instanceof Lst ? NodeKind.LST
+                : o instanceof Fun ? NodeKind.FUN
                 : null; // idealy unreachable
             Class cl = o.getClass();
             raw = cl == Buf.class || cl == Num.class || cl == Lst.class;
