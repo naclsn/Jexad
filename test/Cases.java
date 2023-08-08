@@ -154,14 +154,14 @@ class Cases {
         scope.put("list_end", new Num(0x42 + 3*4));
 
         String script
-            = "filebuf = read filename;\n"
-            + "lst = rect (slice filebuf list_off list_end) 4;\n"
-            + "ptrs = map parse lst;\n"
+            = "filebuf = Read filename;\n"
+            + "lst = Rect (Slice filebuf list_off list_end) 4;\n"
+            + "ptrs = Map Parse lst;\n"
             + "\n"
-            + "starts = map slice (repeat filebuf list_len) ptrs;\n"
-            + "strs = map delim starts;\n"
+            + "starts = Map Slice (Repeat filebuf list_len) ptrs;\n"
+            + "strs = Map Delim starts;\n"
             + "\n"
-            + "return = join strs \"\\n\";\n"
+            + "return = Join strs \"\\n\";\n"
             ;
 
         Lang.Lookup ops = new Lang.Lookup.ClassesUnder("com.jexad.ops");

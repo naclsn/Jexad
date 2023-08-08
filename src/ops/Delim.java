@@ -2,11 +2,12 @@ package com.jexad.ops;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import com.jexad.base.Util;
 
 public class Delim extends Buf {
 
-    public String getHelp() { return "slice until delim (default exclusive), default is {'\\0'} ie C-string"; }
+    public static final Fun fun = new Fun.ForClass(Delim.class, "slice until delim (default exclusive), default is {'\\0'} ie C-string");
 
     Buf under;
     Buf delim;

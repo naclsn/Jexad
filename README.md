@@ -34,16 +34,17 @@ $ ant jar  # to simply generate jar/Jexad.jar
 
 A tiny DSL is hacked together to define objects; this is the full syntax:
 ```plaintext
-<script> ::= <name> '=' <expr> {';' <name> '=' <expr>} [';']
-<expr> ::= <atom> | <name> {<expr>} | <expr> ',' <expr>
-<atom> ::= <str> | <num> | <lst> | <name> | '(' <expr> ')'
+<script> ::= <var> '=' <expr> {';' <var> '=' <expr>} [';']
+<expr> ::= <atom> | <fun> {<expr>} | <expr> ',' <expr>
+<atom> ::= <str> | <num> | <lst> | <fun> | <var> | '(' <expr> ')'
 
 <comment> ::= '#' /./ '\n'
 
 <str> ::= '"' /[^"]/ '"'
 <num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/
 <lst> ::= '{' <atom> {',' <atom>} '}'
-<name> ::= /[a-z_][0-9a-z_]+/
+<fun> ::= /[A-Z][0-9A-Z]+/
+<var> ::= /[a-z_][0-9a-z_]+/
 ```
 
 Example:

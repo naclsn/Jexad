@@ -4,11 +4,12 @@ import com.jexad.base.Buf;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import com.jexad.base.Util;
 
 public class Rect extends Lst<Buf> {
 
-    public String getHelp() { return "slices at regular interval into a list of same-size buffers with optional padding"; }
+    public static final Fun fun = new Fun.ForClass(Rect.class, "slices at regular interval into a list of same-size buffers with optional padding");
 
     Buf under;
     Num it_len;

@@ -3,10 +3,11 @@ package com.jexad.ops.zip;
 import com.jexad.base.Buf;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 
 public class ZipEntry extends Buf {
 
-    public String getHelp() { return "address entry at the given path in the zip"; }
+    public static final Fun fun = new Fun.ForClass(ZipEntry.class, "address entry at the given path in the zip");
 
     Num ziphandle;
     Buf path;

@@ -3,11 +3,12 @@ package com.jexad.ops;
 import com.jexad.base.Buf;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import com.jexad.base.Util;
 
 public class Slice extends Buf {
 
-    public String getHelp() { return "[begin:end], defaults are begin=0 and end=length; begin and end can be <0"; }
+    public static final Fun fun = new Fun.ForClass(Slice.class, "[begin:end], defaults are begin=0 and end=length; begin and end can be <0");
 
     Buf under;
     Num begin;

@@ -4,10 +4,13 @@ import com.jexad.base.Buf;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import java.util.Arrays;
 import java.util.Set;
 
 public class ZipList extends Lst<Buf> {
+
+    public static final Fun fun = new Fun.ForClass(ZipList.class, "list the entries in the zip");
 
     Num ziphandle;
 

@@ -1,9 +1,12 @@
 package com.jexad.ops.math;
 
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import com.jexad.base.Num;
 
 public class Div extends Num {
+
+    public static final Fun fun = new Fun.ForClass(Div.class, "todo");
 
     Num o;
     Num[] n;

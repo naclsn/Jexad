@@ -2,6 +2,7 @@ package com.jexad.ops.zip;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import com.jexad.base.Lst;
 import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipOutputStream;
@@ -9,7 +10,7 @@ import java.util.zip.ZipEntry;
 
 public class ZipEncode extends Buf {
 
-    public String getHelp() { return "encodes entries into zip file as bytes"; }
+    public static final Fun fun = new Fun.ForClass(ZipEncode.class, "encodes entries into zip file as bytes");
 
     Lst<Buf> paths;
     Lst<Buf> bytes;

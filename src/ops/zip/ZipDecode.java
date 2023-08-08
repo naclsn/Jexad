@@ -3,6 +3,7 @@ package com.jexad.ops.zip;
 import com.jexad.base.Buf;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,7 +13,7 @@ import java.util.zip.ZipEntry;
 
 public class ZipDecode extends Num {
 
-    public String getHelp() { return "decodes bytes as a zip file"; }
+    public static final Fun fun = new Fun.ForClass(ZipDecode.class, "decodes bytes as a zip file");
 
     public static class Handle {
 

@@ -16,6 +16,7 @@ public abstract class Fun extends Obj {
         String doc;
 
         public ForClass(Class cl, String doc) {
+            System.out.println("ForClass " + cl + " :" + doc + ":");
             this.cl = cl;
             this.doc = doc;
         }

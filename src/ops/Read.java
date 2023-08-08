@@ -2,6 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.Buf;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import com.jexad.base.Util;
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,7 +10,7 @@ import java.io.IOException;
 
 public class Read extends Buf {
 
-    public String getHelp() { return "read from file, empty if no exist"; }
+    public static final Fun fun = new Fun.ForClass(Read.class, "read from file, empty if no exist");
 
     Buf filename;
 

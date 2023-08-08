@@ -5,12 +5,13 @@ import com.jexad.base.Fun;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import com.jexad.base.Util;
 import java.lang.reflect.Constructor;
 
 public class Map<Out extends Obj> extends Lst<Out> {
 
-    public String getHelp() { return "makes a new list, applying the operation to each item; multiple argument lists are zipped"; }
+    public static final Fun fun = new Fun.ForClass(Map.class, "makes a new list, applying the operation to each item; multiple argument lists are zipped");
 
     Fun op;
     Lst args_one;

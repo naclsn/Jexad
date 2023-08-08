@@ -3,12 +3,13 @@ package com.jexad.ops;
 import com.jexad.base.Buf;
 import com.jexad.base.Lst;
 import com.jexad.base.Obj;
+import com.jexad.base.Fun;
 import com.jexad.base.Util;
 import java.util.ArrayList;
 
 public class Split extends Lst<Buf> {
 
-    public String getHelp() { return "split on separator (exclusive); default is {'\\0'} ie C-string"; }
+    public static final Fun fun = new Fun.ForClass(Split.class, "split on separator (exclusive); default is {'\\0'} ie C-string");
 
     ArrayList<Buf> al = new ArrayList();
     Buf under;

@@ -88,14 +88,6 @@ public class Lang {
         obj = scope.get("return");
     }
 
-    public Obj tryLookup(String name) {
-        for (int k = lookups.length-1; k >= 0; k--) {
-            Obj r = lookups[k].lookup(name);
-            if (null != r) return r;
-        }
-        return null;
-    }
-
     char[] s;
     int i;
 
@@ -181,13 +173,11 @@ public class Lang {
         return new Num(Integer.parseInt(new String(s, a, i-a), b));
     }
 
-    // <lst> ::= '{' {<atom> ','} '}'
+    // <lst> ::= '{' <atom> {',' <atom>} '}'
     Lst scanLst() throws LangException {
         ArrayList<Obj> l = new ArrayList();
         while (i < s.length && '}' != s[i]) {
             Obj w = scanAtom();
-            // XXX: maybe remove idk
-            if (w instanceof Fun) fail("lists of functions are not supported");
             l.add(w);
             skipBlanks();
             if (i >= s.length || ',' != s[i]) break;
@@ -205,23 +195,35 @@ public class Lang {
             : null, r);
     }
 
-    // <name> ::= /[a-z_][0-9a-z_]+/
-    String scanName() throws LangException {
+    // <fun> ::= /[A-Z][0-9A-Z]+/
+    Fun scanFun() throws LangException {
         int a = i;
         char c;
-        if (i >= s.length) fail("expected name");
+        if (i >= s.length) fail("expected function name");
+        if ((c = s[i]) < 'A' || 'Z' < c)
+            fail("expected function name to start with A-Z, got '"+c+"'");
+        while (++i < s.length && ('A' <= (c = s[i]) && c <= 'Z' || 'a' <= c && c <= 'z'));
+        String name = new String(s, a, i-a);
+        for (int k = lookups.length-1; k >= 0; k--) {
+            Fun r = lookups[k].lookup(name);
+            if (null != r) return r;
+        }
+        fail("unknown function '"+name+"'");
+        return null;
+    }
+
+    // <var> ::= /[a-z_][0-9a-z_]+/
+    String scanVarName() throws LangException {
+        int a = i;
+        char c;
+        if (i >= s.length) fail("expected variable name");
         if ('_' != (c = s[i]) && (c < 'a' || 'z' < c))
-            fail("expected name to start with a-z_, got '"+c+"'");
-        while (++i < s.length && ('_' == (c = s[i]) || 'a' <= c && c <= 'z')) ;
+            fail("expected variable name to start with a-z_, got '"+c+"'");
+        while (++i < s.length && ('_' == (c = s[i]) || 'a' <= c && c <= 'z'));
         return new String(s, a, i-a);
     }
 
-    // <atom> ::
-    //   = <str>
-    //   | <num>
-    //   | <lst>
-    //   | <name>
-    //   | '(' <expr> ')'
+    // <atom> ::= <str> | <num> | <lst> | <fun> | <var> | '(' <expr> ')'
     Obj scanAtom() throws LangException {
         if (i >= s.length) fail("expected atom");
         char c = s[i];
@@ -239,63 +241,26 @@ public class Lang {
         }
         if ('0' <= c && c <= '9') return scanNum();
         if ('_' == c || 'a' <= c && c <= 'z') {
-            String n = scanName();
-            Obj r = scope.get(n);
-            if (null != r) return r;
-            r = tryLookup(n);
-            if (null != r) return r;
-            fail("unknown name: '"+n+"'");
+            String name = scanVarName();
+            Obj r = scope.get(name);
+            if (null == r) fail("unknown variable '"+name+"'");
+            return r;
         }
+        if ('A' <= c && c <= 'Z') return scanFun();
         fail("expected atom, got '"+c+"'");
         return null;
     }
 
-    // <unop> ::= '+' | '-' | '!' | '~'
-    // <binop> ::= ',' | '+' | '-' | '*' | '/' | '**' | '//' | '%' | '&' | '|' | '^' | '&&' | '||' | '^^' | '==' | '!=' | '<=' | '>=' | '<' | '>'
-    // YYY: dead code
-    int scanOp() throws LangException {
-        char c = s[i++];
-        switch (c) {
-            case ',':
-            case '+':
-            case '-':
-            case '%':
-            case '~':
-                return c;
-            case '*':
-            case '/':
-            case '&':
-            case '|':
-            case '^':
-                return i < s.length && c == s[i]
-                    ? c | (s[i++] << 8)
-                    : c;
-            case '!':
-            case '<':
-            case '>':
-                return i < s.length && '=' == s[i]
-                    ? c | (s[i++] << 8)
-                    : c;
-            case '=':
-                if (i < s.length && '=' == s[i])
-                    return c | (s[i++] << 8);
-        }
-        fail("unexpected operator '"+c+"'");
-        return 0;
-    }
-
-    // <script> ::= <name> '=' <expr> {';' <name> '=' <expr>} [';']
+    // <script> ::= <var> '=' <expr> {';' <var> '=' <expr>} [';']
     void processScript() throws LangException {
         skipBlanks();
         do {
-            String n = scanName();
+            String n = scanVarName();
             skipBlanks();
             if (i >= s.length || '=' != s[i]) fail("expected '=' after name in statement");
             i++;
             skipBlanks();
             Obj w = processExpr(true);
-            // XXX: remove maybe idk
-            if (w instanceof Fun) fail("storing functions is not supported");
             scope.put(n, w);
             if (i >= s.length) break;
             skipBlanks();
@@ -305,16 +270,13 @@ public class Lang {
         } while (i < s.length);
     }
 
-    // <expr> ::
-    //   = <atom>
-    //   | <call>
-    //   | <expr> ',' <expr>
-    // <call> ::= <name> {<expr>}
+    // <expr> ::= <atom> | <fun> {<expr>} | <expr> ',' <expr>
+    // FIXME: fixme
     Obj processExpr(boolean exprStart) throws LangException {
         if (i >= s.length) fail("expected expression");
         int a = i;
         Obj r = scanAtom();
-        if (!exprStart || !(r instanceof Fun)) return r;
+        if (!exprStart || !(r instanceof Fun)) return r; // FIXME: ',' after a non-function atom (turn this condition the other way around)
         Fun f = (Fun)r;
         skipBlanks();
         ArrayList<Obj> l = new ArrayList();
