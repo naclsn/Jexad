@@ -10,8 +10,7 @@ import java.util.Comparator;
 import com.jexad.base.*;
 import com.jexad.inter.*;
 import com.jexad.ops.*;
-//import ... zip.*;
-//import ... png.*;
+import com.jexad.ops.zip.*;
 
 class Cases {
 
@@ -74,21 +73,34 @@ class Cases {
         return fails;
     }
 
-    public static void main(String[] args) {
-        int fails_total = 0;
+    static int tryDirClassesCallAll(String src_subdir) {
+        int fails = 0;
 
-        File[] ops = sortNamed(new File("src/ops").listFiles());
-        for (int i = 0; i < ops.length; i++) {
-            String name = ops[i].getName();
+        String pkg = "com.jexad." + src_subdir.replace('/', '.');
+
+        File[] cls = sortNamed(new File("src/" + src_subdir).listFiles());
+        System.out.println(Arrays.toString(cls));
+        for (int i = 0; i < cls.length; i++) {
+            String name = cls[i].getName();
             if (!name.endsWith(".java")) continue;
             name = name.substring(0, name.length()-5);
 
             Class op;
-            try { op = Class.forName("com.jexad.ops." + name); }
+            try { op = Class.forName(pkg + "." + name); }
             catch (Exception e) { continue; }
 
-            fails_total+= tryCallAll(op, "test");
+            fails+= tryCallAll(op, "test");
         }
+
+        return fails;
+    }
+
+    public static void main(String[] args) {
+        int fails_total = 0;
+
+        fails_total+= tryDirClassesCallAll("ops");
+        fails_total+= tryDirClassesCallAll("ops/math");
+        fails_total+= tryDirClassesCallAll("ops/zip");
 
         if (0 == fails_total)
             fails_total+= tryCallAll(Cases.class, "case");
@@ -135,7 +147,7 @@ class Cases {
         return "that's\nall\nfolks".equals(res);
     }
 
-    static boolean caseAScript() throws Lang.LangException {
+    static boolean caseAScript1() throws Lang.LangException {
         HashMap<String, Obj> scope = new HashMap();
         scope.put("filename", Buf.encode("test/A/some.bin"));
         scope.put("list_off", new Num(0x42));
@@ -151,7 +163,6 @@ class Cases {
             + "strs = map delim starts;\n"
             + "\n"
             + "return = join strs \"\\n\";\n"
-            + "#_ = view_txt return;\n"
             ;
 
         Lang.Lookup ops = new Lang.Lookup.ClassesUnder("com.jexad.ops");
@@ -166,6 +177,11 @@ class Cases {
         return "that's\nall\nfolks".equals(((Buf)res.obj).decode());
     }
 
+    static boolean caseAScript2() throws Lang.LangException {
+        System.out.println("TODO: caseAScript1 with chain bin op");
+        return false;
+    }
+
     // B)
     //  a ZIP archive contains an entry with path "res/image.png" to a PNG file
     //  (3-bytes RGB) in which each channel is to be interpreted as (ASCII)
@@ -174,7 +190,7 @@ class Cases {
     //  - extract the bytes for "res/image.png"
     //  - decode the PNG image into bytes
     //  - for each channel, select only its bytes
-    static boolean caseB() { return false; } /*{
+    static boolean caseB() {
         final String filename = "test/B/some.zip";
         final String respath = "res/image.png";
         final String r_txt = readFile("test/B/r.txt");
@@ -182,8 +198,10 @@ class Cases {
         final String b_txt = readFile("test/B/b.txt");
 
         Buf zipfilebytes = new Read(Buf.encode(filename));
-        Lst<Buf> zipbufs = new ZipDecode(zipfilebytes);
-        Buf pngfilebytes = new ZipEntry(zipbufs, Buf.encode(respath));
+        Num zipfilehandle = new ZipDecode(zipfilebytes);
+        Buf pngfilebytes = new ZipGetEntry(zipfilehandle, Buf.encode(respath));
+
+        /*
         Buf pngbuf = new PngDecode(pngfilebytes);
         Lst<Buf> rgbbufs = new PngRGB(pngbuf);
         Buf r = new Nth(rgbbufs, new Num(0));
@@ -194,6 +212,10 @@ class Cases {
             && g_txt.equals(g.decode())
             && b_txt.equals(b.decode())
             ;
-    }/*-*/
+        */
+
+        System.out.println("TODO: test is unfinished");
+        return false;
+    }
 
 }

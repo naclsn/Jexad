@@ -35,6 +35,7 @@ public class Read extends Buf {
             f.close();
         } catch (IOException e) {
             System.err.println("Read: " + e);
+            // XXX: errs and such...
         }
     }
 

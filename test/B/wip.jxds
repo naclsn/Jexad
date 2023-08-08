@@ -1,0 +1,10 @@
+bys = read "test/B/some.zip";
+zh = zip_decode bys;
+ls = zip_list zh;
+
+_ = txt_view (join ls "\n") "some.zip [entries]";
+
+img_bys = zip_get zh "res/image.png";
+_ = hex_view img_bys "some.zip/res/image.png [bytes]";
+
+# need png_decode and what not to go further
