@@ -79,7 +79,6 @@ class Cases {
         String pkg = "com.jexad." + src_subdir.replace('/', '.');
 
         File[] cls = sortNamed(new File("src/" + src_subdir).listFiles());
-        System.out.println(Arrays.toString(cls));
         for (int i = 0; i < cls.length; i++) {
             String name = cls[i].getName();
             if (!name.endsWith(".java")) continue;
@@ -199,7 +198,7 @@ class Cases {
 
         Buf zipfilebytes = new Read(Buf.encode(filename));
         Num zipfilehandle = new ZipDecode(zipfilebytes);
-        Buf pngfilebytes = new ZipGetEntry(zipfilehandle, Buf.encode(respath));
+        Buf pngfilebytes = new ZipEntry(zipfilehandle, Buf.encode(respath));
 
         /*
         Buf pngbuf = new PngDecode(pngfilebytes);

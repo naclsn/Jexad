@@ -12,7 +12,7 @@ import java.util.zip.ZipEntry;
 
 public class ZipDecode extends Num {
 
-    public String getHelp() { return "parse bytes as a zip file"; }
+    public String getHelp() { return "decodes bytes as a zip file"; }
 
     public static class Handle {
 

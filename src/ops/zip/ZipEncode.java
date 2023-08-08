@@ -1,0 +1,49 @@
+package com.jexad.ops.zip;
+
+import com.jexad.base.Buf;
+import com.jexad.base.Obj;
+import com.jexad.base.Lst;
+import java.io.ByteArrayOutputStream;
+import java.util.zip.ZipOutputStream;
+import java.util.zip.ZipEntry;
+
+public class ZipEncode extends Buf {
+
+    public String getHelp() { return "encodes entries into zip file as bytes"; }
+
+    Lst<Buf> paths;
+    Lst<Buf> bytes;
+
+    public ZipEncode(Lst<Buf> paths, Lst<Buf> bytes) {
+        this.paths = paths;
+        this.bytes = bytes;
+    }
+
+    @Override
+    public Obj[] arguments() { return new Obj[] {paths, bytes}; }
+
+    @Override
+    public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
+        paths.update();
+        bytes.update();
+
+        ByteArrayOutputStream str = new ByteArrayOutputStream();
+        ZipOutputStream ztr = new ZipOutputStream(str);
+        int len = paths.length(); // XXX: check that lengths matches
+        try {
+            for (int k = 0; k < len; k++) {
+                ztr.putNextEntry(new ZipEntry(paths.at(k).decode()));
+                ztr.write(bytes.at(k).raw);
+            }
+        } catch (Exception e) {
+            System.err.println("ZipEncode: " + e);
+            return; // XXX: errs and such...
+        }
+
+        raw = str.toByteArray();
+    }
+
+}

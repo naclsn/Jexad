@@ -3,17 +3,15 @@ package com.jexad.ops.zip;
 import com.jexad.base.Buf;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipEntry;
 
-public class ZipGet extends Buf {
+public class ZipEntry extends Buf {
 
     public String getHelp() { return "address entry at the given path in the zip"; }
 
     Num ziphandle;
     Buf path;
 
-    public ZipGet(Num ziphandle, Buf path) {
+    public ZipEntry(Num ziphandle, Buf path) {
         if (!(ziphandle instanceof ZipDecode)) {
             System.err.println("ziphandle is not of ZipDecode!!");
             // XXX: errs and such...
