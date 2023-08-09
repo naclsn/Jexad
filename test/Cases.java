@@ -99,6 +99,7 @@ class Cases {
 
         fails_total+= tryDirClassesCallAll("ops");
         fails_total+= tryDirClassesCallAll("ops/math");
+        fails_total+= tryDirClassesCallAll("ops/png");
         fails_total+= tryDirClassesCallAll("ops/zip");
 
         if (0 == fails_total)

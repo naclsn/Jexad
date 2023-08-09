@@ -111,6 +111,7 @@ class Jexad extends Frame {
             new Lang.Lookup.ClassesUnder("com.jexad.ops"),
             new Lang.Lookup.ClassesUnder("com.jexad.views"),
             new Lang.Lookup.ClassesUnder("com.jexad.ops.math"),
+            new Lang.Lookup.ClassesUnder("com.jexad.ops.png"),
             new Lang.Lookup.ClassesUnder("com.jexad.ops.zip"),
         };
 

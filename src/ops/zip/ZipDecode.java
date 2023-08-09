@@ -17,24 +17,18 @@ public class ZipDecode extends Num {
 
     public static class Handle {
 
-        HashMap<String, byte[]> loaded = new HashMap();
+        private static class Pair { byte[] bytes; ZipEntry entry; Pair(byte[] bytes, ZipEntry entry) { this.bytes = bytes; this.entry = entry; } }
+        private HashMap<String, Pair> loaded = new HashMap();
 
-        Handle() { }
-
-        void update(byte[] raw) {
+        private void update(byte[] raw) {
             loaded.clear();
 
             ZipInputStream ztr = new ZipInputStream(new ByteArrayInputStream(raw));
             ZipEntry it;
             try {
                 while ((it = ztr.getNextEntry()) != null) {
-                    // XXX: idea would to skip directory (they have a size of 0
-                    //      and a trailing '/' - test below would also skip
-                    //      legitimately empty files); for now keep, could be
-                    //      set to eg. linewise of identified direct children...
-                    //if (0 == it.getSize()) continue;
                     byte[] b = new byte[(int)it.getSize()];
-                    loaded.put(it.getName(), b);
+                    loaded.put(it.getName(), new Pair(b, it));
 
                     int off = 0, len = b.length;
                     while (0 != len) {
@@ -45,21 +39,27 @@ public class ZipDecode extends Num {
                     }
                 }
             } catch (Exception e) {
-                System.err.println("ZipDecode$Handle: " + e);
+                System.err.println("ZipDecode: " + e);
                 // TODO: errs and such...
             }
         }
 
-        Set<String> all() {
+        Set<String> paths() {
             // TODO: make things lazy
             //while (!= null) ..
             return loaded.keySet();
         }
 
-        byte[] get(String path) {
+        byte[] bytes(String path) {
             // TODO: make things lazy
             //while (!loaded.containsKey()) ..
-            return loaded.get(path);
+            return loaded.get(path).bytes;
+        }
+
+        ZipEntry entry(String path) {
+            // TODO: make things lazy
+            //while (!loaded.containsKey()) ..
+            return loaded.get(path).entry;
         }
 
     }

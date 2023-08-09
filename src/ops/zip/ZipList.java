@@ -29,7 +29,7 @@ public class ZipList extends Lst<Buf> {
 
         ziphandle.update();
         ZipDecode.Handle h = ZipDecode.zips.get(ziphandle.val); // TODO: errs and such...
-        Set<String> all = h.all();
+        Set<String> all = h.paths();
         String[] sorted = new String[all.size()];
         Arrays.sort(all.toArray(sorted));
 
