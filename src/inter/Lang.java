@@ -129,7 +129,7 @@ public class Lang {
         while (i < s.length) {
             if ('\\' == s[i]) i++;
             else if ('"' == s[i])
-                return Buf.encode(new String(s, a, i++-a)
+                return Buf.encode(new String(s, a+1, i++-a-1)
                     .replace("\\t", "\t")
                     .replace("\\n", "\n")
                     .replace("\\r", "\r")
