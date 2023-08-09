@@ -17,7 +17,8 @@ public class Lst<T extends Obj> extends Obj {
 
     @Override
     public String toString() {
-        String r = "{\n";
+        String cln = item_class.getName();
+        String r = "<" + cln.substring(cln.lastIndexOf('.')+1) + ">{\n";
         for (int k = 0; k < arr.length; k++) {
             r+= "   " + arr[k].toString().replace("\n", "\n   ") + ",\n";
         }

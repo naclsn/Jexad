@@ -5,6 +5,7 @@ import com.jexad.base.Fun;
 import com.jexad.base.Lst;
 import com.jexad.base.Num;
 import com.jexad.base.Obj;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,25 +14,45 @@ public class Lang {
 
     public static class LangException extends Exception {
 
-        char[] s;
-        int i;
+        private char[] s;
+        private int i;
 
-        LangException(String message, char[] s, int i) {
+        private LangException(String message, char[] s, int i) {
             super(message);
             this.s = s;
             this.i = i < s.length ? i : s.length;
         }
 
-        int[] getLineCol() {
+        // {lineNr, columnNr, lineStartOff, lineEndOff}
+        int[] getLineInfo() {
             int l = 1, c = 1;
+            int st = 0, ed = 0;
             for (int k = 0; k < i; k++) {
                 c++;
                 if ('\n' == s[k]) {
                     l++;
                     c = 1;
+                    st = k;
                 }
             }
-            return new int[] {l, c};
+            for (int k = i; k < s.length; k++) {
+                if ('\n' == s[k]) {
+                    ed = k;
+                    break;
+                }
+            }
+            return new int[] {l, c, st, ed <= st ? s.length : ed};
+        }
+
+        public void printLocationInfo(PrintStream o) {
+            int[] i = getLineInfo();
+            o.printf("   :%d:%d (ie. %d-%d)\n", i[0], i[1], i[2], i[3]);
+            o.printf("   %s\n", new String(s, i[2], i[3]-i[2]));
+            o.printf("   ");
+            for (int k = 1; k < i[1]; k++)
+                o.append(' ');
+            o.append('^');
+            o.append('\n');
         }
 
     }
@@ -104,7 +125,7 @@ public class Lang {
 
     // <str> ::= '"' /[^"]/ '"'
     Buf scanStr() throws LangException {
-        int a = ++i;
+        int a = i++;
         while (i < s.length) {
             if ('\\' == s[i]) i++;
             else if ('"' == s[i])
@@ -176,15 +197,16 @@ public class Lang {
     // <lst> ::= '{' <atom> {',' <atom>} '}'
     Lst scanLst() throws LangException {
         ArrayList<Obj> l = new ArrayList();
-        while (i < s.length && '}' != s[i]) {
+        while (++i < s.length) {
+            skipBlanks();
             Obj w = scanAtom();
             l.add(w);
             skipBlanks();
-            if (i >= s.length || ',' != s[i]) break;
-            skipBlanks();
+            if (i >= s.length) fail("missing matching closing {} in list");
+            if ('}' == s[i]) break;
+            if (',' != s[i]) fail("expected ',' between list elements, got '"+s[i]+"'");
         }
-        if (i >= s.length) fail("missing matching closing {} in list");
-        if (0 == l.size()) fail("empty list are not supported");
+        i++;
         Class o = l.get(0).getClass();
         Obj[] r = new Obj[l.size()];
         l.toArray(r);

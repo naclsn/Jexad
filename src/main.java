@@ -151,6 +151,7 @@ class Jexad extends Frame {
                             //if (null != res.obj) Util.show(res.obj);
                         } catch (Lang.LangException e) {
                             System.err.println(e);
+                            e.printLocationInfo(System.err);
                             //e.printStackTrace(System.err);
                         }
                 }
