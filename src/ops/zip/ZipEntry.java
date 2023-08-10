@@ -1,9 +1,6 @@
 package com.jexad.ops.zip;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
+import com.jexad.base.*;
 
 public class ZipEntry extends Buf {
 
@@ -15,8 +12,7 @@ public class ZipEntry extends Buf {
     public ZipEntry(Num ziphandle, Buf path) {
         if (!(ziphandle instanceof ZipDecode)) {
             System.err.println("ziphandle is not of ZipDecode!!");
-            // XXX: errs and such...
-            return;
+            return; // XXX: errs and such...
         }
         this.ziphandle = ziphandle;
         this.path = path;
@@ -34,10 +30,6 @@ public class ZipEntry extends Buf {
         ZipDecode.Handle h = ZipDecode.zips.get(ziphandle.val); // TODO: errs and such...
         path.update();
         raw = h.bytes(path.decode()); // TODO: errs and such...
-    }
-
-    public static boolean notest() {
-        return false; // TODO: test
     }
 
 }

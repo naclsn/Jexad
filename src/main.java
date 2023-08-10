@@ -1,28 +1,14 @@
 package com.jexad;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Fun;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
-import com.jexad.base.Util;
-import com.jexad.inter.Lang;
-import com.jexad.ops.Read;
-import com.jexad.views.HexView;
-import com.jexad.views.ImgView;
-import com.jexad.views.TxtView;
-import com.jexad.views.View;
-import java.awt.FlowLayout;
-import java.awt.Frame;
-import java.awt.Toolkit;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import com.jexad.base.*;
+import com.jexad.inter.*;
+import com.jexad.ops.*;
+import com.jexad.views.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.*;
+import java.util.zip.*;
 
 class Jexad extends Frame {
 
@@ -54,14 +40,14 @@ class Jexad extends Frame {
                 default:
                     filename = args[0];
             }
-        }
+        } // else no arguments
 
         //new Jexad(new Read(Buf.encode(filename)));
         Buf filebuf = new Read(Buf.encode(filename));
         new HexView(filebuf);
         new ImgView(filebuf);
         new TxtView(filebuf);
-    }
+    } // main
 
     public static void mainZip(String[] args) {
         if (args.length <3) {
@@ -99,7 +85,7 @@ class Jexad extends Frame {
         } catch (Exception e) {
             System.out.println("error: " + e);
         }
-    }
+    } // mainZip
 
     public static void mainLang(String[] args) {
         String prompt = 2 == args.length ? args[1] : "";
@@ -160,6 +146,6 @@ class Jexad extends Frame {
         } catch (Exception e) {
             e.printStackTrace(System.out);
         }
-    }
+    } // mainLang
 
 }

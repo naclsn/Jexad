@@ -1,9 +1,6 @@
 package com.jexad.ops.zip;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
-import com.jexad.base.Lst;
+import com.jexad.base.*;
 import java.io.ByteArrayOutputStream;
 import java.util.zip.ZipOutputStream;
 import java.util.zip.ZipEntry;

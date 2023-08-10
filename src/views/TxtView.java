@@ -1,6 +1,6 @@
 package com.jexad.views;
 
-import com.jexad.base.Buf;
+import com.jexad.base.*;
 import java.awt.Graphics2D;
 import java.util.ArrayList;
 

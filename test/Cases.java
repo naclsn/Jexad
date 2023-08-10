@@ -1,17 +1,20 @@
 package com.jexad.test;
 
-import java.io.File;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Comparator;
-
 import com.jexad.base.*;
 import com.jexad.inter.*;
 import com.jexad.ops.*;
 import com.jexad.ops.zip.*;
+import java.io.File;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
 
+// This static class contains a main function and a bunch of `case[..]`
+// functions that are somewhat like integration tests.  The main scans and call
+// all `test[..]` functions found on ops classes (somewhat unit tests) then, if
+// no failure, runs the cases.
 class Cases {
 
     static String readFile(String filename) {
@@ -40,26 +43,26 @@ class Cases {
         int fails = 0;
         int done = 0;
 
-        String gname = c.getName();
+        String gname = c.getName().substring("com.jexad.".length());
         for (int k = 0; k < all.length; k++) {
             String name = all[k].getName();
             if (!name.startsWith(startsWith)) continue;
 
             if (0 == (Modifier.STATIC & all[k].getModifiers())) {
-                System.out.printf("%s#%s: not static\n", gname, name);
+                System.out.printf("%s  %s: not static\n", gname, name);
                 continue;
             }
 
             done++;
             try {
                 if ((boolean)all[k].invoke(null)) {
-                    System.out.printf("%s#%s: \033[32mok\033[m\n", gname, name);
+                    System.out.printf("%s  %s: \033[32mok\033[m\n", gname, name);
                 } else {
-                    System.out.printf("%s#%s: \033[31mfailed!\033[m\n", gname, name);
+                    System.out.printf("%s  %s: \033[31mfailed!\033[m\n", gname, name);
                     fails++;
                 }
             } catch (Exception e) {
-                System.out.printf("%s#%s: \033[31mcaught:\033[m\n", gname, name);
+                System.out.printf("%s  %s: \033[31mcaught:\033[m\n", gname, name);
                 Throwable t = e;
                 while (null != t.getCause()) t = t.getCause();
                 t.printStackTrace(System.out);
@@ -71,7 +74,7 @@ class Cases {
             System.out.printf("%s: \033[33mno test\033[m\n", gname);
 
         return fails;
-    }
+    } // tryCallAll
 
     static int tryDirClassesCallAll(String src_subdir) {
         int fails = 0;
@@ -92,7 +95,7 @@ class Cases {
         }
 
         return fails;
-    }
+    } // tryDirClassesCallAll
 
     public static void main(String[] args) {
         int fails_total = 0;
@@ -145,7 +148,7 @@ class Cases {
         //log("result:\n'''\n" + result.decode() + "\n'''");
 
         return "that's\nall\nfolks".equals(res);
-    }
+    } // caseA
 
     static boolean caseAScript1() throws Lang.LangException {
         HashMap<String, Obj> scope = new HashMap();
@@ -175,12 +178,12 @@ class Cases {
 
         res.obj.update();
         return "that's\nall\nfolks".equals(((Buf)res.obj).decode());
-    }
+    } // caseAScript1
 
     static boolean caseAScript2() throws Lang.LangException {
         System.out.println("TODO: caseAScript1 with chain bin op");
         return false;
-    }
+    } // caseAScript2
 
     // B)
     //  a ZIP archive contains an entry with path "res/image.png" to a PNG file
@@ -216,6 +219,6 @@ class Cases {
 
         System.out.println("TODO: test is unfinished");
         return false;
-    }
+    } // caseB
 
 }

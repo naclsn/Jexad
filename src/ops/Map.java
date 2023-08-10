@@ -1,13 +1,6 @@
 package com.jexad.ops;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Fun;
-import com.jexad.base.Lst;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
-import com.jexad.base.Util;
-import java.lang.reflect.Constructor;
+import com.jexad.base.*;
 
 public class Map<Out extends Obj> extends Lst<Out> {
 
@@ -18,8 +11,6 @@ public class Map<Out extends Obj> extends Lst<Out> {
     Lst[] more_args_zip;
 
     public Map(Fun op, Lst args_one, Lst... more_args_zip) {
-        super(op.ret());
-
         this.op = op;
         this.args_one = args_one;
         this.more_args_zip = new Lst[more_args_zip.length];
@@ -57,11 +48,8 @@ public class Map<Out extends Obj> extends Lst<Out> {
         Obj[] args = new Obj[1 + more_args_zip.length];
         for (int i = 0; i < arr.length; i++) {
             args[0] = args_one.arr[i];
-            args[0].update();
-            for (int j = 1; j < args.length; j++) {
+            for (int j = 1; j < args.length; j++)
                 args[j] = more_args_zip[j-1].arr[i];
-                args[j].update();
-            }
 
             try {
                 arr[i] = (Out)op.call(args);
@@ -69,11 +57,9 @@ public class Map<Out extends Obj> extends Lst<Out> {
                 System.err.println("Map: " + e);
                 return; // XXX: errs and such...
             }
-        }
-    }
 
-    public static boolean notest() {
-        return false; // TODO: test
+            arr[i].update();
+        }
     }
 
 }

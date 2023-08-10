@@ -1,10 +1,6 @@
 package com.jexad.ops;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Lst;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
-import com.jexad.base.Util;
+import com.jexad.base.*;
 
 public class Join extends Buf {
 
@@ -39,13 +35,9 @@ public class Join extends Buf {
         if (1 < list_len) sep.update();
         Buf first = list.at(0);
 
-        first.update();
         int total_len = first.raw.length;
-        for (int k = 1; k < list_len; k++) {
-            Buf it = list.at(k);
-            it.update();
-            total_len+= sep.raw.length + it.raw.length;
-        }
+        for (int k = 1; k < list_len; k++)
+            total_len+= sep.raw.length + list.at(k).raw.length;
         raw = new byte[total_len];
 
         int at = first.raw.length;
@@ -64,7 +56,7 @@ public class Join extends Buf {
 
     public static boolean test() {
         return Util.cmpBuf
-                ( new Join(new Lst(Buf.class, new Buf[]
+                ( new Join(new Lst(new Buf[]
                     { new Buf(new byte[] {1, 2, 3})
                     , new Buf(new byte[] {4, 5})
                     , new Buf(new byte[] {6, 7, 8})
@@ -73,7 +65,7 @@ public class Join extends Buf {
                 , new Buf(new byte[] {1, 2, 3, 0, 4, 5, 0, 6, 7, 8, 0, 9})
                 )
             && Util.cmpBuf
-                ( new Join(new Lst(Buf.class, new Buf[]
+                ( new Join(new Lst(new Buf[]
                     { new Buf(new byte[0])
                     , new Buf(new byte[0])
                     , new Buf(new byte[0])
@@ -82,11 +74,11 @@ public class Join extends Buf {
                 , new Buf(new byte[] {42, 12, 42, 12, 42, 12})
                 )
             && Util.cmpBuf
-                ( new Join(new Lst(Buf.class, new Buf[0]))
+                ( new Join(new Lst(new Buf[0]))
                 , new Buf(new byte[0])
                 )
             && Util.cmpBuf
-                ( new Join(new Lst(Buf.class, new Buf[] { new Buf(new byte[0]) }))
+                ( new Join(new Lst(new Buf[] { new Buf(new byte[0]) }))
                 , new Buf(new byte[0])
                 )
             ;

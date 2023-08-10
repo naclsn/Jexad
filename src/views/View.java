@@ -1,6 +1,6 @@
 package com.jexad.views;
 
-import com.jexad.base.Obj;
+import com.jexad.base.*;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Font;
@@ -36,6 +36,7 @@ public abstract class View<T extends Obj> extends Canvas implements
     protected Preferences prefs;
 
     protected class ScrollInfo {
+
         float ve = 0;
         float hz = 0;
         float minVe = 0;
@@ -55,6 +56,7 @@ public abstract class View<T extends Obj> extends Canvas implements
             else if (maxVe < ve) ve = maxVe;
             return pve != ve;
         }
+
         // returns true if changed
         boolean addHz(int n) {
             float phz = hz;
@@ -63,6 +65,7 @@ public abstract class View<T extends Obj> extends Canvas implements
             else if (maxHz < hz) hz = maxHz;
             return phz != hz;
         }
+
         // returns true if changed
         boolean cap() {
             boolean did = false;
@@ -72,7 +75,9 @@ public abstract class View<T extends Obj> extends Canvas implements
             else if (maxHz < hz) { did = true; hz = maxHz; }
             return did;
         }
-    }
+
+    } // class ScrollInfo
+
     protected ScrollInfo scroll = new ScrollInfo();
 
     // (anti-aliasing and such)
@@ -223,7 +228,7 @@ public abstract class View<T extends Obj> extends Canvas implements
             case KeyEvent.VK_Q:
                 if (ctrl) System.exit(0); //dispose(); // ZZZ: (whatever)
                 break;
-        }
+        } // switch keyCode
     }
 
     @Override

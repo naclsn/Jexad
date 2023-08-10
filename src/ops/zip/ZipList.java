@@ -1,10 +1,6 @@
 package com.jexad.ops.zip;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Lst;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
+import com.jexad.base.*;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -15,7 +11,6 @@ public class ZipList extends Lst<Buf> {
     Num ziphandle;
 
     public ZipList(Num ziphandle) {
-        super(Buf.class);
         this.ziphandle = ziphandle;
     }
 

@@ -9,11 +9,6 @@ public class Util {
             return null;
         }
         obj.update();
-        if (obj instanceof Lst) {
-            Lst lst = (Lst)obj;
-            for (int k = 0; k < lst.arr.length; k++)
-                lst.arr[k].update();
-        }
         String cln = obj.getClass().toString();
         System.out.println("(show " + cln.substring(cln.lastIndexOf('.')+1) + ") " + obj);
         return obj;
@@ -75,15 +70,26 @@ public class Util {
             System.out.printf("list lengths differ: %d != %d\n", l.length(), r.length());
             return false;
         }
-        Class c = l.getItemClass();
         for (int k = 0; k < l.length(); k++) {
-            T l_it = l.at(k), r_it = r.at(k);
-            if (!(Buf.class == c ? cmpBuf((Buf)l_it, (Buf)r_it)
-                : Num.class == c ? cmpNum((Num)l_it, (Num)r_it)
-                : Lst.class == c ? cmpLst((Lst)l_it, (Lst)r_it)
-                : false)) return false;
+            if (!cmpObj(l.at(k), r.at(k)))
+                return false;
         }
         return true;
+    }
+
+    // note: does not compare `Fun`s
+    public static boolean cmpObj(Obj l, Obj r) {
+        Class cl = l.baseClass(), cr = r.baseClass();
+        if (cl != cr) {
+            System.out.printf("object classes differ: %s != %s\n", cl, cr);
+            return false;
+        }
+        return
+            ( Buf.class == cl ? cmpBuf((Buf)l, (Buf)r)
+            : Num.class == cl ? cmpNum((Num)l, (Num)r)
+            : Lst.class == cl ? cmpLst((Lst)l, (Lst)r)
+            : false
+            );
     }
 
 }

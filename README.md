@@ -54,6 +54,10 @@ lst = rect (slice filebuf list_off list_end) 4;
 ptrs = map parse lst;
 ```
 
+Few random notes:
+- lists of mixed types are accepted, this is how 'tuples' are supported
+- Java-side 'generics' are purely cosmetic
+
 ### Operations
 
 Operations are java classes that you can make `Fun` of.. uh...

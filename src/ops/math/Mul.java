@@ -1,8 +1,6 @@
 package com.jexad.ops.math;
 
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
-import com.jexad.base.Num;
+import com.jexad.base.*;
 
 public class Mul extends Num {
 

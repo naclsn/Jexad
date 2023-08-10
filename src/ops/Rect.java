@@ -1,11 +1,6 @@
 package com.jexad.ops;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Lst;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
-import com.jexad.base.Util;
+import com.jexad.base.*;
 
 public class Rect extends Lst<Buf> {
 
@@ -16,7 +11,6 @@ public class Rect extends Lst<Buf> {
     Num it_pad;
 
     public Rect(Buf under, Num it_len, Num it_pad) {
-        super(Buf.class);
         this.under = under;
         this.it_len = it_len;
         this.it_pad = it_pad;
@@ -48,7 +42,7 @@ public class Rect extends Lst<Buf> {
     public static boolean test() {
         return Util.cmpLst
                 ( new Rect(new Buf(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9}), new Num(3))
-                , new Lst(Buf.class, new Buf[]
+                , new Lst(new Buf[]
                     { new Buf(new byte[] {1, 2, 3})
                     , new Buf(new byte[] {4, 5, 6})
                     , new Buf(new byte[] {7, 8, 9})
@@ -56,11 +50,11 @@ public class Rect extends Lst<Buf> {
                 )
             && Util.cmpLst
                 ( new Rect(new Buf(new byte[0]), new Num(3))
-                , new Lst(Buf.class, new Buf[0])
+                , new Lst(new Buf[0])
                 )
             && Util.cmpLst
                 ( new Rect(new Buf(new byte[] {1, 2, 3, 4, 5, 6, 7, 8, 9}), new Num(2), new Num(1))
-                , new Lst(Buf.class, new Buf[]
+                , new Lst(new Buf[]
                     { new Buf(new byte[] {1, 2})
                     , new Buf(new byte[] {4, 5})
                     , new Buf(new byte[] {7, 8})

@@ -1,9 +1,6 @@
 package com.jexad.ops.png;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
+import com.jexad.base.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
@@ -39,7 +36,8 @@ public class PngDecode extends Num {
 
         IIOMetadata meta() { return ma; }
 
-    }
+    } // class Handle
+
     public static ArrayList<Handle> pngs = new ArrayList();
 
     Buf pngbytes;
@@ -60,10 +58,6 @@ public class PngDecode extends Num {
 
         pngbytes.update();
         pngs.get(val).update(pngbytes.raw);
-    }
-
-    public static boolean notest() {
-        return false; // TODO: test
     }
 
 }

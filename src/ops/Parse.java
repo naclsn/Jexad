@@ -1,10 +1,8 @@
 package com.jexad.ops;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
+import com.jexad.base.*;
 
+// TODO: rename (NumEncode/NumDecode)
 public class Parse extends Num {
 
     public static final Fun fun = new Fun.ForClass(Parse.class, "parse from a buffer slice (default little endian); does not check the size (for now only does 4-bytes signed integer)");

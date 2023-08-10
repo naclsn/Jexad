@@ -1,8 +1,6 @@
 package com.jexad.ops.png;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Fun;
-import com.jexad.base.Obj;
+import com.jexad.base.*;
 import java.io.ByteArrayOutputStream;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageWriter;
@@ -27,6 +25,7 @@ public class PngEncode extends Buf {
         imw.setOutput(str);
 
         raw = new byte[0];
+        System.err.println("PngEncode: NIY");
     }
 
 }

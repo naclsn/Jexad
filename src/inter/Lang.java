@@ -1,10 +1,6 @@
 package com.jexad.inter;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Fun;
-import com.jexad.base.Lst;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
+import com.jexad.base.*;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +51,7 @@ public class Lang {
             o.append('\n');
         }
 
-    }
+    } // class LangException
 
     public static interface Lookup {
 
@@ -210,11 +206,7 @@ public class Lang {
         Class o = l.get(0).getClass();
         Obj[] r = new Obj[l.size()];
         l.toArray(r);
-        return new Lst
-            ( Buf.class.isAssignableFrom(o) ? Buf.class
-            : Num.class.isAssignableFrom(o) ? Num.class
-            : Lst.class.isAssignableFrom(o) ? Lst.class
-            : null, r);
+        return new Lst(r);
     }
 
     // <fun> ::= /[A-Z][0-9A-Z]+/
@@ -310,14 +302,8 @@ public class Lang {
         Obj[] g = new Obj[l.size()];
         l.toArray(g);
         Class[] gcl = new Class[g.length];
-        for (int k = 0; k < g.length; k++) {
-            gcl[k]
-                = g[k] instanceof Buf ? Buf.class
-                : g[k] instanceof Num ? Num.class
-                : g[k] instanceof Lst ? Lst.class
-                : g[k] instanceof Fun ? Fun.class
-                : null; // idealy unreachable
-        }
+        for (int k = 0; k < g.length; k++)
+            gcl[k] = g[k].baseClass();
         try {
             Obj o = f.call(g);
             if (',' == c) {
@@ -331,9 +317,9 @@ public class Lang {
             String args = "";
             for (int k = 0; k < gcl.length; k++)
                 args+= (0 == k ? "" : ", ") + gcl[k].getName().substring(15);
-            fail("cannot apply function to arguments: "+args);
+            fail("cannot call function with arguments: "+args);
             return null; // unreachable
         }
-    }
+    } // processExpr
 
 }

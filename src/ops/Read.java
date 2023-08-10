@@ -1,9 +1,6 @@
 package com.jexad.ops;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
-import com.jexad.base.Util;
+import com.jexad.base.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;

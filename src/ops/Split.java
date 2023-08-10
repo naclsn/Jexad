@@ -1,10 +1,6 @@
 package com.jexad.ops;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Lst;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
-import com.jexad.base.Util;
+import com.jexad.base.*;
 import java.util.ArrayList;
 
 public class Split extends Lst<Buf> {
@@ -16,7 +12,6 @@ public class Split extends Lst<Buf> {
     Buf sep;
 
     public Split(Buf under, Buf sep) {
-        super(Buf.class);
         this.under = under;
         this.sep = sep;
     }
@@ -77,7 +72,7 @@ public class Split extends Lst<Buf> {
     public static boolean test() {
         return Util.cmpLst
                 ( new Split(new Buf(new byte[] {1, 2, 3, 0, 4, 5, 0, 6, 7, 8, 0, 9}))
-                , new Lst(Buf.class, new Buf[]
+                , new Lst(new Buf[]
                     { new Buf(new byte[] {1, 2, 3})
                     , new Buf(new byte[] {4, 5})
                     , new Buf(new byte[] {6, 7, 8})
@@ -86,7 +81,7 @@ public class Split extends Lst<Buf> {
                 )
             && Util.cmpLst
                 ( new Split(new Buf(new byte[] {42, 12, 42, 12, 42, 12}), new Buf(new byte[] {42, 12}))
-                , new Lst(Buf.class, new Buf[]
+                , new Lst(new Buf[]
                     { new Buf(new byte[0])
                     , new Buf(new byte[0])
                     , new Buf(new byte[0])
@@ -95,7 +90,7 @@ public class Split extends Lst<Buf> {
                 )
             && Util.cmpLst
                 ( new Split(new Buf(new byte[0]))
-                , new Lst(Buf.class, new Buf[0])
+                , new Lst(new Buf[0])
                 )
             ;
     }

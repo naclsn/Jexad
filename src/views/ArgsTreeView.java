@@ -1,10 +1,6 @@
 package com.jexad.views;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Fun;
-import com.jexad.base.Lst;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
+import com.jexad.base.*;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -22,9 +18,9 @@ public class ArgsTreeView extends View {
     public ArgsTreeView(Lst content) { super(content, null); }
     public ArgsTreeView(Num content) { super(content, null); }
 
-    static enum NodeKind { BUF, NUM, LST, FUN }
+    private static enum NodeKind { BUF, NUM, LST, FUN }
 
-    class Node {
+    private class Node {
 
         NodeKind kind;
         boolean raw; // does not apply to FUN

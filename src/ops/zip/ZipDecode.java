@@ -1,9 +1,6 @@
 package com.jexad.ops.zip;
 
-import com.jexad.base.Buf;
-import com.jexad.base.Num;
-import com.jexad.base.Obj;
-import com.jexad.base.Fun;
+import com.jexad.base.*;
 import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +59,8 @@ public class ZipDecode extends Num {
             return loaded.get(path).entry;
         }
 
-    }
+    } // class Handle
+
     public static ArrayList<Handle> zips = new ArrayList();
 
     Buf zipbytes;
@@ -83,10 +81,6 @@ public class ZipDecode extends Num {
 
         zipbytes.update();
         zips.get(val).update(zipbytes.raw);
-    }
-
-    public static boolean notest() {
-        return false; // TODO: test
     }
 
 }
