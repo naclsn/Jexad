@@ -4,67 +4,36 @@ import com.jexad.base.*;
 
 public class Map<Out extends Obj> extends Lst<Out> {
 
-    public static final Fun fun = new Fun.ForClass(Map.class, "makes a new list, applying the operation to each item; multiple argument lists are zipped");
+    public static final Fun fun = new Fun.ForClass(Map.class, "makes a new list, applying the operation to each item");
 
     Fun op;
-    Lst args_one;
-    Lst[] more_args_zip;
+    Lst args;
 
-    public Map(Fun op, Lst args_one, Lst... more_args_zip) {
+    public Map(Fun op, Lst args) {
         this.op = op;
-        this.args_one = args_one;
-        this.more_args_zip = new Lst[more_args_zip.length];
-
-        for (int j = 1; j < 1 + more_args_zip.length; j++)
-            this.more_args_zip[j-1] = more_args_zip[j-1];
+        this.args = args;
     }
-
-    // needed for `getConstructor` resolutions...
-    public Map(Fun op, Lst a) { this(op, a, new Lst[0]); }
-    public Map(Fun op, Lst a, Lst b) { this(op, a, new Lst[] {b}); }
-    public Map(Fun op, Lst a, Lst b, Lst c) { this(op, a, new Lst[] {b, c}); }
 
     @Override
-    public Obj[] arguments() {
-        Obj[] r = new Obj[1 + more_args_zip.length];
-        r[0] = args_one;
-        for (int j = 1; j < r.length; j++)
-            r[j] = more_args_zip[j-1];
-        return r;
-    }
+    public Obj[] arguments() { return new Obj[] {op, args}; }
 
     @Override
     public void update() {
         if (uptodate) return;
         uptodate = true;
 
-        //op.update();
-        //args.update();
-        //arr = (Out[])new Obj[args.arr.length];
-        //for (int k = 0; k < arr.length; k++)
-        //    arr[k] = (Out)op.call(new Obj[] {args[k]});
+        op.update();
+        args.update();
 
-        args_one.update();
-        for (int j = 0; j < more_args_zip.length; j++)
-            more_args_zip[j].update();
-
-        // XXX: lengths not check if matching.. could take shorter or throw...
-        arr = (Out[])new Obj[args_one.arr.length];
-
-        Obj[] args = new Obj[1 + more_args_zip.length];
-        for (int i = 0; i < arr.length; i++) {
-            args[0] = args_one.arr[i];
-            for (int j = 1; j < args.length; j++)
-                args[j] = more_args_zip[j-1].arr[i];
-
+        arr = (Out[])new Obj[args.length()];
+        for (int k = 0; k < arr.length; k++) {
             try {
-                arr[i] = (Out)op.call(args);
+                arr[k] = (Out)op.call(new Obj[] {args.at(k)});
+                arr[k].update();
             } catch (Exception e) {
                 System.err.println("Map: " + e);
                 return; // XXX: errs and such...
             }
-
-            arr[i].update();
         }
     }
 

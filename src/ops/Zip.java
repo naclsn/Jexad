@@ -50,7 +50,7 @@ public class Zip extends Lst {
                     , new Lst(new Obj[]
                         { new Num(6)
                         , new Num(5)
-                        , new Num(5)
+                        , new Num(4)
                         })
                     )
                 , new Lst(new Obj[]

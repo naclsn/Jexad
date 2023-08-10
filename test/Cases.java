@@ -120,7 +120,7 @@ class Cases {
     //  - read each C-strings
     //  - concatenate them
     //  - join with new-lines
-    static boolean caseA() {
+    static boolean caseA() throws Fun.InvokeException {
         final String filename = "test/A/some.bin";
         final int list_off = 0x42;
         final int list_len = 3;
@@ -131,14 +131,14 @@ class Cases {
         Lst<Buf> list_32b = new Rect(list_buf, new Num(4));
         Lst<Num> pointers = new Map<Num>(new Fun.ForClass(Parse.class, "doc"), list_32b);
 
-        Lst<Buf> strings_starts = new Map<Buf>(new Fun.ForClass(Slice.class, "doc"), new Repeat<Buf>(binfile_buf, new Num(list_len)), pointers);
-        // new Map<Buf>(new Lambda(
-        //     new String[] {"ptr"},
-        //     new Lambda.Call(Slice.fun, new Obj[] {
-        //         binfile_buf,
-        //         new Lambda.Arg("ptr"),
-        //     }),
-        // ), pointers);
+        Fun bound_lambda = (Fun)new Fun.ForClass(Bind.class, "doc").call(
+            new Fun.ForClass(Slice.class, "doc"),
+            new Lst(new Obj[] {
+                binfile_buf,
+                new Lst(new Obj[] {new Num(0)})
+            })
+        );
+        Lst<Buf> strings_starts = new Map<Buf>(bound_lambda, pointers);
         Lst<Buf> strings = new Map<Buf>(new Fun.ForClass(Delim.class, "doc"), strings_starts); // new Repeat<Buf>(new Buf(new byte[] {0}), new Num(list_len)));
 
         Buf result = new Join(strings, new Buf(new byte[] {'\n'}));
@@ -161,8 +161,7 @@ class Cases {
             + "lst = Rect (Slice filebuf list_off list_end) 4;\n"
             + "ptrs = Map Parse lst;\n"
             + "\n"
-            + "starts = Map Slice (Repeat filebuf list_len) ptrs;\n"
-            // starts = Map ([ptr] Slice filebuf ptr) ptrs
+            + "starts = Map (Bind Slice {filebuf, {0}}) ptrs;\n"
             + "strs = Map Delim starts;\n"
             + "\n"
             + "return = Join strs \"\\n\";\n"
