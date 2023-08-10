@@ -1,6 +1,6 @@
 package com.jexad.base;
 
-// to use with 'unit-test'-like
+// as of now, the `cmp[..]` are to use with 'unit-test'-like
 public class Util {
 
     public static <T extends Obj> T show(T obj) {
@@ -71,8 +71,10 @@ public class Util {
             return false;
         }
         for (int k = 0; k < l.length(); k++) {
-            if (!cmpObj(l.at(k), r.at(k)))
+            if (!cmpObj(l.at(k), r.at(k))) {
+                System.out.printf(".. in list at %d\n", k);
                 return false;
+            }
         }
         return true;
     }

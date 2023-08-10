@@ -163,6 +163,7 @@ class Cases {
             + "ptrs = Map Parse lst;\n"
             + "\n"
             + "starts = Map Slice (Repeat filebuf list_len) ptrs;\n"
+            // starts = Map ([ptr] Slice filebuf ptr) ptrs
             + "strs = Map Delim starts;\n"
             + "\n"
             + "return = Join strs \"\\n\";\n"

@@ -38,6 +38,12 @@ public class Map<Out extends Obj> extends Lst<Out> {
         if (uptodate) return;
         uptodate = true;
 
+        //op.update();
+        //args.update();
+        //arr = (Out[])new Obj[args.arr.length];
+        //for (int k = 0; k < arr.length; k++)
+        //    arr[k] = (Out)op.call(new Obj[] {args[k]});
+
         args_one.update();
         for (int j = 0; j < more_args_zip.length; j++)
             more_args_zip[j].update();
