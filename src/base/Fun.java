@@ -10,6 +10,9 @@ public abstract class Fun extends Obj {
     public abstract Obj call(Obj... args) throws InvokeException;
     public abstract Class ret();
 
+    @Override
+    public String toString() { return "'''\n" + help() + "\n'''"; }
+
     public static class ForClass extends Fun {
 
         Class cl;

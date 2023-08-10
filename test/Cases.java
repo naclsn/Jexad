@@ -129,17 +129,17 @@ class Cases {
 
         Buf list_buf = new Slice(binfile_buf, new Num(list_off), new Num(list_off + list_len*4));
         Lst<Buf> list_32b = new Rect(list_buf, new Num(4));
-        Lst<Num> pointers = new Map<Num>(new Fun.ForClass(Parse.class, "doc"), list_32b);
+        Lst<Num> pointers = new Map<Num>(Parse.fun, list_32b);
 
-        Fun bound_lambda = (Fun)new Fun.ForClass(Bind.class, "doc").call(
-            new Fun.ForClass(Slice.class, "doc"),
+        Fun bound_lambda = (Fun)Bind.fun.call(
+            Slice.fun,
             new Lst(new Obj[] {
                 binfile_buf,
                 new Lst(new Obj[] {new Num(0)})
             })
         );
         Lst<Buf> strings_starts = new Map<Buf>(bound_lambda, pointers);
-        Lst<Buf> strings = new Map<Buf>(new Fun.ForClass(Delim.class, "doc"), strings_starts); // new Repeat<Buf>(new Buf(new byte[] {0}), new Num(list_len)));
+        Lst<Buf> strings = new Map<Buf>(Delim.fun, strings_starts); // new Repeat<Buf>(new Buf(new byte[] {0}), new Num(list_len)));
 
         Buf result = new Join(strings, new Buf(new byte[] {'\n'}));
 

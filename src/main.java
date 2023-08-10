@@ -114,8 +114,15 @@ class Jexad extends Frame {
                             for (int k = 0; k < names.length; k++)
                                 System.out.println(names[k]);
                         } else {
-                            Obj obj = globalScope.get(line.substring(1).trim());
-                            Util.show(obj);
+                            String name = line.substring(1).trim();
+                            Obj obj = globalScope.get(name);
+                            if (null != obj) Util.show(obj);
+                            else {
+                                for (int k = 0; k < globalNames.length; k++) {
+                                    Fun fun = globalNames[k].lookup(name);
+                                    if (null != fun) Util.show(fun);
+                                }
+                            }
                         }
                         break;
 

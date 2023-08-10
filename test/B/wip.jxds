@@ -1,8 +1,9 @@
 bys = Read "test/B/some.zip";
 zh = ZipDecode bys;
-ls = ZipList zh;
 
-_ = TxtView (Join ls "\n") "some.zip [entries]";
+_ = ZipList zh
+  , Join _ "\n"
+  , TxtView _ "some.zip [entries]";
 
 img_bys = ZipEntry zh "res/image.png";
 _ = HexView img_bys "some.zip/res/image.png [bytes]";

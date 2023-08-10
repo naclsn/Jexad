@@ -82,7 +82,7 @@ public class Lang {
                 }
                 try {
                     Class cl = Class.forName(base + new String(a, 0, a.length-w));
-                    return new Fun.ForClass(cl, "doc");
+                    return (Fun)cl.getField("fun").get(null);
                 } catch (Exception e) { return null; }
             }
 

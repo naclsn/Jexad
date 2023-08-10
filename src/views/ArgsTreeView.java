@@ -8,6 +8,8 @@ import java.awt.geom.Rectangle2D;
 
 public class ArgsTreeView extends View {
 
+    public static final Fun fun = new Fun.ForClass(ArgsTreeView.class, "view dependencies of an object as a tree");
+
     public ArgsTreeView(Buf content, String title) { super(content, title); }
     public ArgsTreeView(Lst content, String title) { super(content, title); }
     public ArgsTreeView(Num content, String title) { super(content, title); }
