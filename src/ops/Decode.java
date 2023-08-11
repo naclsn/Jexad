@@ -2,10 +2,9 @@ package com.jexad.ops;
 
 import com.jexad.base.*;
 
-// TODO: rename (NumEncode/NumDecode)
-public class Parse extends Num {
+public class Decode extends Num {
 
-    public static final Fun fun = new Fun.ForClass(Parse.class, "parse from a buffer slice (default little endian); does not check the size (for now only does 4-bytes signed integer)");
+    public static final Fun fun = new Fun.ForClass(Decode.class, "decode a number from bytes (default little endian)");
 
     Buf under;
     Endian endian;
@@ -14,13 +13,12 @@ public class Parse extends Num {
     public enum Endian { LITTLE, BIG }
     //public enum Kind { BYTE, SHORT, INT, LONG, HALF, FLOAT, DOUBLE }
 
-    // XXX: argument type is not Obj (ie. Buf/Num/Lst)
-    public Parse(Buf under, Endian endian) {
+    public Decode(Buf under, Endian endian) {
         this.under = under;
         this.endian = endian;
     }
 
-    public Parse(Buf under) { this(under, Endian.LITTLE); }
+    public Decode(Buf under) { this(under, Endian.LITTLE); }
 
     @Override
     public Obj[] arguments() { return new Obj[] {under}; }

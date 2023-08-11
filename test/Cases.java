@@ -129,7 +129,7 @@ class Cases {
 
         Buf list_buf = new Slice(binfile_buf, new Num(list_off), new Num(list_off + list_len*4));
         Lst<Buf> list_32b = new Rect(list_buf, new Num(4));
-        Lst<Num> pointers = new Map<Num>(Parse.fun, list_32b);
+        Lst<Num> pointers = new Map<Num>(Decode.fun, list_32b);
 
         Fun bound_lambda = (Fun)Bind.fun.call(Slice.fun, new Lst(new Obj[] {binfile_buf, new Sym("0")}));
         Lst<Buf> strings_starts = new Map<Buf>(bound_lambda, pointers);
@@ -150,7 +150,7 @@ class Cases {
         String script
             = "filebuf = Read filename;\n"
             + "lst = Rect (Slice filebuf list_off list_end) 4;\n"
-            + "ptrs = Map Parse lst;\n"
+            + "ptrs = Map Decode lst;\n"
             + "\n"
             + "starts = Map (Bind Slice {filebuf, :0}) ptrs;\n"
             + "strs = Map Delim starts;\n"
@@ -180,7 +180,7 @@ class Cases {
             + "return\n"
             + "    = Slice filebuf list_off (Add list_off (Mul list_len 4))\n"
             + "    , Rect _ 4\n"
-            + "    , Map Parse _\n"
+            + "    , Map Decode _\n"
             + "    , Map (Bind Slice {filebuf, :0}) _\n"
             + "    , Map Delim _\n"
             + "    , Join _ \"\\n\"\n"
