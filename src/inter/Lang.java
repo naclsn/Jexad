@@ -226,6 +226,20 @@ public class Lang {
         return null;
     }
 
+    // <sym> ::= ':' /[0-9A-Za-z_]+/
+    Sym scanSym() throws LangException {
+        int a = ++i;
+        char c = ':';
+        while (i < s.length &&
+            ( '_' == (c = s[i])
+            || '0' <= c && c <= '9'
+            || 'A' <= c && c <= 'Z'
+            || 'a' <= c && c <= 'z'
+            )) i++;
+        if (a == i) fail("expected symbol name to start with 0-9, A-Z, a-z or _, got '"+c+"'");
+        return new Sym(new String(s, a, i-a));
+    }
+
     // <var> ::= /[a-z_][0-9a-z_]+/
     String scanVarName() throws LangException {
         int a = i;
@@ -237,13 +251,14 @@ public class Lang {
         return new String(s, a, i-a);
     }
 
-    // <atom> ::= <str> | <num> | <lst> | <fun> | <var> | '(' <expr> ')'
+    // <atom> ::= <str> | <num> | <lst> | <fun> | <sym> | <var> | '(' <expr> ')'
     Obj scanAtom() throws LangException {
         if (i >= s.length) fail("expected atom");
         char c = s[i];
         switch (s[i]) {
             case '"': return scanStr();
             case '{': return scanLst();
+            case ':': return scanSym();
             case '(':
                 i++;
                 Obj r = processExpr(true);

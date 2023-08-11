@@ -36,7 +36,7 @@ A tiny DSL is hacked together to define objects; this is the full syntax:
 ```plaintext
 <script> ::= <var> '=' <expr> {';' <var> '=' <expr>} [';']
 <expr> ::= <atom> | <fun> {<expr>} | <expr> ',' <expr>
-<atom> ::= <str> | <num> | <lst> | <fun> | <var> | '(' <expr> ')'
+<atom> ::= <str> | <num> | <lst> | <fun> | <sym> | <var> | '(' <expr> ')'
 
 <comment> ::= '#' /./ '\n'
 
@@ -44,6 +44,7 @@ A tiny DSL is hacked together to define objects; this is the full syntax:
 <num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/
 <lst> ::= '{' <atom> {',' <atom>} '}'
 <fun> ::= /[A-Z][0-9A-Z]+/
+<sym> ::= ':' /[0-9A-Za-z_]+/
 <var> ::= /[a-z_][0-9a-z_]+/
 ```
 

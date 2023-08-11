@@ -16,6 +16,7 @@ public class Obj {
             : this instanceof Num ? Num.class
             : this instanceof Lst ? Lst.class
             : this instanceof Fun ? Fun.class
+            : this instanceof Sym ? Sym.class
             : Obj.class
             );
     }

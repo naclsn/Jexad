@@ -20,7 +20,7 @@ public class ArgsTreeView extends View {
     public ArgsTreeView(Lst content) { super(content, null); }
     public ArgsTreeView(Num content) { super(content, null); }
 
-    private static enum NodeKind { BUF, NUM, LST, FUN }
+    private static enum NodeKind { BUF, NUM, LST, FUN, SYM }
 
     private class Node {
 
@@ -38,9 +38,10 @@ public class ArgsTreeView extends View {
                 : o instanceof Num ? NodeKind.NUM
                 : o instanceof Lst ? NodeKind.LST
                 : o instanceof Fun ? NodeKind.FUN
+                : o instanceof Sym ? NodeKind.SYM
                 : null; // idealy unreachable
             Class cl = o.getClass();
-            raw = cl == Buf.class || cl == Num.class || cl == Lst.class;
+            raw = cl == Buf.class || cl == Num.class || cl == Lst.class || cl == Sym.class;
 
             text = cl.getName();
             text = text.substring(text.lastIndexOf('.')+1);

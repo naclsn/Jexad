@@ -131,22 +131,13 @@ class Cases {
         Lst<Buf> list_32b = new Rect(list_buf, new Num(4));
         Lst<Num> pointers = new Map<Num>(Parse.fun, list_32b);
 
-        Fun bound_lambda = (Fun)Bind.fun.call(
-            Slice.fun,
-            new Lst(new Obj[] {
-                binfile_buf,
-                new Lst(new Obj[] {new Num(0)})
-            })
-        );
+        Fun bound_lambda = (Fun)Bind.fun.call(Slice.fun, new Lst(new Obj[] {binfile_buf, new Sym("0")}));
         Lst<Buf> strings_starts = new Map<Buf>(bound_lambda, pointers);
         Lst<Buf> strings = new Map<Buf>(Delim.fun, strings_starts); // new Repeat<Buf>(new Buf(new byte[] {0}), new Num(list_len)));
 
         Buf result = new Join(strings, new Buf(new byte[] {'\n'}));
 
-        result.update();
-        String res = result.decode();
-
-        return "that's\nall\nfolks".equals(res);
+        return Util.cmpBuf(result, Buf.encode("that's\nall\nfolks"));
     } // caseA
 
     static boolean caseAScript1() throws Lang.LangException {
@@ -161,7 +152,7 @@ class Cases {
             + "lst = Rect (Slice filebuf list_off list_end) 4;\n"
             + "ptrs = Map Parse lst;\n"
             + "\n"
-            + "starts = Map (Bind Slice {filebuf, {0}}) ptrs;\n"
+            + "starts = Map (Bind Slice {filebuf, :0}) ptrs;\n"
             + "strs = Map Delim starts;\n"
             + "\n"
             + "return = Join strs \"\\n\";\n"
@@ -175,13 +166,39 @@ class Cases {
             return false;
         }
 
-        res.obj.update();
-        return "that's\nall\nfolks".equals(((Buf)res.obj).decode());
+        return Util.cmpBuf((Buf)res.obj, Buf.encode("that's\nall\nfolks"));
     } // caseAScript1
 
     static boolean caseAScript2() throws Lang.LangException {
-        System.out.println("TODO: caseAScript1 with chain bin op");
-        return false;
+        HashMap<String, Obj> scope = new HashMap();
+        scope.put("filename", Buf.encode("test/A/some.bin"));
+        scope.put("list_off", new Num(0x42));
+        scope.put("list_len", new Num(3));
+
+        String script
+            = "filebuf = Read filename;\n"
+            + "return\n"
+            + "    = Slice filebuf list_off (Add list_off (Mul list_len 4))\n"
+            + "    , Rect _ 4\n"
+            + "    , Map Parse _\n"
+            + "    , Map (Bind Slice {filebuf, :0}) _\n"
+            + "    , Map Delim _\n"
+            + "    , Join _ \"\\n\"\n"
+            + "    ;\n"
+            ;
+
+        Lang.Lookup[] lookups = new Lang.Lookup[]
+            { new Lang.Lookup.ClassesUnder("com.jexad.ops")
+            , new Lang.Lookup.ClassesUnder("com.jexad.ops.math")
+            };
+        Lang res = new Lang(script, lookups, scope);
+
+        if (null == res.obj) {
+            System.out.println("script result is null");
+            return false;
+        }
+
+        return Util.cmpBuf((Buf)res.obj, Buf.encode("that's\nall\nfolks"));
     } // caseAScript2
 
     // B)
