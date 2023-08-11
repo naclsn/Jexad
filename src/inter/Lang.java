@@ -42,13 +42,9 @@ public class Lang {
 
         public void printLocationInfo(PrintStream o) {
             int[] i = getLineInfo();
-            o.printf("   :%d:%d (ie. %d-%d)\n", i[0], i[1], i[2], i[3]);
-            o.printf("   %s\n", new String(s, i[2], i[3]-i[2]));
-            o.printf("   ");
-            for (int k = 1; k < i[1]; k++)
-                o.append(' ');
-            o.append('^');
-            o.append('\n');
+            o.printf("ERROR %s:%d:%d\n", "<script>", i[0], i[1]);
+            o.printf("%4d | %s\n", i[0], new String(s, i[2], i[3]-i[2]));
+            o.printf("%4d | %"+i[1]+"s\n", i[0]+1, "^");
         }
 
     } // class LangException
@@ -123,6 +119,7 @@ public class Lang {
     Buf scanStr() throws LangException {
         int a = i++;
         while (i < s.length) {
+            // TODO: truly handle escapes, fail on unknown/erroneous ones
             if ('\\' == s[i]) i++;
             else if ('"' == s[i])
                 return Buf.encode(new String(s, a+1, i++-a-1)
@@ -140,11 +137,12 @@ public class Lang {
         return null;
     }
 
-    // <num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/
+    // TODO: size specifiers (integral: [bsil], floating: [hfd])
+    // <num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/ /[bsilhfd]/
     Num scanNum() throws LangException {
         int b = 10;
         if ('\'' == s[i]) {
-            if (i+2 < s.length || '\'' != s[i+2])
+            if (i+2 >= s.length || '\'' != s[i+2])
                 fail("missing end quote in character literal");
             i+= 2;
             return new Num(s[i-1]);
@@ -159,8 +157,7 @@ public class Lang {
                     case 'b': b =  2; break;
                     default: return new Num(0);
                 }
-                if (++i >= s.length)
-                    fail("missing digit after base hint '0"+s[i-1]+s[i]+"'");
+                i++;
             }
         }
         int a = i;
@@ -171,39 +168,48 @@ public class Lang {
                 case 16: k = 'A' <= c && c <= 'F' || 'a' <= c && c <= 'f';
                 case 10: k = k || '8' == c || '9' == c;
                 case  8: k = k || '2' <= c && c <= '7';
-                case  2: k = k || '0' == c || '1' == c;
+                case  2: k = k || '0' == c || '1' == c || '_' == c;
             }
             if (!k) break;
             i++;
         }
+        if (a == i) fail("missing digit after base hint '0"+s[i-1]+"'");
         int d = 0;
         if (10 == b && i < s.length && '.' == s[i]) {
-            d = i++;
-            if (i < s.length) fail("missing digit after decimal separator");
+            d = ++i;
             while (i < s.length) {
                 char c = s[i];
                 if (c < '0' || '9' < c) break;
                 i++;
             }
+            if (d == i) fail("missing digit after decimal separator");
         }
-        // TODO: handle '_'s (maybe?) and floats
-        return new Num(Integer.parseInt(new String(s, a, i-a), b));
+        return new Num(Integer.parseInt(new String(s, a, i-a).replace("_", ""), b));
     }
 
-    // <lst> ::= '{' <atom> {',' <atom>} '}'
+    // <lst> ::= '{' [<atom> {',' <atom>}] '}'
     Lst scanLst() throws LangException {
+        int a = i++;
         ArrayList<Obj> l = new ArrayList();
-        while (++i < s.length) {
-            skipBlanks();
+        skipBlanks();
+        if (i >= s.length) {
+            i--;
+            fail("missing matching closing {} in list");
+        }
+        while (i < s.length && '}' != s[i]) {
             Obj w = scanAtom();
             l.add(w);
             skipBlanks();
-            if (i >= s.length) fail("missing matching closing {} in list");
-            if ('}' == s[i]) break;
-            if (',' != s[i]) fail("expected ',' between list elements, got '"+s[i]+"'");
+            if (i >= s.length) {
+                i = a;
+                fail("missing matching closing {} in list");
+            }
+            if (',' != s[i] && '}' != s[i])
+                fail("expected ',' between list elements, got '"+s[i]+"'");
+            i++;
+            skipBlanks();
         }
         i++;
-        Class o = l.get(0).getClass();
         Obj[] r = new Obj[l.size()];
         l.toArray(r);
         return new Lst(r);
@@ -213,15 +219,13 @@ public class Lang {
     Fun scanFun() throws LangException {
         int a = i;
         char c;
-        if (i >= s.length) fail("expected function name");
-        if ((c = s[i]) < 'A' || 'Z' < c)
-            fail("expected function name to start with A-Z, got '"+c+"'");
         while (++i < s.length && ('A' <= (c = s[i]) && c <= 'Z' || 'a' <= c && c <= 'z'));
         String name = new String(s, a, i-a);
         for (int k = lookups.length-1; k >= 0; k--) {
             Fun r = lookups[k].lookup(name);
             if (null != r) return r;
         }
+        i = a;
         fail("unknown function '"+name+"'");
         return null;
     }
@@ -244,9 +248,6 @@ public class Lang {
     String scanVarName() throws LangException {
         int a = i;
         char c;
-        if (i >= s.length) fail("expected variable name");
-        if ('_' != (c = s[i]) && (c < 'a' || 'z' < c))
-            fail("expected variable name to start with a-z_, got '"+c+"'");
         while (++i < s.length && ('_' == (c = s[i]) || 'a' <= c && c <= 'z'));
         return new String(s, a, i-a);
     }
@@ -254,6 +255,7 @@ public class Lang {
     // <atom> ::= <str> | <num> | <lst> | <fun> | <sym> | <var> | '(' <expr> ')'
     Obj scanAtom() throws LangException {
         if (i >= s.length) fail("expected atom");
+        int a = i;
         char c = s[i];
         switch (s[i]) {
             case '"': return scanStr();
@@ -263,16 +265,21 @@ public class Lang {
                 i++;
                 Obj r = processExpr(true);
                 skipBlanks();
-                if (i >= s.length || ')' != s[i])
+                if (i >= s.length || ')' != s[i]) {
+                    i = a;
                     fail("missing matching closing () in atom");
+                }
                 i++;
                 return r;
         }
-        if ('0' <= c && c <= '9') return scanNum();
+        if ('\'' == c || '0' <= c && c <= '9') return scanNum();
         if ('_' == c || 'a' <= c && c <= 'z') {
             String name = scanVarName();
             Obj r = scope.get(name);
-            if (null == r) fail("unknown variable '"+name+"'");
+            if (null == r) {
+                i = a;
+                fail("unknown variable '"+name+"'");
+            }
             return r;
         }
         if ('A' <= c && c <= 'Z') return scanFun();
@@ -284,6 +291,10 @@ public class Lang {
     void processScript() throws LangException {
         skipBlanks();
         do {
+            if (i >= s.length) fail("expected variable name");
+            char c = s[i];
+            if ('_' != c && (c < 'a' || 'z' < c))
+                fail("expected variable name to start with a-z_, got '"+c+"'");
             String n = scanVarName();
             skipBlanks();
             if (i >= s.length || '=' != s[i]) fail("expected '=' after name in statement");
@@ -292,8 +303,12 @@ public class Lang {
             Obj w = processExpr(true);
             scope.put(n, w);
             if (i >= s.length) break;
+            int a = i;
             skipBlanks();
-            if (';' != s[i]) fail("expected ';' after statement");
+            if (';' != s[i]) {
+                i = a;
+                fail("expected ';' after statement");
+            }
             i++;
             skipBlanks();
         } while (i < s.length);
@@ -329,6 +344,9 @@ public class Lang {
             }
             return o;
         } catch (Fun.InvokeException e) { // TODO: properly bubble whatever this is
+            i = a;
+            if (0 == g.length)
+                fail("cannot call function with not argument");
             String args = "";
             for (int k = 0; k < gcl.length; k++)
                 args+= (0 == k ? "" : ", ") + gcl[k].getName().substring(15);

@@ -11,6 +11,7 @@
 - [~] .(somewhat with above): the `arguments` method
 - [~] finish cleanup with `Lookup.ClassesUnder`
 - [ ] num based on other than i32
+- [ ] finish fixing parser (bsilhfd, excapes, processExpr)
 - [ ] Parse should be to parse a str to num, bytes to num should be a Decode/Encode probably
 - [ ] double buffering (or overall better rendering - maybe even.. *swing*?)
 - [ ] annotation to make fun of a class

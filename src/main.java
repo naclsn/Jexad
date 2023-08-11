@@ -146,6 +146,8 @@ class Jexad extends Frame {
                             System.err.println(e);
                             e.printLocationInfo(System.err);
                             //e.printStackTrace(System.err);
+                        } catch (Exception e) {
+                            e.printStackTrace(System.err);
                         }
                 }
 
