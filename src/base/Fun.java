@@ -1,5 +1,7 @@
 package com.jexad.base;
 
+import java.lang.reflect.Constructor;
+
 public abstract class Fun extends Obj {
 
     public static class InvokeException extends Exception {
@@ -11,7 +13,7 @@ public abstract class Fun extends Obj {
     public abstract Class ret();
 
     @Override
-    public String toString() { return "'''\n" + help() + "\n'''"; }
+    public String toString() { return "'''\n" + getClass() + "\n'''"; }
 
     public static class ForClass extends Fun {
 
@@ -50,6 +52,28 @@ public abstract class Fun extends Obj {
                 : Fun.class.isAssignableFrom(cl) ? Fun.class
                 : Obj.class;
             return r;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder r = new StringBuilder();
+            String n = getClass().getSimpleName();
+            String b = ret().getSimpleName();
+
+            Constructor[] ovl = cl.getConstructors();
+            for (int i = 0; i < ovl.length; i++) {
+                r.append(n + " (");
+
+                Class[] pcl = ovl[i].getParameterTypes();
+                for (int j = 0; j < pcl.length; j++) {
+                    if (0 != j) r.append(", ");
+                    r.append(pcl[j].getSimpleName());
+                }
+
+                r.append(") -> " + b + "\n");
+            }
+
+            return r.toString();
         }
 
     } // class ForClass

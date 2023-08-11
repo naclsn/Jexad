@@ -43,8 +43,7 @@ public class ArgsTreeView extends View {
             Class cl = o.getClass();
             raw = cl == Buf.class || cl == Num.class || cl == Lst.class || cl == Sym.class;
 
-            text = cl.getName();
-            text = text.substring(text.lastIndexOf('.')+1);
+            text = cl.getSimpleName();
 
             chld = null;
             obj = o;

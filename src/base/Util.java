@@ -9,8 +9,7 @@ public class Util {
             return null;
         }
         obj.update();
-        String cln = obj.getClass().toString();
-        System.out.println("(show " + cln.substring(cln.lastIndexOf('.')+1) + ") " + obj);
+        System.out.println("(show " + obj.getClass().getSimpleName() + ") " + obj);
         return obj;
     }
 

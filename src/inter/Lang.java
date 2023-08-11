@@ -28,7 +28,7 @@ public class Lang {
                 if ('\n' == s[k]) {
                     l++;
                     c = 1;
-                    st = k;
+                    st = k+1;
                 }
             }
             for (int k = i; k < s.length; k++) {
@@ -192,11 +192,11 @@ public class Lang {
         int a = i++;
         ArrayList<Obj> l = new ArrayList();
         skipBlanks();
-        if (i >= s.length) {
-            i--;
-            fail("missing matching closing {} in list");
-        }
-        while (i < s.length && '}' != s[i]) {
+        while (true) {
+            if (i >= s.length) {
+                i = a;
+                fail("missing matching closing {} in list");
+            }
             Obj w = scanAtom();
             l.add(w);
             skipBlanks();
@@ -204,7 +204,8 @@ public class Lang {
                 i = a;
                 fail("missing matching closing {} in list");
             }
-            if (',' != s[i] && '}' != s[i])
+            if ('}' == s[i]) break;
+            if (',' != s[i])
                 fail("expected ',' between list elements, got '"+s[i]+"'");
             i++;
             skipBlanks();

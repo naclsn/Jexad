@@ -118,10 +118,8 @@ public abstract class View<T extends Obj> extends Canvas implements
         });
         f.add(this);
 
-        if (null == title) {
-            String full = this.getClass().getName();
-            title = full.substring(full.lastIndexOf('.')+1) + unnamed_view_counter++;
-        }
+        if (null == title)
+            title = getClass().getSimpleName() + unnamed_view_counter++;
 
         f.setSize(640, 480);
         f.setTitle(this.title = title);
