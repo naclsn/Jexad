@@ -3,10 +3,12 @@ package com.jexad.views;
 import com.jexad.base.*;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
@@ -156,13 +158,31 @@ public abstract class View<T extends Obj> extends Canvas implements
         return content;
     }
 
+    Dimension offDim;
+    Image offImg;
+    Graphics2D offG;
+
     @Override
     public void paint(Graphics g0) {
-        if (null == getBufferStrategy()) createBufferStrategy(2);
+        //if (null == getBufferStrategy()) createBufferStrategy(2); // YYY: then what's the point of that?
 
-        Graphics2D g = (Graphics2D)g0;
-        if (null != desktophints) g.addRenderingHints(desktophints);
-        render(g);
+        Dimension d = getSize();
+        if (offG == null || d.width != offDim.width || d.height != offDim.height) {
+            offDim = d;
+            offImg = createImage(d.width, d.height);
+            offG = (Graphics2D)offImg.getGraphics();
+            if (null != desktophints) offG.addRenderingHints(desktophints);
+        }
+
+        offG.clearRect(0, 0, d.width, d.height);
+        render(offG);
+        g0.drawImage(offImg, 0, 0, null);
+    }
+
+    @Override
+    public void update(Graphics g0) {
+        // don't clear
+        paint(g0);
     }
 
     // once, when the content is changed/updated

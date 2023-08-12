@@ -13,7 +13,6 @@ import java.util.zip.*;
 class Jexad extends Frame {
 
     public static void main(String[] args) {
-        if (true) return;
         String filename = "build.xml";
         if (0 < args.length) {
             switch (args[0]) {
@@ -46,8 +45,8 @@ class Jexad extends Frame {
         //new Jexad(new Read(Buf.encode(filename)));
         Buf filebuf = new Read(Buf.encode(filename));
         new HexView(filebuf);
-        new ImgView(filebuf);
-        new TxtView(filebuf);
+        //new ImgView(filebuf);
+        //new TxtView(filebuf);
     } // main
 
     public static void mainZip(String[] args) {
