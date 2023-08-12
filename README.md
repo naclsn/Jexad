@@ -29,6 +29,14 @@ $ ant jar  # to simply generate jar/Jexad.jar
 - `Buf`: a buffer on raw bytes
 - `Lst`: a list of `Buf` or `Num` (or `Lst`)
 - `Num`: a number from bytes (eg. 4 bytes little-endian int)
+- `Fun`: a factory factory of doom
+- `Sym`: an immutable symbol (eg. :coucou)
+
+> - after udpating a `Lst`, its elements are also up to date
+> - updating `Fun` once before some `Fun.call`(s)
+> - arguments to a `Fun.call` are not up to date
+> - result from a `Fun.call` is not up to date
+> - no updating `Sym`, it cannot depend on anything anyway
 
 ### Script Front-End
 

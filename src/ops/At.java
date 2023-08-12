@@ -7,7 +7,7 @@ public class At extends Fun {
     public static final Fun fun = new At();
 
     @Override
-    public String help() { return "get element from list at index"; }
+    public String help() { return "get element from list at index (negative counts from the end) or from a list of pairs at key symbol"; }
 
     @Override
     public Obj call(Obj... args) throws Fun.InvokeException {
@@ -19,12 +19,14 @@ public class At extends Fun {
             if (args[1] instanceof Num) {
                 Num num = (Num)args[1];
                 num.update();
-                return lst.at(num.val); // XXX: errs and such...
+                return num.val < 0
+                    ? lst.at(lst.length()+num.val)
+                    : lst.at(num.val)
+                    ; // XXX: errs and such...
             }
 
             else if (args[1] instanceof Sym) {
                 Sym sym = (Sym)args[1];
-                //sym.update(); // no-op
                 for (int k = 0; k < len; k++) {
                     Obj it = lst.at(k);
                     if (!(it instanceof Lst)) break;
@@ -35,13 +37,48 @@ public class At extends Fun {
                     if (sym.str.equals(((Sym)key).str))
                         return pair.at(1);
                 }
+                throw new Fun.InvokeException("key not found in dictionary");
             }
         }
 
-        throw new Fun.InvokeException("wrong argument and such (should be Lst,Num or Lst<Lst>,Sym)");
+        throw new Fun.InvokeException("wrong arguments and such (should be Lst,Num or Lst<Lst>,Sym)");
     }
 
     @Override
     public Class ret() { return Obj.class; }
+
+    public static boolean testList() throws Fun.InvokeException {
+        return Util.cmpNum
+                ( (Num)fun.call(new Lst(new Obj[]
+                    { new Num(5)
+                    , new Num(4)
+                    , new Num(3)
+                    , new Num(2)
+                    }), new Num(1))
+                , new Num(4)
+                )
+            && Util.cmpNum
+                ( (Num)fun.call(new Lst(new Obj[]
+                    { new Num(5)
+                    , new Num(4)
+                    , new Num(3)
+                    , new Num(2)
+                    }), new Num(-1))
+                , new Num(2)
+                )
+            ;
+    }
+
+    public static boolean testDict() throws Fun.InvokeException {
+        return Util.cmpNum
+                ( (Num)fun.call(new Lst(new Obj[]
+                    { new Lst(new Obj[] {new Sym("how_are_you"), new Num(63)})
+                    , new Lst(new Obj[] {new Sym("coucou"), new Num(42)})
+                    , new Lst(new Obj[] {new Sym("blabla"), new Num(12)})
+                    }), new Sym("coucou"))
+                , new Num(42)
+                )
+            ;
+    }
 
 }

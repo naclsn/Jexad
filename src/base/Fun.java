@@ -10,11 +10,13 @@ public abstract class Fun extends Obj {
 
     public String help() { return "no help for this function..."; }
     public abstract Obj call(Obj... args) throws InvokeException;
+    //public abstract Class[][] overloads();
     public abstract Class ret();
 
     @Override
     public String toString() { return "'''\n" + getClass() + "\n'''"; }
 
+    // yes, this is a factory factory
     public static class ForClass extends Fun {
 
         Class cl;
