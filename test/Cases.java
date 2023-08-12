@@ -76,12 +76,16 @@ class Cases {
         return fails;
     } // tryCallAll
 
-    static int tryDirClassesCallAll(String src_subdir) {
+    static int trySrcDirClassesCallAll(String src_subdir) {
         int fails = 0;
 
-        String pkg = "com.jexad." + src_subdir.replace('/', '.');
+        String pkg = src_subdir.replace('/', '.');
 
-        File[] cls = sortNamed(new File("src/" + src_subdir).listFiles());
+        File[] cls = sortNamed(new File("src/"+src_subdir).listFiles());
+        if (null == cls) {
+            System.out.printf("\033[31mno source file under '%s'\033[m\n", "src/"+src_subdir);
+            return 1;
+        }
         for (int i = 0; i < cls.length; i++) {
             String name = cls[i].getName();
             if (!name.endsWith(".java")) continue;
@@ -95,15 +99,15 @@ class Cases {
         }
 
         return fails;
-    } // tryDirClassesCallAll
+    } // trySrcDirClassesCallAll
 
     public static void main(String[] args) {
         int fails_total = 0;
 
-        fails_total+= tryDirClassesCallAll("ops");
-        fails_total+= tryDirClassesCallAll("ops/math");
-        fails_total+= tryDirClassesCallAll("ops/png");
-        fails_total+= tryDirClassesCallAll("ops/zip");
+        fails_total+= trySrcDirClassesCallAll("com/jexad/ops");
+        fails_total+= trySrcDirClassesCallAll("com/jexad/ops/math");
+        fails_total+= trySrcDirClassesCallAll("com/jexad/ops/png");
+        fails_total+= trySrcDirClassesCallAll("com/jexad/ops/zip");
 
         if (0 == fails_total)
             fails_total+= tryCallAll(Cases.class, "case");

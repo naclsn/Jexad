@@ -15,6 +15,7 @@ public class Range extends Lst<Num> {
         this.end = end;
         this.step = step;
     }
+
     public Range(Num start, Num end) { this(start, end, new Num(1)); }
 
     @Override

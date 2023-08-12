@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 public class Split extends Lst<Buf> {
 
-    public static final Fun fun = new Fun.ForClass(Split.class, "split on separator (exclusive); default is {'\\0'} ie C-string");
+    public static final Fun fun = new Fun.ForClass(Split.class, "split on separator (exclusive); default is \"\\0\" ie C-string");
 
     ArrayList<Buf> al = new ArrayList();
     Buf under;

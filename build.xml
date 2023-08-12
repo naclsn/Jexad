@@ -1,4 +1,8 @@
 <project name="Jexad">
+  <target name="clean">
+    <delete dir="classes" />
+  </target>
+
   <target name="classes">
     <mkdir dir="classes" />
     <javac srcdir="src" destdir="classes" debug="true" includeantruntime="false" />

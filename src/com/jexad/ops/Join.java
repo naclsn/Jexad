@@ -4,7 +4,7 @@ import com.jexad.base.*;
 
 public class Join extends Buf {
 
-    public static final Fun fun = new Fun.ForClass(Join.class, "join with separator; default is {'\\0'} ie C-string");
+    public static final Fun fun = new Fun.ForClass(Join.class, "join with separator; default is \"\\0\" ie C-string");
 
     Lst<Buf> list;
     Buf sep;

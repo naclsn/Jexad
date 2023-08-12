@@ -13,6 +13,7 @@ import java.util.zip.*;
 class Jexad extends Frame {
 
     public static void main(String[] args) {
+        if (true) return;
         String filename = "build.xml";
         if (0 < args.length) {
             switch (args[0]) {
