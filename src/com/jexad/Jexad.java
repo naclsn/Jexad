@@ -4,102 +4,102 @@ import com.jexad.base.*;
 import com.jexad.inter.*;
 import com.jexad.ops.*;
 import com.jexad.views.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Frame;
 import java.io.*;
 import java.util.*;
-import java.util.zip.*;
 
 class Jexad extends Frame {
 
+    static void usage() {
+        System.out.print
+            ( "Usage (temp): <prog> -c <script>\n"
+            + "                     -i [<prompt>]\n"
+            + "                     -v txt|hex|img <file>\n"
+            );
+        System.exit(1);
+    }
+
+    static Buf input() {
+        StringBuilder r = new StringBuilder();
+        byte[] b = new byte[1024];
+        try {
+            int len;
+            while (-1 != (len = System.in.read(b)))
+                r.append(new String(b, 0, len));
+        } catch (Exception e) {
+            e.printStackTrace(System.err);
+            System.exit(1);
+        }
+        return Buf.encode(r.toString());
+    }
+
     public static void main(String[] args) {
-        String filename = "build.xml";
-        if (0 < args.length) {
-            switch (args[0]) {
-                case "-h":
-                case "--help":
-                    System.out.println("Usage (temp): <prog> --help|--font-list|--props-list|--zip|--lang|<filename>");
-                    return;
+        if (0 == args.length) usage();
 
-                case "--font-list":
-                    System.out.println("Font list: " + Arrays.toString(Toolkit.getDefaultToolkit().getFontList()));
-                    return;
+        switch (args[0]) {
+            case "-h":
+            case "--help":
+                usage();
+                return;
 
-                case "--props-list":
-                    System.getProperties().list(System.out);
-                    return;
+            case "-c":
+                if (2 != args.length) usage();
 
-                case "--zip":
-                    mainZip(args);
-                    return;
+                command(args[1]);
+                return;
 
-                case "--lang":
-                    mainLang(args);
-                    return;
+            case "-i":
+                interactive(1 == args.length ? "" : args[1]);
+                return;
 
-                default:
-                    filename = args[0];
-            }
-        } // else no arguments
+            case "-v":
+                if (3 != args.length) usage();
 
-        //new Jexad(new Read(Buf.encode(filename)));
-        Buf filebuf = new Read(Buf.encode(filename));
-        new HexView(filebuf);
-        //new ImgView(filebuf);
-        //new TxtView(filebuf);
+                Buf content = "-".equals(args[2])
+                    ? input()
+                    : new Read(Buf.encode(args[2]))
+                    ;
+
+                switch (args[1]) {
+                    case "txt": new TxtView(content); break;
+                    case "hex": new HexView(content); break;
+                    case "img": new ImgView(content); break;
+                }
+                return;
+        }
     } // main
 
-    public static void mainZip(String[] args) {
-        if (args.length <3) {
-            System.out.println("Usage (temp): <prog> --zip <zipfilename> --entry-list|<entryname>");
-            return;
-        }
+    static HashMap<String, Obj> globalScope = new HashMap();
+    static Lang.Lookup[] globalNames = new Lang.Lookup[] {
+        new Lang.Lookup.ClassesUnder("com.jexad.ops"),
+        new Lang.Lookup.ClassesUnder("com.jexad.views"),
+        new Lang.Lookup.ClassesUnder("com.jexad.ops.math"),
+        new Lang.Lookup.ClassesUnder("com.jexad.ops.png"),
+        new Lang.Lookup.ClassesUnder("com.jexad.ops.zip"),
+    };
 
+    static void command(String script) {
+        globalScope.put("input", input());
         try {
-            ZipFile f = new ZipFile(args[1]);
-
-            if ("--entry-list".equals(args[2])) {
-                System.out.println("Entry list:");
-                for (Enumeration e = f.entries(); e.hasMoreElements(); ) {
-                    ZipEntry it = (ZipEntry)e.nextElement();
-                    long size = it.getSize();
-                    String ssize
-                        = 1000000 < size ? size/1000000 + " MB"
-                        : 1000 < size ? size/1000 + " KB"
-                        : size + " B";
-                    System.out.println(" - " + it.getName() + " (" + ssize + ")");
-                }
-
-            } else {
-                ZipEntry it = f.getEntry(args[2]);
-                byte[] b = new byte[(int)it.getSize()];
-                f.getInputStream(it).read(b);
-
-                Buf contentbuf = new Buf(b);
-                new HexView(contentbuf);
-                new ImgView(contentbuf);
-                new TxtView(contentbuf);
+            Lang res = new Lang(script, globalNames, globalScope);
+            if (null != res.obj) {
+                res.obj.update();
+                if (res.obj instanceof Buf)
+                    System.out.print(((Buf)res.obj).decode());
+                else
+                    System.out.println(res.obj);
             }
-
-            f.close();
+        } catch (Lang.LangException e) {
+            System.err.println(e);
+            e.printLocationInfo(System.err);
         } catch (Exception e) {
-            System.out.println("error: " + e);
+            e.printStackTrace(System.err);
         }
-    } // mainZip
+    } // command
 
-    public static void mainLang(String[] args) {
-        String prompt = 2 == args.length ? args[1] : "";
+    static void interactive(String prompt) {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String line = "";
-
-        HashMap<String, Obj> globalScope = new HashMap();
-        Lang.Lookup[] globalNames = new Lang.Lookup[] {
-            new Lang.Lookup.ClassesUnder("com.jexad.ops"),
-            new Lang.Lookup.ClassesUnder("com.jexad.views"),
-            new Lang.Lookup.ClassesUnder("com.jexad.ops.math"),
-            new Lang.Lookup.ClassesUnder("com.jexad.ops.png"),
-            new Lang.Lookup.ClassesUnder("com.jexad.ops.zip"),
-        };
 
         try {
             do {
@@ -117,20 +117,18 @@ class Jexad extends Frame {
                             String name = line.substring(1).trim();
                             Obj obj = globalScope.get(name);
                             if (null != obj) Util.show(obj);
-                            else {
-                                for (int k = 0; k < globalNames.length; k++) {
-                                    Fun fun = globalNames[k].lookup(name);
-                                    if (null != fun) Util.show(fun);
-                                }
+                            else for (int k = 0; k < globalNames.length; k++) {
+                                Fun fun = globalNames[k].lookup(name);
+                                if (null != fun) Util.show(fun);
                             }
                         }
                         break;
 
-                    //case '@':
-                    //    globalScope.clear();
-                    //    System.gc();
-                    //    System.runFinalization();
-                    //    break;
+                    case '@':
+                        globalScope.clear();
+                        System.gc();
+                        System.runFinalization();
+                        break;
 
                     case '.':
                         Buf b = new Read(Buf.encode(line.substring(1).trim()));
@@ -140,12 +138,10 @@ class Jexad extends Frame {
 
                     default:
                         try {
-                            Lang res = new Lang(line, globalNames, globalScope);
-                            //if (null != res.obj) Util.show(res.obj);
+                            new Lang(line, globalNames, globalScope);
                         } catch (Lang.LangException e) {
                             System.err.println(e);
                             e.printLocationInfo(System.err);
-                            //e.printStackTrace(System.err);
                         } catch (Exception e) {
                             e.printStackTrace(System.err);
                         }
@@ -153,8 +149,8 @@ class Jexad extends Frame {
 
             } while ((line = br.readLine()) != null);
         } catch (Exception e) {
-            e.printStackTrace(System.out);
+            e.printStackTrace(System.err);
         }
-    } // mainLang
+    } // interactive
 
 }
