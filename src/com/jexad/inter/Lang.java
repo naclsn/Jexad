@@ -220,7 +220,11 @@ public class Lang {
     Fun scanFun() throws LangException {
         int a = i;
         char c;
-        while (++i < s.length && ('A' <= (c = s[i]) && c <= 'Z' || 'a' <= c && c <= 'z'));
+        while (++i < s.length &&
+            (  '0' <= (c = s[i]) && c <= '9'
+            || 'A' <= c && c <= 'Z'
+            || 'a' <= c && c <= 'z'
+            ));
         String name = new String(s, a, i-a);
         for (int k = lookups.length-1; k >= 0; k--) {
             Fun r = lookups[k].lookup(name);

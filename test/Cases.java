@@ -105,6 +105,7 @@ class Cases {
         int fails_total = 0;
 
         fails_total+= trySrcDirClassesCallAll("com/jexad/ops");
+        fails_total+= trySrcDirClassesCallAll("com/jexad/ops/benc");
         fails_total+= trySrcDirClassesCallAll("com/jexad/ops/math");
         fails_total+= trySrcDirClassesCallAll("com/jexad/ops/png");
         fails_total+= trySrcDirClassesCallAll("com/jexad/ops/zip");

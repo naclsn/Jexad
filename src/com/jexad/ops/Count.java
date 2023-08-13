@@ -70,4 +70,18 @@ public class Count extends Num {
             ;
     }
 
+    // TODO
+    //public static boolean testOddEven() {
+    //    Lst<Num> l = new Lst<Num>(new Num[]
+    //        { new Num(7)
+    //        , new Num(6)
+    //        , new Num(5)
+    //        , new Num(4)
+    //        , new Num(3)
+    //        });
+    //    return Util.cmpNum(new Count(l, Odd.fun), new Num(3))
+    //        && Util.cmpNum(new Count(l, Even.fun), new Num(2))
+    //        ;
+    //}
+
 }

@@ -73,6 +73,7 @@ class Jexad extends Frame {
     static Lang.Lookup[] globalNames = new Lang.Lookup[] {
         new Lang.Lookup.ClassesUnder("com.jexad.ops"),
         new Lang.Lookup.ClassesUnder("com.jexad.views"),
+        new Lang.Lookup.ClassesUnder("com.jexad.ops.benc"),
         new Lang.Lookup.ClassesUnder("com.jexad.ops.math"),
         new Lang.Lookup.ClassesUnder("com.jexad.ops.png"),
         new Lang.Lookup.ClassesUnder("com.jexad.ops.zip"),
