@@ -1,7 +1,9 @@
 package com.jexad.inter;
 
 import com.jexad.base.*;
+import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -10,10 +12,10 @@ public class Lang {
 
     public static class LangException extends Exception {
 
-        private char[] s;
+        private byte[] s;
         private int i;
 
-        private LangException(String message, char[] s, int i) {
+        private LangException(String message, byte[] s, int i) {
             super(message);
             this.s = s;
             this.i = i < s.length ? i : s.length;
@@ -61,25 +63,11 @@ public class Lang {
             public ClassesUnder(String base) { this.base = base + "."; }
 
             public Fun lookup(String name) {
-                char[] a = name.toCharArray();
-                boolean f = true;
-                int w = 0;
-                for (int k = 0; k < a.length-w; k++) {
-                    char c = a[k];
-                    if (f) {
-                        if ('a' <= c && c <= 'z') a[k]-= 'a'-'A';
-                        f = false;
-                    } else if ('_' == c) {
-                        w++;
-                        System.arraycopy(a, k+1, a, k, a.length-k-1);
-                        k--;
-                        f = true;
-                    }
-                }
                 try {
-                    Class cl = Class.forName(base + new String(a, 0, a.length-w));
-                    return (Fun)cl.getField("fun").get(null);
-                } catch (Exception e) { return null; }
+                    return (Fun)Class.forName(base+name).getField("fun").get(null);
+                } catch (Exception e) {
+                    return null;
+                }
             }
 
         } // class ClassesUnder
@@ -91,45 +79,105 @@ public class Lang {
     public Obj obj;
 
     public Lang(String script, Lookup[] lookups, Map<String, Obj> scope) throws LangException {
-        this.scope = null == scope ? new HashMap() : scope;
+        this.scope = null == scope ? new HashMap<String, Obj>() : scope;
         this.lookups = lookups;
 
-        s = script.toCharArray();
+        try {
+            s = script.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            s = script.getBytes();
+            if (null == s) fail("encoding error when reading the source");
+        }
         i = 0;
 
         processScript();
         obj = scope.get("return");
     }
 
-    char[] s;
+    byte[] s;
     int i;
 
     void fail(String message) throws LangException { throw new LangException(message, s, i); }
 
     void skipBlanks() {
         while (i < s.length) {
-            char c = s[i];
+            byte c = s[i];
             if ('#' == c) while (++i < s.length && '\n' != s[i]) ;
             else if ('\t' != c && '\n' != c && '\r' != c && ' ' != c) break;
             i++;
         }
     }
 
+    byte decodeEscape() throws LangException {
+        if (++i >= s.length) fail("incomplete escape sequence");
+
+        byte c = s[i];
+        switch (c) {
+            case 'a': return 0x07;
+            case 'b': return 0x08;
+            case 'e': return 0x1B;
+            case 'f': return 0x0C;
+            case 'n': return 0x0A;
+            case 'r': return 0x0D;
+            case 't': return 0x09;
+            case 'v': return 0x0B;
+            case '\\': return 0x5C;
+            case '\'': return 0x27;
+            case '"': return 0x22;
+
+            case 'x':
+                if (i+2 >= s.length) fail("incomplete escape sequence");
+                byte hi = s[++i];
+                if (!( '0' <= hi && hi <= '9'
+                    || 'A' <= hi && hi <= 'F'
+                    || 'a' <= hi && hi <= 'f'
+                    )) fail("expected hexadecimal digit in escape sequence");
+                byte lo = s[++i];
+                if (!( '0' <= lo && lo <= '9'
+                    || 'A' <= lo && lo <= 'F'
+                    || 'a' <= lo && lo <= 'f'
+                    )) fail("expected hexadecimal digit in escape sequence");
+                return (byte)(
+                    ( (hi-(hi<='9'?'0':(hi<='F'?'A':'a')+10)) << 4 )
+                    | (lo-(lo<='9'?'0':(lo<='F'?'A':'a')+10))
+                    );
+
+            case 'u':
+            case 'U':
+                fail("NIY: unicode escapes");
+                break;
+
+            default:
+                if ('0' <= c && c <= '7') {
+                    fail("NIY: octal escapes");
+                    return 0;
+                }
+                fail("unknown escape sequence character '"+s[i]+"'");
+        }
+        return -1;
+    } // decodeEscape
+
     // <str> ::= '"' /[^"]/ '"'
     Buf scanStr() throws LangException {
         int a = i++;
+
+        ByteArrayOutputStream w = new ByteArrayOutputStream();
+        int st = i, ln = 0;
+
         while (i < s.length) {
-            // TODO: truly handle escapes, fail on unknown/erroneous ones
-            if ('\\' == s[i]) i++;
-            else if ('"' == s[i])
-                return Buf.encode(new String(s, a+1, i++-a-1)
-                    .replace("\\t", "\t")
-                    .replace("\\n", "\n")
-                    .replace("\\r", "\r")
-                    .replace("\\e", "\033")
-                    .replace("\\\"", "\"")
-                    .replace("\\\\", "\\")
-                );
+            if ('"' == s[i]) {
+                w.write(s, st, ln);
+                i++;
+                return new Buf(w.toByteArray());
+            }
+
+            if ('\\' == s[i]) {
+                w.write(s, st, ln);
+                w.write(decodeEscape());
+                st = i+1;
+                ln = 0;
+            } else ln++;
+
             i++;
         }
         i = a;
@@ -140,16 +188,23 @@ public class Lang {
     // TODO: size specifiers (integral: [bsil], floating: [hfd])
     // <num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/ /[bsilhfd]/
     Num scanNum() throws LangException {
-        int b = 10;
         if ('\'' == s[i]) {
-            if (i+2 >= s.length || '\'' != s[i+2])
-                fail("missing end quote in character literal");
-            i+= 2;
-            return new Num(s[i-1]);
+            if (++i >= s.length) fail("missing end quote in character literal");
+
+            int v = s[i];
+            if ('\\' == v) v = decodeEscape();
+
+            if (++i >= s.length || '\'' != s[i]) fail("missing end quote in character literal");
+            i++;
+            return new Num(v);
         }
+
+        int b = 10;
+
         if ('0' == s[i]) {
             if (++i >= s.length) return new Num(0);
-            char c = s[i];
+
+            byte c = s[i];
             if (c < '0' || '9' < c) {
                 switch (c) {
                     case 'x': b = 16; break;
@@ -160,9 +215,11 @@ public class Lang {
                 i++;
             }
         }
+
         int a = i;
         while (i < s.length) {
-            char c = s[i];
+            byte c = s[i];
+
             boolean k = false;
             switch (b) {
                 case 16: k = 'A' <= c && c <= 'F' || 'a' <= c && c <= 'f';
@@ -171,65 +228,75 @@ public class Lang {
                 case  2: k = k || '0' == c || '1' == c || '_' == c;
             }
             if (!k) break;
+
             i++;
         }
         if (a == i) fail("missing digit after base hint '0"+s[i-1]+"'");
+
         int d = 0;
         if (10 == b && i < s.length && '.' == s[i]) {
             d = ++i;
             while (i < s.length) {
-                char c = s[i];
+                byte c = s[i];
                 if (c < '0' || '9' < c) break;
                 i++;
             }
             if (d == i) fail("missing digit after decimal separator");
         }
+
         return new Num(Integer.parseInt(new String(s, a, i-a).replace("_", ""), b));
     }
 
     // <lst> ::= '{' [<atom> {',' <atom>}] '}'
     Lst scanLst() throws LangException {
         int a = i++;
-        ArrayList<Obj> l = new ArrayList();
         skipBlanks();
+
+        ArrayList<Obj> l = new ArrayList();
         while (true) {
             if (i >= s.length) {
                 i = a;
                 fail("missing matching closing {} in list");
             }
+
             Obj w = scanAtom();
             l.add(w);
             skipBlanks();
+
             if (i >= s.length) {
                 i = a;
                 fail("missing matching closing {} in list");
             }
+
             if ('}' == s[i]) break;
             if (',' != s[i])
                 fail("expected ',' between list elements, got '"+s[i]+"'");
+
             i++;
             skipBlanks();
         }
         i++;
+
         Obj[] r = new Obj[l.size()];
-        l.toArray(r);
-        return new Lst(r);
+        return new Lst(l.toArray(r));
     }
 
     // <fun> ::= /[A-Z][0-9A-Z]+/
     Fun scanFun() throws LangException {
         int a = i;
-        char c;
+        byte c;
         while (++i < s.length &&
             (  '0' <= (c = s[i]) && c <= '9'
             || 'A' <= c && c <= 'Z'
             || 'a' <= c && c <= 'z'
             ));
+
         String name = new String(s, a, i-a);
         for (int k = lookups.length-1; k >= 0; k--) {
             Fun r = lookups[k].lookup(name);
             if (null != r) return r;
         }
+
         i = a;
         fail("unknown function '"+name+"'");
         return null;
@@ -238,13 +305,14 @@ public class Lang {
     // <sym> ::= ':' /[0-9A-Za-z_]+/
     Sym scanSym() throws LangException {
         int a = ++i;
-        char c = ':';
+        byte c = ':';
         while (i < s.length &&
             ( '_' == (c = s[i])
             || '0' <= c && c <= '9'
             || 'A' <= c && c <= 'Z'
             || 'a' <= c && c <= 'z'
             )) i++;
+
         if (a == i) fail("expected symbol name to start with 0-9, A-Z, a-z or _, got '"+c+"'");
         return new Sym(new String(s, a, i-a));
     }
@@ -252,7 +320,7 @@ public class Lang {
     // <var> ::= /[a-z_][0-9a-z_]+/
     String scanVarName() throws LangException {
         int a = i;
-        char c;
+        byte c;
         while (++i < s.length && ('_' == (c = s[i]) || 'a' <= c && c <= 'z'));
         return new String(s, a, i-a);
     }
@@ -260,8 +328,9 @@ public class Lang {
     // <atom> ::= <str> | <num> | <lst> | <fun> | <sym> | <var> | '(' <expr> ')'
     Obj scanAtom() throws LangException {
         if (i >= s.length) fail("expected atom");
+
         int a = i;
-        char c = s[i];
+        byte c = s[i];
         switch (s[i]) {
             case '"': return scanStr();
             case '{': return scanLst();
@@ -277,7 +346,9 @@ public class Lang {
                 i++;
                 return r;
         }
+
         if ('\'' == c || '0' <= c && c <= '9') return scanNum();
+
         if ('_' == c || 'a' <= c && c <= 'z') {
             String name = scanVarName();
             Obj r = scope.get(name);
@@ -287,29 +358,35 @@ public class Lang {
             }
             return r;
         }
+
         if ('A' <= c && c <= 'Z') return scanFun();
+
         fail("expected atom, got '"+c+"'");
         return null;
-    }
+    } // scanAtom
 
     // <script> ::= <var> '=' <expr> {';' <var> '=' <expr>} [';']
     void processScript() throws LangException {
         skipBlanks();
+
         do {
             if (i >= s.length) fail("expected variable name");
-            char c = s[i];
+            byte c = s[i];
             if ('_' != c && (c < 'a' || 'z' < c))
                 fail("expected variable name to start with a-z_, got '"+c+"'");
             String n = scanVarName();
             skipBlanks();
+
             if (i >= s.length || '=' != s[i]) fail("expected '=' after name in statement");
             i++;
             skipBlanks();
+
             Obj w = processExpr(true);
             scope.put(n, w);
             if (i >= s.length) break;
             int a = i;
             skipBlanks();
+
             if (';' != s[i]) {
                 i = a;
                 fail("expected ';' after statement");
@@ -317,7 +394,7 @@ public class Lang {
             i++;
             skipBlanks();
         } while (i < s.length);
-    }
+    } // processScript
 
     // <expr> ::= <atom> | <fun> {<expr>} | <expr> ',' <expr>
     // FIXME: fixme
@@ -329,7 +406,7 @@ public class Lang {
         Fun f = (Fun)r;
         skipBlanks();
         ArrayList<Obj> l = new ArrayList();
-        char c = 0;
+        byte c = 0;
         while (i < s.length && ';' != (c = s[i]) && ')' != c && ',' != c && '}' != c) {
             l.add(processExpr(false));
             skipBlanks();
