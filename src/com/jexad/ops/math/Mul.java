@@ -4,7 +4,7 @@ import com.jexad.base.*;
 
 public class Mul extends Num {
 
-    public static final Fun fun = new Fun.ForClass(Mul.class, "todo");
+    public static final Fun fun = new Fun.ForClass(Mul.class, "multiply two numbers");
 
     Num l, r;
     public Mul(Num l, Num r) { this.l = l; this.r = r; }

@@ -2,12 +2,12 @@ package com.jexad.ops.math;
 
 import com.jexad.base.*;
 
-public class Floor extends Num {
+public class Trunc extends Num {
 
-    public static final Fun fun = new Fun.ForClass(Floor.class, "todo");
+    public static final Fun fun = new Fun.ForClass(Trunc.class, "truncate a number (toward -inf), making it integral");
 
     Num f;
-    public Floor(Num f) { this.f = f; }
+    public Trunc(Num f) { this.f = f; }
 
     @Override
     public Obj[] arguments() { return new Obj[] {f}; }

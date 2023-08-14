@@ -4,6 +4,8 @@ import com.jexad.base.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -159,7 +161,7 @@ public class Lang {
                     fail("NIY: octal escapes");
                     return 0;
                 }
-                fail("unknown escape sequence character '"+s[i]+"'");
+                fail("unknown escape sequence character '"+(char)s[i]+"'");
         }
         return -1;
     } // decodeEscape
@@ -192,9 +194,11 @@ public class Lang {
         return null;
     }
 
-    // TODO: size specifiers (integral: [bsil], floating: [hfd])
-    // <num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/ /[bsilhfd]/
+    // <num> ::= ['-'] /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/
     Num scanNum() throws LangException {
+        boolean sign = '-' == s[i];
+        if (sign && ++i >= s.length) fail("missing digit after '-'");
+
         if ('\'' == s[i]) {
             if (++i >= s.length) fail("missing end quote in character literal");
 
@@ -203,7 +207,7 @@ public class Lang {
 
             if (++i >= s.length || '\'' != s[i]) fail("missing end quote in character literal");
             i++;
-            return new Num(v);
+            return new Num(sign ? -v : v);
         }
 
         int b = 10;
@@ -238,7 +242,7 @@ public class Lang {
 
             i++;
         }
-        if (a == i) fail("missing digit after base hint '0"+s[i-1]+"'");
+        if (a == i) fail("missing digit after base hint '0"+(char)s[i-1]+"'");
 
         int d = 0;
         if (10 == b && i < s.length && '.' == s[i]) {
@@ -251,7 +255,12 @@ public class Lang {
             if (d == i) fail("missing digit after decimal separator");
         }
 
-        return new Num(Integer.parseInt(new String(s, a, i-a).replace("_", ""), b));
+        String z = new String(s, a, i-a).replace("_", "");
+        if (sign) z = '-'+z;
+        return 0 == d
+            ? new Num(new BigInteger(z, b))
+            : new Num(new BigDecimal(z))
+            ;
     }
 
     // <lst> ::= '{' [<atom> {',' <atom>}] '}'
@@ -277,7 +286,7 @@ public class Lang {
 
             if ('}' == s[i]) break;
             if (',' != s[i])
-                fail("expected ',' between list elements, got '"+s[i]+"'");
+                fail("expected ',' between list elements, got '"+(char)s[i]+"'");
 
             i++;
             skipBlanks();
@@ -320,7 +329,7 @@ public class Lang {
             || 'a' <= c && c <= 'z'
             )) i++;
 
-        if (a == i) fail("expected symbol name to start with 0-9, A-Z, a-z or _, got '"+c+"'");
+        if (a == i) fail("expected symbol name to start with 0-9, A-Z, a-z or _, got '"+(char)c+"'");
         return new Sym(new String(s, a, i-a));
     }
 
@@ -354,7 +363,7 @@ public class Lang {
                 return r;
         }
 
-        if ('\'' == c || '0' <= c && c <= '9') return scanNum();
+        if ('\'' == c || '-' == c || '0' <= c && c <= '9') return scanNum();
 
         if ('_' == c || 'a' <= c && c <= 'z') {
             String name = scanVarName();
@@ -368,7 +377,7 @@ public class Lang {
 
         if ('A' <= c && c <= 'Z') return scanFun();
 
-        fail("expected atom, got '"+c+"'");
+        fail("expected atom, got '"+(char)c+"'");
         return null;
     } // scanAtom
 
@@ -380,7 +389,7 @@ public class Lang {
             if (i >= s.length) fail("expected variable name");
             byte c = s[i];
             if ('_' != c && (c < 'a' || 'z' < c))
-                fail("expected variable name to start with a-z_, got '"+c+"'");
+                fail("expected variable name to start with a-z_, got '"+(char)c+"'");
             String n = scanVarName();
             skipBlanks();
 

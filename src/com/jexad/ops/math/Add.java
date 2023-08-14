@@ -4,7 +4,7 @@ import com.jexad.base.*;
 
 public class Add extends Num {
 
-    public static final Fun fun = new Fun.ForClass(Add.class, "todo");
+    public static final Fun fun = new Fun.ForClass(Add.class, "add two numbers");
 
     Num l, r;
     public Add(Num l, Num r) { this.l = l; this.r = r; }

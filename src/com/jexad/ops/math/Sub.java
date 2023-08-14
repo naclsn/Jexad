@@ -4,7 +4,7 @@ import com.jexad.base.*;
 
 public class Sub extends Num {
 
-    public static final Fun fun = new Fun.ForClass(Sub.class, "todo");
+    public static final Fun fun = new Fun.ForClass(Sub.class, "subtract two numbers (first by second)");
 
     Num l, r;
     public Sub(Num l, Num r) { this.l = l; this.r = r; }

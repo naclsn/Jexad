@@ -4,7 +4,7 @@ import com.jexad.base.*;
 
 public class Div extends Num {
 
-    public static final Fun fun = new Fun.ForClass(Div.class, "todo");
+    public static final Fun fun = new Fun.ForClass(Div.class, "divide tow numbers (first by second)");
 
     Num l, r;
     public Div(Num l, Num r) { this.l = l; this.r = r; }

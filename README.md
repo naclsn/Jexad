@@ -27,12 +27,12 @@ $ ant jar  # to simply generate jar/Jexad.jar
 ### Basic Objects
 
 - `Buf`: a buffer on raw bytes
-- `Lst`: a list of `Buf` or `Num` (or `Lst`)
-- `Num`: a number from bytes (eg. 4 bytes little-endian int)
+- `Lst`: a list of objects
+- `Num`: a number, either integral or decimal (Java's `Big[..]`)
 - `Fun`: a factory factory of doom
-- `Sym`: an immutable symbol (eg. :coucou)
+- `Sym`: an immutable symbol (eg. `:coucou`)
 
-> - after udpating a `Lst`, its elements are also up to date
+> - after updating a `Lst`, its elements are also up to date
 > - updating `Fun` once before some `Fun.call`(s)
 > - arguments to a `Fun.call` are not up to date
 > - result from a `Fun.call` is not up to date
@@ -49,7 +49,7 @@ A tiny DSL is hacked together to define objects; this is the full syntax:
 <comment> ::= '#' /.*/ '\n'
 
 <str> ::= '"' /[^"]/ '"'
-<num> ::= /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/ /[bsilhfd]/
+<num> ::= ['-'] /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/
 <lst> ::= '{' [<atom> {',' <atom>}] '}'
 <fun> ::= /[A-Z][0-9A-Z]+/
 <sym> ::= ':' /[0-9A-Za-z_]+/
@@ -57,20 +57,23 @@ A tiny DSL is hacked together to define objects; this is the full syntax:
 ```
 
 Example:
-```plaintext
-filebuf = read filename;
-lst = rect (slice filebuf list_off list_end) 4;
-ptrs = map parse lst;
+```shell
+filebuf = Read filename;
+lst = Slice filebuf list_off list_end
+    , Rect _ 4
+    ; # hint: read the ',' as 'then'
+ptrs = Map Parse lst;
 ```
 
 Few random notes:
-- lists of mixed types are accepted, this is how 'tuples' are supported
+- the grammar above does not mention the escape sequences (the common ones, as well as `\x` `\u` `\U`)
+- lists of mixed types are accepted, this is how tuples and var-args are 'supported'
 - Java-side 'generics' are purely cosmetic
 
 ### Operations
 
-Operations are java classes that you can make `Fun` of.. uh...
-(For example the class `Split` is the function `split` in script.)
+Operations are Java classes that you can make `Fun` of.. uh...
+(For example the class `Split` is the function `Split` in script.)
 
 ### Views on a Buffer
 
