@@ -14,14 +14,15 @@ public class Mul extends Num {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         l.update();
         r.update();
 
-        if (!l.dec && !r.dec) {
-            dec = false;
-            iv = l.iv.multiply(r.iv);
-            return;
-        }
+        Num.MaybePromoted m = new Num.MaybePromoted(l, r);
+        if (dec = m.dec) dv = m.dvs[0].multiply(m.dvs[1]);
+        else iv = m.ivs[0].multiply(m.ivs[1]);
     }
 
 }

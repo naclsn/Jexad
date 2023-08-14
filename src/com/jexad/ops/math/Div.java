@@ -14,14 +14,15 @@ public class Div extends Num {
 
     @Override
     public void update() {
+        if (uptodate) return;
+        uptodate = true;
+
         l.update();
         r.update();
 
-        if (!l.dec && !r.dec) {
-            dec = false;
-            iv = l.iv.divide(r.iv);
-            return;
-        }
+        Num.MaybePromoted m = new Num.MaybePromoted(l, r);
+        if (dec = m.dec) dv = m.dvs[0].divide(m.dvs[1]);
+        else iv = m.ivs[0].divide(m.ivs[1]);
     }
 
 }

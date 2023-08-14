@@ -27,6 +27,29 @@ public class Num extends Obj {
     public float asFloat() { return dec ? dv.floatValue() : dv.floatValue(); }
     public double asDouble() { return dec ? dv.doubleValue() : dv.doubleValue(); }
 
+    public class MaybePromoted {
+        public boolean dec;
+        public BigInteger[] ivs;
+        public BigDecimal[] dvs;
+        public MaybePromoted(Num l, Num r) {
+            dec = l.dec || r.dec;
+            if (dec) dvs = new BigDecimal[]
+                { l.dec ? l.dv : new BigDecimal(l.iv)
+                , r.dec ? r.dv : new BigDecimal(r.iv)
+                };
+            else ivs = new BigInteger[] {l.iv, r.iv};
+        }
+        public MaybePromoted(Num a, Num b, Num c) { // USL: track usage
+            dec = a.dec || b.dec || c.dec;
+            if (dec) dvs = new BigDecimal[]
+                { a.dec ? a.dv : new BigDecimal(a.iv)
+                , b.dec ? b.dv : new BigDecimal(b.iv)
+                , c.dec ? c.dv : new BigDecimal(c.iv)
+                };
+            else ivs = new BigInteger[] {a.iv, b.iv, c.iv};
+        }
+    }
+
     @Override
     public String toString() {
         return dec ? dv.toString() : iv.toString();
