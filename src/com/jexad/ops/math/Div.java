@@ -6,29 +6,21 @@ public class Div extends Num {
 
     public static final Fun fun = new Fun.ForClass(Div.class, "todo");
 
-    Num o;
-    Num[] n;
-    Div(Num o, Num... n) { this.o = o; this.n = n; }
-    // for `getConstructor` resolution...
-    public Div(Num a, Num b, Num c, Num d) { this(a, new Num[] {b, c, d}); }
-    public Div(Num a, Num b, Num c) { this(a, new Num[] {b, c}); }
-    public Div(Num a, Num b) { this(a, new Num[] {b}); }
+    Num l, r;
+    public Div(Num l, Num r) { this.l = l; this.r = r; }
 
     @Override
-    public Obj[] arguments() {
-        Num[] r = new Num[1+n.length];
-        r[0] = o;
-        System.arraycopy(n, 0, r, 1, n.length);
-        return r;
-    }
+    public Obj[] arguments() { return new Obj[] {l, r}; }
 
     @Override
     public void update() {
-        o.update();
-        val = o.val;
-        for (int k = 0; k < n.length; k++) {
-            n[k].update();
-            val/= n[k].val;
+        l.update();
+        r.update();
+
+        if (!l.dec && !r.dec) {
+            dec = false;
+            iv = l.iv.divide(r.iv);
+            return;
         }
     }
 

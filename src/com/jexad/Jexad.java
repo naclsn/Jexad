@@ -103,8 +103,7 @@ class Jexad extends Frame {
         String line = "";
 
         try {
-            do {
-                System.out.print(prompt);
+            for (System.out.print(prompt); (line = br.readLine()) != null; System.out.print(prompt)) {
                 if (line.isEmpty()) continue;
 
                 switch (line.charAt(0)) {
@@ -147,8 +146,7 @@ class Jexad extends Frame {
                             e.printStackTrace(System.err);
                         }
                 }
-
-            } while ((line = br.readLine()) != null);
+            }
         } catch (Exception e) {
             e.printStackTrace(System.err);
         }

@@ -2,6 +2,7 @@ package com.jexad.ops.zip;
 
 import com.jexad.base.*;
 import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Set;
@@ -67,7 +68,8 @@ public class ZipDecode extends Num {
 
     public ZipDecode(Buf zipbytes) {
         this.zipbytes = zipbytes;
-        val = zips.size();
+        dec = false;
+        iv = BigInteger.valueOf(zips.size());
         zips.add(new Handle());
     }
 
@@ -80,7 +82,7 @@ public class ZipDecode extends Num {
         uptodate = true;
 
         zipbytes.update();
-        zips.get(val).update(zipbytes.raw);
+        zips.get(iv.intValue()).update(zipbytes.raw);
     }
 
 }

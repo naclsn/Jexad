@@ -30,8 +30,10 @@ public class Range extends Lst<Num> {
         end.update();
         step.update();
 
-        arr = new Num[(end.val-start.val) / step.val];
-        for (int k = 0, n = start.val; k < arr.length; n+= step.val)
+        int st = start.asInt();
+        int by = step.asInt();
+        arr = new Num[(end.asInt()-st) / by];
+        for (int k = 0, n = st; k < arr.length; n+= by)
             arr[k++] = new Num(n);
     }
 

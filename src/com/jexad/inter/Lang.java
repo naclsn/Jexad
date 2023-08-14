@@ -15,6 +15,12 @@ public class Lang {
         private byte[] s;
         private int i;
 
+        private LangException(String message, byte[] s, int i, Throwable cause) {
+            super(message, cause);
+            this.s = s;
+            this.i = i < s.length ? i : s.length;
+        }
+
         private LangException(String message, byte[] s, int i) {
             super(message);
             this.s = s;
@@ -97,6 +103,7 @@ public class Lang {
     byte[] s;
     int i;
 
+    void fail(String message, Throwable cause) throws LangException { throw new LangException(message, s, i, cause); }
     void fail(String message) throws LangException { throw new LangException(message, s, i); }
 
     void skipBlanks() {
@@ -397,44 +404,54 @@ public class Lang {
     } // processScript
 
     // <expr> ::= <atom> | <fun> {<expr>} | <expr> ',' <expr>
-    // FIXME: fixme
     Obj processExpr(boolean exprStart) throws LangException {
         if (i >= s.length) fail("expected expression");
+
         int a = i;
         Obj r = scanAtom();
-        if (!exprStart || !(r instanceof Fun)) return r; // FIXME: ',' after a non-function atom (turn this condition the other way around)
-        Fun f = (Fun)r;
+
+        if (!exprStart) return r;
+
         skipBlanks();
+
         ArrayList<Obj> l = new ArrayList();
         byte c = 0;
         while (i < s.length && ';' != (c = s[i]) && ')' != c && ',' != c && '}' != c) {
             l.add(processExpr(false));
             skipBlanks();
         }
-        Obj[] g = new Obj[l.size()];
-        l.toArray(g);
-        Class[] gcl = new Class[g.length];
-        for (int k = 0; k < g.length; k++)
-            gcl[k] = g[k].baseClass();
-        try {
-            Obj o = f.call(g);
-            if (',' == c) {
-                scope.put("_", o);
-                i++;
-                skipBlanks();
-                return processExpr(true);
+
+        if (0 < l.size()) {
+            if (!(r instanceof Fun))
+                fail("'"+r.baseClass().getSimpleName()+"' is not a function");
+            Fun f = (Fun)r;
+
+            Obj[] g = new Obj[l.size()];
+            l.toArray(g);
+
+            try {
+                r = f.call(g);
+            } catch (Fun.InvokeException e) {
+                i = a;
+                if (0 == g.length)
+                    fail("could not call function with no argument", e);
+
+                String args = "";
+                for (int k = 0; k < g.length; k++)
+                    args+= (0 == k ? "" : ", ") + g[k].baseClass().getSimpleName();
+                fail("could not call function with arguments: "+args, e);
+
+                return null; // unreachable
             }
-            return o;
-        } catch (Fun.InvokeException e) { // TODO: properly bubble whatever this is
-            i = a;
-            if (0 == g.length)
-                fail("cannot call function with not argument");
-            String args = "";
-            for (int k = 0; k < gcl.length; k++)
-                args+= (0 == k ? "" : ", ") + gcl[k].getName().substring(15);
-            fail("cannot call function with arguments: "+args);
-            return null; // unreachable
         }
+
+        if (',' == c) {
+            scope.put("_", r);
+            i++;
+            skipBlanks();
+            r = processExpr(true);
+        }
+        return r;
     } // processExpr
 
 }

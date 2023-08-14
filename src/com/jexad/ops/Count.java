@@ -1,6 +1,7 @@
 package com.jexad.ops;
 
 import com.jexad.base.*;
+import java.math.BigInteger;
 
 public class Count extends Num {
 
@@ -31,9 +32,9 @@ public class Count extends Num {
 
         lst.update();
 
+        int val = 0;
         if (null == pred) val = lst.length();
         else {
-            val = 0;
             pred.update();
             int len = lst.length();
             for (int k = 0; k < len; k++) {
@@ -43,13 +44,16 @@ public class Count extends Num {
                         System.err.println("Count: predicat result is not a number");
                         return; // XXX: errs and such...
                     }
-                    if (0 != ((Num)r).val) val++;
+                    if (0 != ((Num)r).asByte()) val++;
                 } catch (Fun.InvokeException e) {
                     System.err.println("Count: " + e);
                     return; // XXX: errs and such...
                 }
             }
         }
+
+        dec = false;
+        iv = BigInteger.valueOf(val);
     }
 
     public static boolean testNoPred() {

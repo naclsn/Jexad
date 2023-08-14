@@ -30,11 +30,12 @@ public class Rect extends Lst<Buf> {
         it_len.update();
         it_pad.update();
 
-        int w = it_len.val + it_pad.val;
+        int len = it_len.asInt();
+        int w = len + it_pad.asInt();
         int count = under.raw.length / w;
         arr = new Buf[count];
         for (int k = 0; k < count; k++) {
-            arr[k] = new Buf(new byte[it_len.val]);
+            arr[k] = new Buf(new byte[len]);
             System.arraycopy(under.raw, w*k, arr[k].raw, 0, arr[k].raw.length);
         }
     }

@@ -19,9 +19,10 @@ public class At extends Fun {
             if (args[1] instanceof Num) {
                 Num num = (Num)args[1];
                 num.update();
-                return num.val < 0
-                    ? lst.at(lst.length()+num.val)
-                    : lst.at(num.val)
+                int k = num.asInt();
+                return k < 0
+                    ? lst.at(lst.length()+k)
+                    : lst.at(k)
                     ; // XXX: errs and such...
             }
 

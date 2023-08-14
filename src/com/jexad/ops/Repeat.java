@@ -30,7 +30,7 @@ public class Repeat<T extends Obj> extends Lst<T> {
         under.update();
         count.update();
 
-        arr = (T[])new Obj[count.val];
+        arr = (T[])new Obj[count.asInt()];
         for (int k = 0; k < arr.length; k++)
             arr[k] = under;
     }

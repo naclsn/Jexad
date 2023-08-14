@@ -1,6 +1,7 @@
 package com.jexad.ops;
 
 import com.jexad.base.*;
+import java.math.BigInteger;
 
 public class Len extends Num {
 
@@ -19,7 +20,8 @@ public class Len extends Num {
         uptodate = true;
 
         buf.update();
-        val = buf.raw.length;
+        dec = false;
+        iv = BigInteger.valueOf(buf.raw.length);
     }
 
     public static boolean test() {

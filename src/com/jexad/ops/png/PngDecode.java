@@ -3,6 +3,7 @@ package com.jexad.ops.png;
 import com.jexad.base.*;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -44,7 +45,8 @@ public class PngDecode extends Num {
 
     public PngDecode(Buf pngbytes) {
         this.pngbytes = pngbytes;
-        val = pngs.size();
+        dec = false;
+        iv = BigInteger.valueOf(pngs.size());
         pngs.add(new Handle());
     }
 
@@ -57,7 +59,7 @@ public class PngDecode extends Num {
         uptodate = true;
 
         pngbytes.update();
-        pngs.get(val).update(pngbytes.raw);
+        pngs.get(iv.intValue()).update(pngbytes.raw);
     }
 
 }

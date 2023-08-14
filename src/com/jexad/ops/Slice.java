@@ -37,10 +37,12 @@ public class Slice extends Buf {
         int pbegin, pend;
 
         begin.update();
-        pbegin = begin.val < 0 ? ulen + begin.val : begin.val;
+        pbegin = begin.asInt();
+        pbegin = pbegin < 0 ? ulen + pbegin : pbegin;
         if (null != end) {
             end.update();
-            pend = end.val < 0 ? ulen + end.val : end.val;
+            pend = end.asInt();
+            pend = pend < 0 ? ulen + pend : pend;
         } else pend = ulen;
 
         int len = pend - pbegin;

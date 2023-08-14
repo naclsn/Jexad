@@ -54,12 +54,22 @@ public class Util {
     public static boolean cmpNum(Num l, Num r) {
         l.update();
         r.update();
-        int l_va = l.val, r_va = r.val;
-        if (l_va != r_va) {
-            System.out.printf("numbers differ: %d != %d\n", l_va, r_va);
-            return false;
+        switch ((l.dec ? 0b10 : 0) | (r.dec ? 0b01 : 0)) {
+            case 0b00:
+                if (l.iv.equals(r.iv)) return true;
+                break;
+            case 0b11:
+                if (l.dv.equals(r.dv)) return true;
+                break;
+            case 0b10:
+                System.out.printf("number type differ: left is decimal\n");
+                break;
+            case 0b01:
+                System.out.printf("number type differ: right is decimal\n");
+                break;
         }
-        return true;
+        System.out.printf("numbers differ: %d != %d\n", l, r);
+        return false;
     }
 
     public static <T extends Obj> boolean cmpLst(Lst<T> l, Lst<T> r) {
