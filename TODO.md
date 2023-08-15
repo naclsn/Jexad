@@ -8,10 +8,12 @@
 - [x] 'help' for a function (with ret type and all)
 - [~] build a list of funs (eg. build step)
     - [ ] make the classes from template (in build step)
+- [ ] make the view be `Obj`s, but then not sure how
 - [ ] error handling
 - [ ] loading obj from external jars
 - [ ] Tostr, Tonum, Eval
 - [ ] `(= )` and `($ )` syntaxes
+- [ ] outdate() things
 
 - [ ] caseB:
     - [ ] png decode, functions on the returned handle (what should an image look like? dohas a ..Pixel(x, y) or something?)

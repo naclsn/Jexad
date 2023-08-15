@@ -62,7 +62,7 @@ public class Lang {
     public static interface Lookup {
 
         Fun lookup(String name);
-        //Fun[] known();
+        //String[] known();
 
         public static class ClassesUnder implements Lookup {
 

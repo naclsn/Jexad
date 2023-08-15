@@ -10,11 +10,18 @@ import java.util.*;
 
 class Jexad extends Frame {
 
-    static void usage() {
-        System.out.print
+    static void usage(String reason) {
+        if (null != reason) System.out.println("Oops: " + reason);
+        else System.out.print
             ( "Usage (temp): <prog> -c <script>\n"
             + "                     -i [<prompt>]\n"
             + "                     -v txt|hex|img <file>\n"
+            + "\n"
+            + "Must be present before the -c/-i/-v:\n"
+            + "   -xl <lookup-class-name>  (repeatable)\n"
+            + "         specify an additional lookup class (to provide\n"
+            + "         more `FunctionName`s); this will requier the\n"
+            + "         classpath to contain it somewhere (eg. a jar)\n"
             );
         System.exit(1);
     }
@@ -33,51 +40,82 @@ class Jexad extends Frame {
         return Buf.encode(r.toString());
     }
 
-    public static void main(String[] args) {
-        if (0 == args.length) usage();
+    static HashMap<String, Obj> globalScope = new HashMap();
+    static Lang.Lookup[] globalNames;
 
-        switch (args[0]) {
-            case "-h":
-            case "--help":
-                usage();
-                return;
+    static void makeLookupsWithUsers(ArrayList<Lang.Lookup> user_lus) {
+        user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops"));
+        user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.views"));
+        user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops.benc"));
+        user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops.math"));
+        user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops.png"));
+        user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops.zip"));
+
+        globalNames = new Lang.Lookup[user_lus.size()];
+        user_lus.toArray(globalNames);
+
+    }
+
+    public static void main(String[] args) {
+        ArrayList<Lang.Lookup> user_lus = new ArrayList();
+
+        if (0 == args.length) usage("no argument (try -h)");
+
+        for (int k = 0; k < args.length; k++) switch (args[k]) {
+            case "-xl":
+                if (k+1 >= args.length) usage("missing class name");
+
+                try {
+                    user_lus.add((Lang.Lookup)Class.forName(args[k+1]).getConstructor().newInstance());
+                } catch (Exception e) {
+                    System.out.println(e);
+                    System.out.println(" `-> occurred while trying to add user-lookup: " + args[k+1]);
+                    System.exit(1);
+                }
+                k++;
+                break;
 
             case "-c":
-                if (2 != args.length) usage();
+                if (k+1 >= args.length) usage("missing command");
 
-                command(args[1]);
+                makeLookupsWithUsers(user_lus);
+                command(args[k+1]);
                 return;
 
             case "-i":
-                interactive(1 == args.length ? "" : args[1]);
+                makeLookupsWithUsers(user_lus);
+                interactive(k+1 < args.length ? args[k+1] : "");
                 return;
 
             case "-v":
-                if (3 != args.length) usage();
+                if (k+1 >= args.length) usage("missing method");
+                if (k+2 >= args.length) usage("missing filename");
 
-                Buf content = "-".equals(args[2])
+                Buf content = "-".equals(args[k+2])
                     ? input()
-                    : new Read(Buf.encode(args[2]))
+                    : new Read(Buf.encode(args[k+2]))
                     ;
 
-                switch (args[1]) {
+                makeLookupsWithUsers(user_lus);
+                switch (args[k+1]) {
                     case "txt": new TxtView(content); break;
                     case "hex": new HexView(content); break;
                     case "img": new ImgView(content); break;
+                    default: usage("unknown method");
                 }
                 return;
+
+            case "-h":
+            case "--help":
+                usage(null);
+                return;
+
+            default:
+                usage("unknown argument: " + args[k]);
+                return;
+
         }
     } // main
-
-    static HashMap<String, Obj> globalScope = new HashMap();
-    static Lang.Lookup[] globalNames = new Lang.Lookup[] {
-        new Lang.Lookup.ClassesUnder("com.jexad.ops"),
-        new Lang.Lookup.ClassesUnder("com.jexad.views"),
-        new Lang.Lookup.ClassesUnder("com.jexad.ops.benc"),
-        new Lang.Lookup.ClassesUnder("com.jexad.ops.math"),
-        new Lang.Lookup.ClassesUnder("com.jexad.ops.png"),
-        new Lang.Lookup.ClassesUnder("com.jexad.ops.zip"),
-    };
 
     static void command(String script) {
         globalScope.put("input", input());
