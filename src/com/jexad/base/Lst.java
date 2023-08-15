@@ -4,7 +4,7 @@ public class Lst<T extends Obj> extends Obj {
 
     public T[] arr; // readonly
     public Lst(T[] arr) { this.arr = arr; }
-    public Lst() { this(null); }
+    public Lst() { this((T[])new Obj[0]); }
 
     public int length() { return arr.length; }
     public T at(int k) { return arr[k]; }

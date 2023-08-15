@@ -5,7 +5,7 @@
 - [~] finish cleanup with `Lookup.ClassesUnder`
 - [x] Num based on other than i32
 - [x] finish fixing parser (bsilhfd, escapes, processExpr)
-- [ ] 'help' for a function (with ret type and all)
+- [x] 'help' for a function (with ret type and all)
 - [~] build a list of funs (eg. build step)
     - [ ] make the classes from template (in build step)
 - [ ] error handling

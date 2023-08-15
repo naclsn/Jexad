@@ -92,6 +92,8 @@ class Jexad extends Frame {
             }
         } catch (Lang.LangException e) {
             System.err.println(e);
+            Throwable c = e;
+            while (null != (c = c.getCause())) System.err.println(" `-> " + c);
             e.printLocationInfo(System.err);
         } catch (Exception e) {
             e.printStackTrace(System.err);
@@ -141,6 +143,8 @@ class Jexad extends Frame {
                             new Lang(line, globalNames, globalScope);
                         } catch (Lang.LangException e) {
                             System.err.println(e);
+                            Throwable c = e;
+                            while (null != (c = c.getCause())) System.err.println(" `-> " + c);
                             e.printLocationInfo(System.err);
                         } catch (Exception e) {
                             e.printStackTrace(System.err);

@@ -6,76 +6,104 @@ public abstract class Fun extends Obj {
 
     public static class InvokeException extends Exception {
         public InvokeException(String message) { super(message); }
+        public InvokeException(String message, Throwable cause) { super(message, cause); }
     }
 
     public String help() { return "no help for this function..."; }
-    public abstract Obj call(Obj... args) throws InvokeException;
-    //public abstract Class[][] overloads();
+    public abstract Class[][] overloads();
     public abstract Class ret();
+    public abstract Obj call(Obj... args) throws InvokeException;
+
+    public static int findCtor(Class[][] overloads, Class[] args) {
+        for (int i = 0; i < overloads.length; i++) {
+            if (overloads[i].length == args.length) {
+                boolean matches = true;
+                for (int j = 0; j < args.length; j++) {
+                    if (args[j] != overloads[i][j] || Obj.class == overloads[i][j]) {
+                        matches = false;
+                        break;
+                    }
+                } // for params
+                if (matches) return i;
+            } // if same count
+        } // for overloads
+        return -1;
+    }
 
     @Override
-    public String toString() { return "'''\n" + getClass() + "\n'''"; }
+    public String toString() {
+        StringBuilder r = new StringBuilder(help());
 
-    // yes, this is a factory factory
+        String n = getClass().getSimpleName();
+        String b = ret().getSimpleName();
+
+        Class[][] ovl = overloads();
+        for (int i = 0; i < ovl.length; i++) {
+            r.append('\n');
+            r.append(n);
+            r.append(" (");
+
+            for (int j = 0; j < ovl[i].length; j++) {
+                if (0 != j) r.append(", ");
+                r.append(ovl[i][j].getSimpleName());
+            }
+
+            r.append(") -> ");
+            r.append(b);
+        }
+
+        return r.toString();
+    }
+
+    // your usual factory factory
     public static class ForClass extends Fun {
 
         Class cl;
         String doc;
+        Constructor[] ctors;
 
         public ForClass(Class cl, String doc) {
             this.cl = cl;
             this.doc = doc;
+            ctors = cl.getConstructors();
         }
 
         @Override
         public String help() { return doc; }
 
         @Override
-        public Obj call(Obj... args) throws InvokeException {
-            Class[] clargs = new Class[args.length];
-            for (int k = 0; k < args.length; k++)
-                clargs[k] = args[k].baseClass();
-            try {
-                Object r = cl.getConstructor(clargs).newInstance((Object[])args);
-                // XXX: that, or disallow non-extends-Obj classes (directly in
-                // the maybe-annotation itself)
-                return r instanceof Obj ? (Obj)r : new Buf(new byte[0]);
-            } catch (Exception e) {
-                throw new InvokeException(e.toString()); // TODO: make it the cause
-            }
-        }
-
-        @Override
-        public Class ret() {
-            Class r
-                = Buf.class.isAssignableFrom(cl) ? Buf.class
-                : Num.class.isAssignableFrom(cl) ? Num.class
-                : Lst.class.isAssignableFrom(cl) ? Lst.class
-                : Fun.class.isAssignableFrom(cl) ? Fun.class
-                : Obj.class;
+        public Class[][] overloads() {
+            Class[][] r = new Class[ctors.length][];
+            for (int k = 0; k < r.length; k++)
+                r[k] = ctors[k].getParameterTypes();
             return r;
         }
 
         @Override
-        public String toString() {
-            StringBuilder r = new StringBuilder();
-            String n = getClass().getSimpleName();
-            String b = ret().getSimpleName();
+        public Class ret() {
+            return
+                ( Buf.class.isAssignableFrom(cl) ? Buf.class
+                : Num.class.isAssignableFrom(cl) ? Num.class
+                : Lst.class.isAssignableFrom(cl) ? Lst.class
+                : Fun.class.isAssignableFrom(cl) ? Fun.class
+                : Obj.class
+                );
+        }
 
-            Constructor[] ovl = cl.getConstructors();
-            for (int i = 0; i < ovl.length; i++) {
-                r.append(n + " (");
+        @Override
+        public Obj call(Obj... args) throws InvokeException {
+            Class[] clargs = new Class[args.length];
+            for (int k = 0; k < args.length; k++)
+                clargs[k] = args[k].baseClass();
 
-                Class[] pcl = ovl[i].getParameterTypes();
-                for (int j = 0; j < pcl.length; j++) {
-                    if (0 != j) r.append(", ");
-                    r.append(pcl[j].getSimpleName());
-                }
+            int k = findCtor(overloads(), clargs);
+            if (k < 0) throw new InvokeException("no such overload");
 
-                r.append(") -> " + b + "\n");
+            try {
+                return (Obj)ctors[k].newInstance((Object[])args);
+            } catch (Exception e) {
+                throw new InvokeException("an other exception occured", e);
             }
-
-            return r.toString();
         }
 
     } // class ForClass

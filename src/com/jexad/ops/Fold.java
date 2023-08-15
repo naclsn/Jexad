@@ -10,6 +10,17 @@ public class Fold extends Fun {
     public String help() { return "fold/reduce a list with a binary operation, with optional initial element"; }
 
     @Override
+    public Class[][] overloads() {
+        return new Class[][]
+            { new Class[] {Fun.class, Lst.class}
+            , new Class[] {Fun.class, Obj.class, Lst.class}
+            };
+    }
+
+    @Override
+    public Class ret() { return Obj.class; }
+
+    @Override
     public Obj call(Obj... args) throws Fun.InvokeException {
         if ((2 == args.length || 3 == args.length)
                 && args[0] instanceof Fun
@@ -29,10 +40,7 @@ public class Fold extends Fun {
             return it;
         }
 
-        throw new Fun.InvokeException("wrong arguments and such (should be Fun,Lst or Fun,Obj,Lst)");
+        throw new Fun.InvokeException("no such overload");
     }
-
-    @Override
-    public Class ret() { return Obj.class; }
 
 }

@@ -267,6 +267,10 @@ public class Lang {
     Lst scanLst() throws LangException {
         int a = i++;
         skipBlanks();
+        if ('}' == s[i]) {
+            i++;
+            return new Lst();
+        }
 
         ArrayList<Obj> l = new ArrayList();
         while (true) {

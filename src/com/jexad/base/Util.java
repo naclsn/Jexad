@@ -9,7 +9,7 @@ public class Util {
             return null;
         }
         obj.update();
-        System.out.println("(show " + obj.getClass().getSimpleName() + ") " + obj);
+        System.out.printf("(show %s) %s\n", obj.getClass().getSimpleName(), obj);
         return obj;
     }
 

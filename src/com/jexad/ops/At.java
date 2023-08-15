@@ -10,6 +10,17 @@ public class At extends Fun {
     public String help() { return "get element from list at index (negative counts from the end) or from a list of pairs at key symbol"; }
 
     @Override
+    public Class[][] overloads() {
+        return new Class[][]
+            { new Class[] {Lst.class, Num.class}
+            , new Class[] {Lst.class, Sym.class}
+            };
+    }
+
+    @Override
+    public Class ret() { return Obj.class; }
+
+    @Override
     public Obj call(Obj... args) throws Fun.InvokeException {
         if (2 == args.length && args[0] instanceof Lst) {
             Lst lst = (Lst)args[0];
@@ -38,15 +49,13 @@ public class At extends Fun {
                     if (sym.str.equals(((Sym)key).str))
                         return pair.at(1);
                 }
-                throw new Fun.InvokeException("key not found in dictionary");
+                // XXX: errs and such...
+                //throw new Fun.InvokeException("key not found in dictionary");
             }
         }
 
-        throw new Fun.InvokeException("wrong arguments and such (should be Lst,Num or Lst<Lst>,Sym)");
+        throw new Fun.InvokeException("no such overload");
     }
-
-    @Override
-    public Class ret() { return Obj.class; }
 
     public static boolean testList() throws Fun.InvokeException {
         return Util.cmpNum
