@@ -3,15 +3,12 @@
 - [~] no var-arg constructor, use lists/tuples (but keep overloading)
 - [~] .(somewhat with above): the `arguments` method
 - [~] finish cleanup with `Lookup.ClassesUnder`
-- [x] Num based on other than i32
-- [x] finish fixing parser (bsilhfd, escapes, processExpr)
-- [x] 'help' for a function (with ret type and all)
 - [~] build a list of funs (eg. build step)
     - [ ] make the classes from template (in build step)
-- [ ] make the view be `Obj`s, but then not sure how
+- [~] make the view be `Obj`s
 - [ ] error handling
 - [ ] loading obj from external jars
-- [ ] Tostr, Tonum, Eval
+- [?] Tostr, Tonum, Eval
 - [ ] `(= )` and `($ )` syntaxes
 - [ ] outdate() things
 

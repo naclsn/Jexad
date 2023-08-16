@@ -15,11 +15,7 @@ import java.awt.image.WritableRaster;
 
 public class ImgView extends View<Buf> {
 
-    public static final Fun fun = new Fun.ForClass(ImgView.class, "view buffer as an image");
-
     public ImgView(Buf content, String title) { super(content, title); }
-    public ImgView(Buf content, Buf title) { super(content, title.decode()); }
-    public ImgView(Buf content) { super(content, null); }
 
     BufferedImage img;
     AffineTransform tr;

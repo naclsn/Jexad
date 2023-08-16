@@ -6,11 +6,7 @@ import java.util.ArrayList;
 
 public class TxtView extends View<Buf> {
 
-    public static final Fun fun = new Fun.ForClass(TxtView.class, "view buffer as simple text");
-
     public TxtView(Buf content, String title) { super(content, title); }
-    public TxtView(Buf content, Buf title) { super(content, title.decode()); }
-    public TxtView(Buf content) { super(content, null); }
 
     ArrayList<String> lines = new ArrayList();
     int longest;

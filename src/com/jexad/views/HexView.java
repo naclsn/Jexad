@@ -5,11 +5,7 @@ import java.awt.Graphics2D;
 
 public class HexView extends View<Buf> {
 
-    public static final Fun fun = new Fun.ForClass(HexView.class, "view buffer as hex bytes");
-
     public HexView(Buf content, String title) { super(content, title); }
-    public HexView(Buf content, Buf title) { super(content, title.decode()); }
-    public HexView(Buf content) { super(content, null); }
 
     int line_count;
 

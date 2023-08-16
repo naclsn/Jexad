@@ -98,9 +98,9 @@ class Jexad extends Frame {
 
                 makeLookupsWithUsers(user_lus);
                 switch (args[k+1]) {
-                    case "txt": new TxtView(content); break;
-                    case "hex": new HexView(content); break;
-                    case "img": new ImgView(content); break;
+                    //case "txt": new TxtView(content); break;
+                    //case "hex": new HexView(content); break;
+                    //case "img": new ImgView(content); break;
                     default: usage("unknown method");
                 }
                 return;
