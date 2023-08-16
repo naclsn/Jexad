@@ -32,11 +32,8 @@ $ ant jar  # to simply generate jar/Jexad.jar
 - `Fun`: a factory factory of doom
 - `Sym`: an immutable symbol (eg. `:coucou`)
 
-> - after updating a `Lst`, its elements are also up to date
-> - updating `Fun` once before some `Fun.call`(s)
-> - arguments to a `Fun.call` are not up to date
-> - result from a `Fun.call` is not up to date
-> - no updating `Sym`, it cannot depend on anything anyway
+> - a newly created object is updated right-away (by calling `super.init`)
+> - updating `Sym` is usl noop, it cannot depend on anything anyway
 
 ### Script Front-End
 

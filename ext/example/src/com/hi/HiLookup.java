@@ -10,14 +10,16 @@ public class HiLookup implements Lookup {
         public static final Fun fun = new Fun.ForClass(Hi.class, "sais 'hi <name>'");
 
         Buf name;
-        public Hi(Buf name) { this.name = name; }
+        public Hi(Buf name) {
+            this.name = name;
+            init();
+        }
 
         @Override
         public Obj[] arguments() { return new Obj[] {name}; }
 
         @Override
         public void update() {
-            name.update();
             raw = new byte[3+name.raw.length];
             raw[0] = 'h';
             raw[1] = 'i';

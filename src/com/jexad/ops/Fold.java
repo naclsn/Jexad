@@ -28,9 +28,6 @@ public class Fold extends Fun {
             Fun op = (Fun)args[0];
             Lst lst = (Lst)args[args.length-1];
 
-            op.update();
-            lst.update();
-
             int k = 0;
             Obj it = 2 == args.length ? args[1] : lst.at(k++);
 

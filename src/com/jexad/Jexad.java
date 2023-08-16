@@ -2,8 +2,6 @@ package com.jexad;
 
 import com.jexad.base.*;
 import com.jexad.inter.*;
-import com.jexad.ops.*;
-import com.jexad.views.*;
 import java.awt.Frame;
 import java.io.*;
 import java.util.*;
@@ -15,7 +13,6 @@ class Jexad extends Frame {
         else System.out.print
             ( "Usage (temp): <prog> -c <script>\n"
             + "                     -i [<prompt>]\n"
-            + "                     -v txt|hex|img <file>\n"
             + "\n"
             + "Must be present before the -c/-i/-v:\n"
             + "   -xl <lookup-class-name>  (repeatable)\n"
@@ -45,15 +42,14 @@ class Jexad extends Frame {
 
     static void makeLookupsWithUsers(ArrayList<Lang.Lookup> user_lus) {
         user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops"));
-        user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.views"));
         user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops.benc"));
         user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops.math"));
         user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops.png"));
         user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.ops.zip"));
+        user_lus.add(new Lang.Lookup.ClassesUnder("com.jexad.views"));
 
         globalNames = new Lang.Lookup[user_lus.size()];
         user_lus.toArray(globalNames);
-
     }
 
     public static void main(String[] args) {
@@ -87,24 +83,6 @@ class Jexad extends Frame {
                 interactive(k+1 < args.length ? args[k+1] : "");
                 return;
 
-            case "-v":
-                if (k+1 >= args.length) usage("missing method");
-                if (k+2 >= args.length) usage("missing filename");
-
-                Buf content = "-".equals(args[k+2])
-                    ? input()
-                    : new Read(Buf.encode(args[k+2]))
-                    ;
-
-                makeLookupsWithUsers(user_lus);
-                switch (args[k+1]) {
-                    //case "txt": new TxtView(content); break;
-                    //case "hex": new HexView(content); break;
-                    //case "img": new ImgView(content); break;
-                    default: usage("unknown method");
-                }
-                return;
-
             case "-h":
             case "--help":
                 usage(null);
@@ -122,7 +100,6 @@ class Jexad extends Frame {
         try {
             Lang res = new Lang(script, globalNames, globalScope);
             if (null != res.obj) {
-                res.obj.update();
                 if (res.obj instanceof Buf)
                     System.out.print(((Buf)res.obj).decode());
                 else
@@ -164,6 +141,15 @@ class Jexad extends Frame {
                         }
                         break;
 
+                    case '!':
+                        String name = line.substring(1).trim();
+                        Obj obj = globalScope.get(name);
+                        if (null != obj) {
+                            obj.updateAndPropagate();
+                            System.out.printf("updated from '%s' (%s)\n", name, obj.getClass().getSimpleName());
+                        } else System.out.println("noting to update: no such name");
+                        break;
+
                     case '@':
                         globalScope.clear();
                         System.gc();
@@ -171,10 +157,17 @@ class Jexad extends Frame {
                         break;
 
                     case '.':
-                        Buf b = new Read(Buf.encode(line.substring(1).trim()));
-                        b.update();
-                        line = b.decode();
-                        System.out.println(line);
+                        try {
+                            FileInputStream f = new FileInputStream(new File(line.substring(1).trim()));
+                            byte[] raw = new byte[f.available()];
+                            f.read(raw);
+                            f.close();
+                            line = new String(raw);
+                            System.out.println(line);
+                        } catch (IOException e) {
+                            System.out.println("maybe no such file or something: " + e);
+                            break;
+                        }
 
                     default:
                         try {

@@ -30,6 +30,7 @@ public class Obj {
         Obj[] deps = arguments();
         for (int k = 0; k < deps.length; k++)
             deps[k].depends(this);
+        update();
     }
 
     static final Obj[] noarg = new Obj[0];

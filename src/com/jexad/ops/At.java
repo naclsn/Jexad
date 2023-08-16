@@ -24,12 +24,10 @@ public class At extends Fun {
     public Obj call(Obj... args) throws Fun.InvokeException {
         if (2 == args.length && args[0] instanceof Lst) {
             Lst lst = (Lst)args[0];
-            lst.update();
             int len = lst.length();
 
             if (args[1] instanceof Num) {
                 Num num = (Num)args[1];
-                num.update();
                 int k = num.asInt();
                 return k < 0
                     ? lst.at(lst.length()+k)

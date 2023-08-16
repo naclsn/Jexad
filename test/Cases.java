@@ -5,6 +5,8 @@ import com.jexad.inter.*;
 import com.jexad.ops.*;
 import com.jexad.ops.zip.*;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -17,10 +19,12 @@ import java.util.HashMap;
 // no failure, runs the cases.
 class Cases {
 
-    static String readFile(String filename) {
-        Buf b = new Read(Buf.encode(filename));
-        b.update();
-        return b.decode();
+    static String readFile(String filename) throws IOException {
+        FileInputStream f = new FileInputStream(new File(filename));
+        byte[] raw = new byte[f.available()];
+        f.read(raw);
+        f.close();
+        return new String(raw);
     }
 
     static <T> T[] sortNamed(T[] arr) {
@@ -214,7 +218,7 @@ class Cases {
     //  - extract the bytes for "res/image.png"
     //  - decode the PNG image into bytes
     //  - for each channel, select only its bytes
-    static boolean caseB() {
+    static boolean caseB() throws Throwable {
         final String filename = "test/B/some.zip";
         final String respath = "res/image.png";
         final String r_txt = readFile("test/B/r.txt");

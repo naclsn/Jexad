@@ -150,7 +150,6 @@ public abstract class View<T extends Obj> extends Canvas implements
     // USL: track uses
     public void setContent(T nullIfKeep) {
         if (null != nullIfKeep) content = nullIfKeep;
-        content.update();
         update();
     }
 
