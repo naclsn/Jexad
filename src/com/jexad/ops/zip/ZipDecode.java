@@ -71,6 +71,7 @@ public class ZipDecode extends Num {
         dec = false;
         iv = BigInteger.valueOf(zips.size());
         zips.add(new Handle());
+        init();
     }
 
     @Override
@@ -78,10 +79,6 @@ public class ZipDecode extends Num {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        zipbytes.update();
         zips.get(iv.intValue()).update(zipbytes.raw);
     }
 

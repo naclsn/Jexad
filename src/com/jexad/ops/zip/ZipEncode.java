@@ -15,6 +15,7 @@ public class ZipEncode extends Buf {
     public ZipEncode(Lst<Buf> paths, Lst<Buf> bytes) {
         this.paths = paths;
         this.bytes = bytes;
+        init();
     }
 
     @Override
@@ -22,12 +23,6 @@ public class ZipEncode extends Buf {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        paths.update();
-        bytes.update();
-
         ByteArrayOutputStream str = new ByteArrayOutputStream();
         ZipOutputStream ztr = new ZipOutputStream(str);
         int len = paths.length(); // XXX: check that lengths matches

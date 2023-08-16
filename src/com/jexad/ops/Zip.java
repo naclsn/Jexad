@@ -12,6 +12,7 @@ public class Zip extends Lst {
         this.args = args;
         // (when number of arg is 0)
         // XXX: errs and such...
+        init();
     }
     public Zip(Lst l, Lst r) { this(new Lst[] {l, r}); }
 
@@ -20,12 +21,6 @@ public class Zip extends Lst {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        for (int k = 0; k < args.length; k++)
-            args[k].update();
-
         // (when list sizes differ)
         // XXX: errs and such...
 

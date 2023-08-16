@@ -11,16 +11,15 @@ public class PngEncode extends Buf {
 
     static ImageWriter imw = ImageIO.getImageWritersBySuffix("png").next();
 
-    public PngEncode(Buf bytes) { }
+    public PngEncode(Buf bytes) {
+        init();
+    }
 
     @Override
     public Obj[] arguments() { return new Obj[0]; }
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
         ByteArrayOutputStream str = new ByteArrayOutputStream();
         imw.setOutput(str);
 

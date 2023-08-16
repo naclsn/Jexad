@@ -16,6 +16,7 @@ public class ZipEntry extends Buf {
         }
         this.ziphandle = ziphandle;
         this.path = path;
+        init();
     }
 
     @Override
@@ -23,12 +24,7 @@ public class ZipEntry extends Buf {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        ziphandle.update();
         ZipDecode.Handle h = ZipDecode.zips.get(ziphandle.asInt()); // TODO: errs and such...
-        path.update();
         raw = h.bytes(path.decode()); // TODO: errs and such...
     }
 

@@ -2,6 +2,7 @@ package com.jexad.base;
 
 import java.lang.reflect.Constructor;
 
+// abstract: overloads, ret, call
 public abstract class Fun extends Obj {
 
     public static class InvokeException extends Exception {

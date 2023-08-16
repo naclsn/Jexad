@@ -10,17 +10,16 @@ public class Base64Decode extends Buf {
 
     Buf source;
 
-    public Base64Decode(Buf source) { this.source = source; }
+    public Base64Decode(Buf source) {
+        this.source = source;
+        init();
+    }
 
     @Override
     public Obj[] arguments() { return new Obj[] {source}; }
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        source.update();
         byte[] s = source.raw;
 
         if (0 != s.length%4) {

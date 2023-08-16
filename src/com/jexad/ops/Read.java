@@ -14,6 +14,7 @@ public class Read extends Buf {
     public Read(Buf filename) {
         this.filename = filename;
         this.raw = new byte[0];
+        init();
     }
 
     @Override
@@ -21,11 +22,6 @@ public class Read extends Buf {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        filename.update();
-
         try {
             FileInputStream f = new FileInputStream(new File(filename.decode()));
             raw = new byte[f.available()]; // == file size in case of actual on-disk file

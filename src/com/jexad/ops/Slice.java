@@ -14,6 +14,7 @@ public class Slice extends Buf {
         this.under = under;
         this.begin = begin;
         this.end = end;
+        init();
     }
 
     public Slice(Buf under, Num begin) { this(under, begin, null); }
@@ -29,18 +30,12 @@ public class Slice extends Buf {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        under.update();
         int ulen = under.raw.length;
         int pbegin, pend;
 
-        begin.update();
         pbegin = begin.asInt();
         pbegin = pbegin < 0 ? ulen + pbegin : pbegin;
         if (null != end) {
-            end.update();
             pend = end.asInt();
             pend = pend < 0 ? ulen + pend : pend;
         } else pend = ulen;

@@ -10,7 +10,9 @@
 - [ ] loading obj from external jars
 - [?] Tostr, Tonum, Eval
 - [ ] `(= )` and `($ )` syntaxes
-- [ ] outdate() things
+- [~] outdate() things
+- [ ] find uses of `Lst.at`/`Lst.length`, remove when possible (one less virtual fn call cant do bad..)
+- [ ] symbol to enum
 
 - [ ] caseB:
     - [ ] png decode, functions on the returned handle (what should an image look like? dohas a ..Pixel(x, y) or something?)

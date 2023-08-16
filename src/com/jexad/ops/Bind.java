@@ -65,6 +65,8 @@ public class Bind extends Fun {
                 sym_arg_count++;
             }
         }
+
+        init();
     }
 
     @Override
@@ -72,11 +74,8 @@ public class Bind extends Fun {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        op.update();
-        bound.update();
+        // XXX: ?
+        // (updates on `op` will not be carried to the objects returned from `call`)
     }
 
     @Override

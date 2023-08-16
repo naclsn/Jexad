@@ -14,6 +14,7 @@ public class Rect extends Lst<Buf> {
         this.under = under;
         this.it_len = it_len;
         this.it_pad = it_pad;
+        init();
     }
 
     public Rect(Buf under, Num it_len) { this(under, it_len, new Num(0)); }
@@ -23,13 +24,6 @@ public class Rect extends Lst<Buf> {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        under.update();
-        it_len.update();
-        it_pad.update();
-
         int len = it_len.asInt();
         int w = len + it_pad.asInt();
         int count = under.raw.length / w;

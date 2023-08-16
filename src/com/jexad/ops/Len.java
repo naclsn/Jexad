@@ -9,17 +9,16 @@ public class Len extends Num {
 
     Buf buf;
 
-    public Len(Buf buf) { this.buf = buf; }
+    public Len(Buf buf) {
+        this.buf = buf;
+        init();
+    }
 
     @Override
     public Obj[] arguments() { return new Obj[] {buf}; }
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        buf.update();
         dec = false;
         iv = BigInteger.valueOf(buf.raw.length);
     }

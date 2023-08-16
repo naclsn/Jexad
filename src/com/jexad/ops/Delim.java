@@ -16,9 +16,9 @@ public class Delim extends Buf {
         this.under = under;
         this.delim = delim;
         this.bound = bound;
+        init();
     }
 
-    // XXX: argument type is not Obj (ie. Buf/Num/Lst)
     public Delim(Buf under, Buf delim) { this(under, delim, Bound.EXCLUSIVE); }
     public Delim(Buf under) { this(under, new Buf(new byte[] {0})); }
 
@@ -27,12 +27,6 @@ public class Delim extends Buf {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        under.update();
-        delim.update();
-
         byte[] u = under.raw;
         byte[] d = delim.raw;
 

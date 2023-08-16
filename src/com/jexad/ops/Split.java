@@ -14,6 +14,7 @@ public class Split extends Lst<Buf> {
     public Split(Buf under, Buf sep) {
         this.under = under;
         this.sep = sep;
+        init();
     }
 
     public Split(Buf under) { this(under, new Buf(new byte[] {0})); }
@@ -23,17 +24,12 @@ public class Split extends Lst<Buf> {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        under.update();
         byte[] u = under.raw;
         if (0 == u.length) {
             arr = new Buf[0];
             return;
         }
 
-        sep.update();
         byte[] d = sep.raw;
 
         al.clear();

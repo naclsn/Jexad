@@ -16,6 +16,7 @@ public class Encode extends Buf {
         this.under = under;
         this.width = width;
         this.endian = endian;
+        init();
     }
 
     public Encode(Num under, Num width) { this(under, width, Endian.LITTLE); }
@@ -25,11 +26,6 @@ public class Encode extends Buf {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        under.update();
-        width.update();
         raw = new byte[width.asInt()];
 
         if (under.dec) {

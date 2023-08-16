@@ -13,6 +13,7 @@ public class Count extends Num {
     public Count(Lst lst, Fun pred) {
         this.lst = lst;
         this.pred = pred;
+        init();
     }
 
     public Count(Lst lst) { this(lst, null); }
@@ -27,15 +28,9 @@ public class Count extends Num {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        lst.update();
-
         int val = 0;
         if (null == pred) val = lst.length();
         else {
-            pred.update();
             int len = lst.length();
             for (int k = 0; k < len; k++) {
                 try {

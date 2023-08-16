@@ -12,6 +12,7 @@ public class Map<Out extends Obj> extends Lst<Out> {
     public Map(Fun op, Lst args) {
         this.op = op;
         this.args = args;
+        init();
     }
 
     @Override
@@ -19,17 +20,10 @@ public class Map<Out extends Obj> extends Lst<Out> {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        op.update();
-        args.update();
-
         arr = (Out[])new Obj[args.length()];
         for (int k = 0; k < arr.length; k++) {
             try {
                 arr[k] = (Out)op.call(new Obj[] {args.at(k)});
-                arr[k].update();
             } catch (Exception e) {
                 System.err.println("Map: " + e);
                 return; // XXX: errs and such...

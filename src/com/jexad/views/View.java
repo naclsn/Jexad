@@ -26,6 +26,7 @@ import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
+// abstract: render
 public abstract class View<T extends Obj> extends Canvas implements
     KeyListener,
     MouseListener,

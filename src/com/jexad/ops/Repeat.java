@@ -12,6 +12,7 @@ public class Repeat<T extends Obj> extends Lst<T> {
     Repeat(T under, Num count) {
         this.under = under;
         this.count = count;
+        init();
     }
 
     // needed for `getConstructor` resolutions...
@@ -24,12 +25,6 @@ public class Repeat<T extends Obj> extends Lst<T> {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        under.update();
-        count.update();
-
         arr = (T[])new Obj[count.asInt()];
         for (int k = 0; k < arr.length; k++)
             arr[k] = under;

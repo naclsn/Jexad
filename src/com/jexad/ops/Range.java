@@ -14,6 +14,7 @@ public class Range extends Lst<Num> {
         this.start = start;
         this.end = end;
         this.step = step;
+        init();
     }
 
     public Range(Num start, Num end) { this(start, end, new Num(1)); }
@@ -23,13 +24,6 @@ public class Range extends Lst<Num> {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        start.update();
-        end.update();
-        step.update();
-
         int st = start.asInt();
         int by = step.asInt();
         arr = new Num[(end.asInt()-st) / by];

@@ -12,6 +12,7 @@ public class Join extends Buf {
     public Join(Lst<Buf> list, Buf sep) {
         this.list = list;
         this.sep = sep;
+        init();
     }
 
     public Join(Lst<Buf> list) { this(list, new Buf(new byte[] {0})); }
@@ -21,10 +22,6 @@ public class Join extends Buf {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        list.update();
         int list_len = list.length();
 
         if (0 == list_len) {
@@ -32,7 +29,6 @@ public class Join extends Buf {
             return;
         }
 
-        if (1 < list_len) sep.update();
         Buf first = list.at(0);
 
         int total_len = first.raw.length;

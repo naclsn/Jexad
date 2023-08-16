@@ -11,29 +11,24 @@ public class ViewTxt extends Buf {
 
     public ViewTxt(Buf content, Buf title) {
         vw = new TxtView(content, title.decode());
+        init();
     }
     public ViewTxt(Buf content) {
         vw = new TxtView(content, null);
+        init();
     }
 
     @Override
     public Obj[] arguments() {
-        return null != detached
-            ? new Obj[0]
-            : new Obj[] {vw.getContent()}
-            ;
+        return new Obj[] {vw.getContent()};
     }
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
         if (null != detached)
             raw = detached;
         else {
             Buf c = vw.getContent();
-            c.update();
             raw = c.raw;
         }
     }

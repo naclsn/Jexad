@@ -17,6 +17,7 @@ public class Decode extends Num {
         this.under = under;
         this.isdec = isdec;
         this.endian = endian;
+        init();
     }
 
     public Decode(Buf under, Num isdec) { this(under, isdec, Endian.LITTLE); }
@@ -27,12 +28,6 @@ public class Decode extends Num {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        under.update();
-        isdec.update();
-
         dec = 0 != isdec.asByte();
 
         if (dec) {

@@ -12,6 +12,7 @@ public class ZipList extends Lst<Buf> {
 
     public ZipList(Num ziphandle) {
         this.ziphandle = ziphandle;
+        init();
     }
 
     @Override
@@ -19,10 +20,6 @@ public class ZipList extends Lst<Buf> {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        ziphandle.update();
         ZipDecode.Handle h = ZipDecode.zips.get(ziphandle.asInt()); // TODO: errs and such...
         Set<String> all = h.paths();
         String[] sorted = new String[all.size()];

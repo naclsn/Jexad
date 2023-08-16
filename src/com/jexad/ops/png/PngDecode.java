@@ -48,6 +48,7 @@ public class PngDecode extends Num {
         dec = false;
         iv = BigInteger.valueOf(pngs.size());
         pngs.add(new Handle());
+        init();
     }
 
     @Override
@@ -55,10 +56,6 @@ public class PngDecode extends Num {
 
     @Override
     public void update() {
-        if (uptodate) return;
-        uptodate = true;
-
-        pngbytes.update();
         pngs.get(iv.intValue()).update(pngbytes.raw);
     }
 
