@@ -1,6 +1,5 @@
 package com.jexad.views;
 
-import com.jexad.base.*;
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -26,8 +25,8 @@ import java.beans.PropertyChangeListener;
 import java.util.Map;
 import java.util.prefs.Preferences;
 
-// abstract: render
-public abstract class View<T extends Obj> extends Canvas implements
+// abstract: update, render
+public abstract class View extends Canvas implements
     KeyListener,
     MouseListener,
     MouseMotionListener,
@@ -35,7 +34,6 @@ public abstract class View<T extends Obj> extends Canvas implements
     PropertyChangeListener
 {
 
-    protected T content;
     protected Preferences prefs;
 
     protected class ScrollInfo {
@@ -104,16 +102,15 @@ public abstract class View<T extends Obj> extends Canvas implements
     }
 
     static int unnamed_view_counter = 0;
-    protected String title;
 
     // create a `Frame` for the view with the (maybe) content and (maybe) title
-    protected View(T content, String title) {
+    protected View(String title) {
         this();
 
         Frame f = new Frame();
         f.addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent _e) {
-                if (null != content) View.this.setContent(content);
+                update();
             }
             public void windowClosing(WindowEvent _e) {
                 f.dispose();
@@ -125,7 +122,7 @@ public abstract class View<T extends Obj> extends Canvas implements
             title = getClass().getSimpleName() + unnamed_view_counter++;
 
         f.setSize(640, 480);
-        f.setTitle(this.title = title);
+        f.setTitle(title);
         f.setVisible(true);
 
         requestFocusInWindow();
@@ -145,17 +142,6 @@ public abstract class View<T extends Obj> extends Canvas implements
 
         Color fg = parseColor(prefs.get("foreground", ""));
         if (null != fg) setForeground(fg);
-    }
-
-    // USL: track uses
-    public void setContent(T nullIfKeep) {
-        if (null != nullIfKeep) content = nullIfKeep;
-        update();
-    }
-
-    // USL: track uses
-    public T getContent() {
-        return content;
     }
 
     Dimension offDim;
@@ -185,10 +171,11 @@ public abstract class View<T extends Obj> extends Canvas implements
         paint(g0);
     }
 
-    // once, when the content is changed/updated
+    // called once when things are initialized
     protected abstract void update();
     // called from `Canvas#paint`
     protected abstract void render(Graphics2D g);
+
 
     @Override
     public void keyPressed(KeyEvent e) {

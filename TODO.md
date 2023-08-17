@@ -5,9 +5,9 @@
 - [~] finish cleanup with `Lookup.ClassesUnder`
 - [~] build a list of funs (eg. build step)
     - [ ] make the classes from template (in build step)
-- [~] make the view be `Obj`s
+- [x] make the view be `Obj`s (although ArgsTreeView was not ported)
 - [ ] error handling
-- [ ] loading obj from external jars
+- [x] loading obj from external jars
 - [?] Tostr, Tonum, Eval
 - [~] `(= )` and `($ )` syntaxes
 - [x] outdate() things
