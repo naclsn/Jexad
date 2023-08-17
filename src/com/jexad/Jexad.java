@@ -130,14 +130,19 @@ class Jexad extends Frame {
                             System.out.println("(global scope)");
                             for (int k = 0; k < names.length; k++)
                                 System.out.println(names[k]);
-                        } else {
-                            String name = line.substring(1).trim();
-                            Obj obj = globalScope.get(name);
-                            if (null != obj) Util.show(obj);
-                            else for (int k = 0; k < globalNames.length; k++) {
-                                Fun fun = globalNames[k].lookup(name);
-                                if (null != fun) Util.show(fun);
-                            }
+                            break;
+                        }
+
+                        try {
+                            new Lang("_ = " + line.substring(1).trim(), globalNames, globalScope);
+                            Util.show(globalScope.get("_"));
+                        } catch (Lang.LangException e) {
+                            System.err.println(e);
+                            Throwable c = e;
+                            while (null != (c = c.getCause())) System.err.println(" `-> " + c);
+                            e.printLocationInfo(System.err);
+                        } catch (Exception e) {
+                            e.printStackTrace(System.err);
                         }
                         break;
 

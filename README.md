@@ -46,7 +46,7 @@ A tiny DSL is hacked together to define objects; this is the full syntax:
 <comment> ::= '#' /.*/ '\n'
 
 <str> ::= '"' /[^"]/ '"'
-<num> ::= ['-'] /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'.'/
+<num> ::= ['-'] /0x[0-9A-Fa-f_]+|0o[0-8_]+|0b[01_]+|[0-9_](\.[0-9_])?|'[^']'/
 <lst> ::= '{' [<atom> {',' <atom>}] '}'
 <fun> ::= /[A-Z][0-9A-Z]+/
 <sym> ::= ':' /[0-9A-Za-z_]+/
@@ -62,10 +62,50 @@ lst = Slice filebuf list_off list_end
 ptrs = Map Parse lst;
 ```
 
+The accepted escape sequences in string literals and character literals are:
+- `\a`: 0x07
+- `\b`: 0x08
+- `\e`: 0x1B
+- `\f`: 0x0C
+- `\n`: 0x0A
+- `\r`: 0x0D
+- `\t`: 0x09
+- `\v`: 0x0B
+- `\\`: 0x5C
+- `\'`: 0x27
+- `\"`: 0x22
+- `\x`: 2 hex digits byte
+- `\u`: 4 hex digits codepoint below 0x10000
+- `\U`: 8 hex digits codepoint
+- 3 oct digits (idk y tho, is there this much use for it?)
+
 Few random notes:
-- the grammar above does not mention the escape sequences (the common ones, as well as `\x` `\u` `\U`)
+- sequences of codepoints/characters/bytes.. are never validated in anyways
 - lists of mixed types are accepted, this is how tuples and var-args are 'supported'
 - Java-side 'generics' are purely cosmetic
+
+Syntaxic sugar extension:
+```plaintext
+<atom> ::= ... | '(=' <math> ')' | '($' <bind> ')'
+
+<math> ::
+    = <unop> <atom>
+    | <atom> <binop> <atom>
+    | <atom> '?' <atom> ':' <atom>
+    | <atom> '[' <atom> [':' [<atom>]] ']'
+<unop> ::= '+' '-' '!' '~'
+<binop> ::= '+' '-' '*' '/' '%' '//' '**' '==' '!=' '>' '<' '>=' '<=' '<=>' '&' '|' '^' '<<' '>>'
+
+<bind> ::= <fun> {<atom>}
+```
+
+`<math>` gets expanded to the equivalent set of nested calls to `Add`, `Sub`, ...
+`<bind>` is a shorthand for calling the `Bind` function:
+```shell
+first2b = Bind Slice {:0, 0, 2}
+# same as
+first2b = ($Slice :0 0 2)
+```
 
 ### Operations
 

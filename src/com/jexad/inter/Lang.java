@@ -1,6 +1,7 @@
 package com.jexad.inter;
 
 import com.jexad.base.*;
+import com.jexad.ops.Bind;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
@@ -135,7 +136,7 @@ public class Lang {
             case '"': return 0x22;
 
             case 'x':
-                if (i+2 >= s.length) fail("incomplete escape sequence");
+                if (i+2 >= s.length) fail("incomplete escape sequence (must be 2 characters)");
                 byte hi = s[++i];
                 if (!( '0' <= hi && hi <= '9'
                     || 'A' <= hi && hi <= 'F'
@@ -152,12 +153,18 @@ public class Lang {
                     );
 
             case 'u':
+                if (i+4 >= s.length) fail("incomplete escape sequence (must be 4 characters)");
+                fail("NIY: unicode escapes");
+                break;
+
             case 'U':
+                if (i+8 >= s.length) fail("incomplete escape sequence (must be 8 characters)");
                 fail("NIY: unicode escapes");
                 break;
 
             default:
                 if ('0' <= c && c <= '7') {
+                    if (i+3 >= s.length) fail("incomplete escape sequence (must be 3 characters)");
                     fail("NIY: octal escapes");
                     return 0;
                 }
@@ -327,7 +334,7 @@ public class Lang {
         int a = ++i;
         byte c = ':';
         while (i < s.length &&
-            ( '_' == (c = s[i])
+            (  '_' == (c = s[i])
             || '0' <= c && c <= '9'
             || 'A' <= c && c <= 'Z'
             || 'a' <= c && c <= 'z'
@@ -341,11 +348,16 @@ public class Lang {
     String scanVarName() throws LangException {
         int a = i;
         byte c;
-        while (++i < s.length && ('_' == (c = s[i]) || 'a' <= c && c <= 'z'));
+        while (++i < s.length &&
+            (  '_' == (c = s[i])
+            || '0' <= c && c <= '9'
+            || 'a' <= c && c <= 'z'
+            ));
         return new String(s, a, i-a);
     }
 
     // <atom> ::= <str> | <num> | <lst> | <fun> | <sym> | <var> | '(' <expr> ')'
+    // (ex) <atom> ::= ... | '(=' <math> ')' | '($' <bind> ')'
     Obj scanAtom() throws LangException {
         if (i >= s.length) fail("expected atom");
 
@@ -356,7 +368,11 @@ public class Lang {
             case '{': return scanLst();
             case ':': return scanSym();
             case '(':
-                i++;
+                switch (i+1 < s.length ? s[++i] : 0) {
+                    case '=': return processExMath();
+                    case '$': return processExBind();
+                }
+
                 Obj r = processExpr(true);
                 skipBlanks();
                 if (i >= s.length || ')' != s[i]) {
@@ -466,5 +482,50 @@ public class Lang {
         }
         return r;
     } // processExpr
+
+    // <math> ::
+    //     = <unop> <atom>
+    //     | <atom> <binop> <atom>
+    //     | <atom> '?' <atom> ':' <atom>
+    //     | <atom> '[' <atom> [':' [<atom>]] ']'
+    // <unop> ::= '+' '-' '!' '~'
+    // <binop> ::= '+' '-' '*' '/' '%' '//' '**' '==' '!=' '>' '<' '>=' '<=' '<=>' '&' '|' '^' '<<' '>>'
+    Obj processExMath() throws LangException {
+        if (++i >= s.length) fail("expected math expression");
+        fail("NIY: (= )");
+        return null;
+    }
+
+    // <bind> ::= <fun> {<atom>}
+    Obj processExBind() throws LangException {
+        int a = i-1;
+        if (++i >= s.length) fail("expected bind expression");
+
+        Obj obj = scanAtom();
+        if (!(obj instanceof Fun))
+            fail("expected a function, got '"+obj.baseClass().getSimpleName()+"'");
+        Fun fun = (Fun)obj;
+        skipBlanks();
+
+        ArrayList<Obj> args = new ArrayList();
+        while (i < s.length && ')' != s[i]) {
+            args.add(scanAtom());
+            skipBlanks();
+        }
+
+        if (')' != s[i]) {
+            i = a;
+            fail("missing matching closing () in bind expression");
+        }
+        i++;
+
+        Obj[] largs = new Obj[args.size()];
+        try {
+            return new Bind(fun, new Lst(args.toArray(largs)));
+        } catch (Fun.InvokeException e) {
+            fail("failed to construct bind expression", e);
+        }
+        return null;
+    }
 
 }
