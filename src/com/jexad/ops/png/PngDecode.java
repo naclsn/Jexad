@@ -39,7 +39,7 @@ public class PngDecode extends Num {
 
     } // class Handle
 
-    public static ArrayList<Handle> pngs = new ArrayList();
+    public static ArrayList<Handle> pngs = new ArrayList<Handle>();
 
     Buf pngbytes;
 

@@ -16,7 +16,7 @@ public class ZipDecode extends Num {
     public static class Handle {
 
         private static class Pair { byte[] bytes; ZipEntry entry; Pair(byte[] bytes, ZipEntry entry) { this.bytes = bytes; this.entry = entry; } }
-        private HashMap<String, Pair> loaded = new HashMap();
+        private HashMap<String, Pair> loaded = new HashMap<String, Pair>();
 
         private void update(byte[] raw) {
             loaded.clear();
@@ -62,7 +62,7 @@ public class ZipDecode extends Num {
 
     } // class Handle
 
-    public static ArrayList<Handle> zips = new ArrayList();
+    public static ArrayList<Handle> zips = new ArrayList<Handle>();
 
     Buf zipbytes;
 

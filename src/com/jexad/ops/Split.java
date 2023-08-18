@@ -7,7 +7,7 @@ public class Split extends Lst {
 
     public static final Fun fun = new Fun.ForClass(Split.class, "split on separator (exclusive); default is \"\\0\" ie C-string");
 
-    ArrayList<Buf> al = new ArrayList();
+    ArrayList<Buf> al = new ArrayList<Buf>();
     Buf under;
     Buf sep;
 

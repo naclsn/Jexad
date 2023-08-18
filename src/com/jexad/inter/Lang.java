@@ -279,7 +279,7 @@ public class Lang {
             return new Lst();
         }
 
-        ArrayList<Obj> l = new ArrayList();
+        ArrayList<Obj> l = new ArrayList<Obj>();
         while (true) {
             if (i >= s.length) {
                 i = a;
@@ -443,7 +443,7 @@ public class Lang {
 
         skipBlanks();
 
-        ArrayList<Obj> l = new ArrayList();
+        ArrayList<Obj> l = new ArrayList<Obj>();
         byte c = 0;
         while (i < s.length && ';' != (c = s[i]) && ')' != c && ',' != c && '}' != c) {
             l.add(processExpr(false));
@@ -507,7 +507,7 @@ public class Lang {
         Fun fun = (Fun)obj;
         skipBlanks();
 
-        ArrayList<Obj> args = new ArrayList();
+        ArrayList<Obj> args = new ArrayList<Obj>();
         while (i < s.length && ')' != s[i]) {
             args.add(scanAtom());
             skipBlanks();

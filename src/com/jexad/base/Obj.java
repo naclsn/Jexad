@@ -26,9 +26,11 @@ public class Obj {
             );
     }
 
-    public <T extends Obj> T as(String cx_fmt, Object... cx_va) {
-        return (T)this;
-    }
+    public Buf asBuf(String cx_fmt, Object... cx_va) { return (Buf)this; }
+    public Num asNum(String cx_fmt, Object... cx_va) { return (Num)this; }
+    public Lst asLst(String cx_fmt, Object... cx_va) { return (Lst)this; }
+    public Fun asFun(String cx_fmt, Object... cx_va) { return (Fun)this; }
+    public Sym asSym(String cx_fmt, Object... cx_va) { return (Sym)this; }
 
     protected void init() {
         Obj[] deps = arguments();

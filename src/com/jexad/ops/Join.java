@@ -29,11 +29,11 @@ public class Join extends Buf {
             return;
         }
 
-        Buf first = list.arr[0].<Buf>as("item 0");
+        Buf first = list.arr[0].asBuf("item 0");
 
         int total_len = first.raw.length;
         for (int k = 1; k < list_len; k++)
-            total_len+= sep.raw.length + list.arr[k].<Buf>as("item %d", k).raw.length;
+            total_len+= sep.raw.length + list.arr[k].asBuf("item %d", k).raw.length;
         raw = new byte[total_len];
 
         int at = first.raw.length;

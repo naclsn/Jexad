@@ -12,7 +12,7 @@ public class ViewTxt extends Buf {
     View v;
     boolean edited;
 
-    ArrayList<String> lines = new ArrayList();
+    ArrayList<String> lines = new ArrayList<String>();
     int longest;
     int char_count;
 

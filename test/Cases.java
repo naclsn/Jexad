@@ -150,7 +150,7 @@ class Cases {
     } // caseA
 
     static boolean caseAScript1() throws Lang.LangException {
-        HashMap<String, Obj> scope = new HashMap();
+        HashMap<String, Obj> scope = new HashMap<String, Obj>();
         scope.put("filename", Buf.encode("test/A/some.bin"));
         scope.put("list_off", new Num(0x42));
         scope.put("list_len", new Num(3));
@@ -179,7 +179,7 @@ class Cases {
     } // caseAScript1
 
     static boolean caseAScript2() throws Lang.LangException {
-        HashMap<String, Obj> scope = new HashMap();
+        HashMap<String, Obj> scope = new HashMap<String, Obj>();
         scope.put("filename", Buf.encode("test/A/some.bin"));
         scope.put("list_off", new Num(0x42));
         scope.put("list_len", new Num(3));

@@ -37,7 +37,7 @@ class Jexad extends Frame {
         return Buf.encode(r.toString());
     }
 
-    static HashMap<String, Obj> globalScope = new HashMap();
+    static HashMap<String, Obj> globalScope = new HashMap<String, Obj>();
     static Lang.Lookup[] globalNames;
 
     static void makeLookupsWithUsers(ArrayList<Lang.Lookup> user_lus) {
@@ -53,7 +53,7 @@ class Jexad extends Frame {
     }
 
     public static void main(String[] args) {
-        ArrayList<Lang.Lookup> user_lus = new ArrayList();
+        ArrayList<Lang.Lookup> user_lus = new ArrayList<Lang.Lookup>();
 
         if (0 == args.length) usage("no argument (try -h)");
 

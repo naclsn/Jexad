@@ -26,9 +26,9 @@ public class ZipEncode extends Buf {
 
         int len = entries.arr.length;
         for (int k = 0; k < len; k++) {
-            Lst entry = entries.arr[k].<Lst>as("zip entry %d", k);
-            Buf path = entry.arr[0].<Buf>as("zip entry %d's path", k);
-            Buf bytes = entry.arr[0].<Buf>as("zip entry %d's bytes", k);
+            Lst entry = entries.arr[k].asLst("zip entry %d", k);
+            Buf path = entry.arr[0].asBuf("zip entry %d's path", k);
+            Buf bytes = entry.arr[0].asBuf("zip entry %d's bytes", k);
 
             try {
                 ztr.putNextEntry(new ZipEntry(path.decode()));

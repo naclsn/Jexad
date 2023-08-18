@@ -35,7 +35,7 @@ public class Count extends Num {
             int len = lst.arr.length;
             for (int k = 0; k < len; k++) {
                 try {
-                    Num r = pred.call(lst.arr[k]).<Num>as("predicat result %d", k);
+                    Num r = pred.call(lst.arr[k]).asNum("predicat result %d", k);
                     if (0 != r.asByte()) val++;
                 } catch (Fun.InvokeException e) {
                     System.err.println("Count: " + e);
