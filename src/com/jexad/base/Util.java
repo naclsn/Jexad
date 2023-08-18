@@ -65,13 +65,13 @@ public class Util {
         return false;
     }
 
-    public static <T extends Obj> boolean cmpLst(Lst<T> l, Lst<T> r) {
-        if (l.length() != r.length()) {
-            System.out.printf("list lengths differ: %d != %d\n", l.length(), r.length());
+    public static boolean cmpLst(Lst l, Lst r) {
+        if (l.arr.length != r.arr.length) {
+            System.out.printf("list lengths differ: %d != %d\n", l.arr.length, r.arr.length);
             return false;
         }
-        for (int k = 0; k < l.length(); k++) {
-            if (!cmpObj(l.at(k), r.at(k))) {
+        for (int k = 0; k < l.arr.length; k++) {
+            if (!cmpObj(l.arr[k], r.arr[k])) {
                 System.out.printf(".. in list at %d\n", k);
                 return false;
             }

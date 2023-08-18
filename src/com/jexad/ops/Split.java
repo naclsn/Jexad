@@ -3,7 +3,7 @@ package com.jexad.ops;
 import com.jexad.base.*;
 import java.util.ArrayList;
 
-public class Split extends Lst<Buf> {
+public class Split extends Lst {
 
     public static final Fun fun = new Fun.ForClass(Split.class, "split on separator (exclusive); default is \"\\0\" ie C-string");
 
@@ -61,8 +61,9 @@ public class Split extends Lst<Buf> {
         al.toArray(arr);
 
         int len = u.length - last;
-        arr[size] = new Buf(new byte[len]);
-        System.arraycopy(u, last, arr[size].raw, 0, len);
+        Buf b = new Buf(new byte[len]);
+        arr[size] = b;
+        System.arraycopy(u, last, b.raw, 0, len);
     }
 
     public static boolean test() {

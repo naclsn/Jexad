@@ -2,7 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.*;
 
-public class Rect extends Lst<Buf> {
+public class Rect extends Lst {
 
     public static final Fun fun = new Fun.ForClass(Rect.class, "slices at regular interval into a list of same-size buffers with optional padding");
 
@@ -29,8 +29,9 @@ public class Rect extends Lst<Buf> {
         int count = under.raw.length / w;
         arr = new Buf[count];
         for (int k = 0; k < count; k++) {
-            arr[k] = new Buf(new byte[len]);
-            System.arraycopy(under.raw, w*k, arr[k].raw, 0, arr[k].raw.length);
+            Buf b = new Buf(new byte[len]);
+            arr[k] = b;
+            System.arraycopy(under.raw, w*k, b.raw, 0, b.raw.length);
         }
     }
 

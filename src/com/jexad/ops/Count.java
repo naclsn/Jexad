@@ -13,6 +13,7 @@ public class Count extends Num {
     public Count(Lst lst, Fun pred) {
         this.lst = lst;
         this.pred = pred;
+        //if (Num.class != pred.ret()) ..
         init();
     }
 
@@ -29,17 +30,13 @@ public class Count extends Num {
     @Override
     public void update() {
         int val = 0;
-        if (null == pred) val = lst.length();
+        if (null == pred) val = lst.arr.length;
         else {
-            int len = lst.length();
+            int len = lst.arr.length;
             for (int k = 0; k < len; k++) {
                 try {
-                    Obj r = pred.call(lst.at(k));
-                    if (!(r instanceof Num)) {
-                        System.err.println("Count: predicat result is not a number");
-                        return; // XXX: errs and such...
-                    }
-                    if (0 != ((Num)r).asByte()) val++;
+                    Num r = pred.call(lst.arr[k]).<Num>as("predicat result %d", k);
+                    if (0 != r.asByte()) val++;
                 } catch (Fun.InvokeException e) {
                     System.err.println("Count: " + e);
                     return; // XXX: errs and such...
@@ -53,7 +50,7 @@ public class Count extends Num {
 
     public static boolean testNoPred() {
         return Util.cmpNum
-                ( new Count(new Lst<Num>(new Num[]
+                ( new Count(new Lst(new Num[]
                     { new Num(7)
                     , new Num(6)
                     , new Num(5)
@@ -63,7 +60,7 @@ public class Count extends Num {
                 , new Num(5)
                 )
             && Util.cmpNum
-                ( new Count(new Lst<Num>(new Num[0]))
+                ( new Count(new Lst(new Num[0]))
                 , new Num(0)
                 )
             ;
@@ -71,7 +68,7 @@ public class Count extends Num {
 
     // TODO
     //public static boolean testOddEven() {
-    //    Lst<Num> l = new Lst<Num>(new Num[]
+    //    Lst l = new Lst<Num>(new Num[]
     //        { new Num(7)
     //        , new Num(6)
     //        , new Num(5)

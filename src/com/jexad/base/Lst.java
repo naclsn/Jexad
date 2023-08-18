@@ -1,13 +1,10 @@
 package com.jexad.base;
 
-public class Lst<T extends Obj> extends Obj {
+public class Lst extends Obj {
 
-    public T[] arr; // readonly
-    public Lst(T[] arr) { this.arr = arr; }
-    public Lst() { this((T[])new Obj[0]); }
-
-    public int length() { return arr.length; }
-    public T at(int k) { return arr[k]; }
+    public Obj[] arr; // readonly
+    public Lst(Obj[] arr) { this.arr = arr; }
+    public Lst() { this(new Obj[0]); }
 
     @Override
     public String toString() {

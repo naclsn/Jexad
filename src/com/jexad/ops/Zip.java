@@ -24,12 +24,12 @@ public class Zip extends Lst {
         // (when list sizes differ)
         // XXX: errs and such...
 
-        int len = args[0].length();
+        int len = args[0].arr.length;
         arr = new Obj[len];
         for (int j = 0; j < len; j++) {
             Obj[] ll = new Obj[args.length];
             for (int i = 0; i < args.length; i++)
-                ll[i] = args[i].at(j);
+                ll[i] = args[i].arr[j];
             arr[j] = new Lst(ll);
         }
     }

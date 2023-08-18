@@ -15,12 +15,12 @@ public abstract class Fun extends Obj {
     public abstract Class ret();
     public abstract Obj call(Obj... args) throws InvokeException;
 
-    public static int findCtor(Class[][] overloads, Class[] args) {
+    public static int findOvl(Class[][] overloads, Class[] args) {
         for (int i = 0; i < overloads.length; i++) {
             if (overloads[i].length == args.length) {
                 boolean matches = true;
                 for (int j = 0; j < args.length; j++) {
-                    if (args[j] != overloads[i][j] || Obj.class == overloads[i][j]) {
+                    if (args[j] != overloads[i][j] && Obj.class != overloads[i][j]) {
                         matches = false;
                         break;
                     }
@@ -97,7 +97,7 @@ public abstract class Fun extends Obj {
             for (int k = 0; k < args.length; k++)
                 clargs[k] = args[k].baseClass();
 
-            int k = findCtor(overloads(), clargs);
+            int k = findOvl(overloads(), clargs);
             if (k < 0) throw new InvokeException("no such overload");
 
             try {

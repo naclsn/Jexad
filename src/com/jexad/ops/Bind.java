@@ -107,11 +107,11 @@ public class Bind extends Fun {
 
     @Override
     public Obj call(Obj... args) throws InvokeException {
-        int len = bound.length();
+        int len = bound.arr.length;
         Obj[] filled = new Obj[len];
 
         for (int k = 0; k < len; k++) {
-            Obj it = bound.at(k);
+            Obj it = bound.arr[k];
 
             if (it instanceof Sym) {
                 // YYY: for now let's settle with just 10 args...

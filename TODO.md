@@ -1,5 +1,10 @@
 ## notes on things not done yet in no particular order
 
+- [ ] Obj.update() throws Throwable (or other)
+- [ ] Obj.at() throws ..
+- [ ] remove generic from Lst
+- [ ] raw types
+
 - [~] no var-arg constructor, use lists/tuples (but keep overloading)
 - [~] .(somewhat with above): the `arguments` method
 - [~] finish cleanup with `Lookup.ClassesUnder`

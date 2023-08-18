@@ -82,6 +82,7 @@ The accepted escape sequences in string literals and character literals are:
 Few random notes:
 - sequences of codepoints/characters/bytes.. are never validated in anyways
 - lists of mixed types are accepted, this is how tuples and var-args are 'supported'
+- a function make take `Obj`, this is how generics are 'supported'
 - Java-side 'generics' are purely cosmetic
 
 Syntaxic sugar extension:

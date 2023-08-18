@@ -26,6 +26,10 @@ public class Obj {
             );
     }
 
+    public <T extends Obj> T as(String cx_fmt, Object... cx_va) {
+        return (T)this;
+    }
+
     protected void init() {
         Obj[] deps = arguments();
         for (int k = 0; k < deps.length; k++)
@@ -36,7 +40,7 @@ public class Obj {
     static final Obj[] noarg = new Obj[0];
     // the dependencies for `this` object (ie. that are used in `update`)
     public Obj[] arguments() { return noarg; }
-    protected void update() { }
+    protected void update() /*throws Throwable*/ { }
 
     public void updateAndPropagate() {
         updateCycle++;

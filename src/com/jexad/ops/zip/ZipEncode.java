@@ -9,31 +9,34 @@ public class ZipEncode extends Buf {
 
     public static final Fun fun = new Fun.ForClass(ZipEncode.class, "encodes entries into zip file as bytes");
 
-    Lst<Buf> paths;
-    Lst<Buf> bytes;
+    Lst entries;
 
-    public ZipEncode(Lst<Buf> paths, Lst<Buf> bytes) {
-        this.paths = paths;
-        this.bytes = bytes;
+    public ZipEncode(Lst entries) {
+        this.entries = entries;
         init();
     }
 
     @Override
-    public Obj[] arguments() { return new Obj[] {paths, bytes}; }
+    public Obj[] arguments() { return new Obj[] {entries}; }
 
     @Override
     public void update() {
         ByteArrayOutputStream str = new ByteArrayOutputStream();
         ZipOutputStream ztr = new ZipOutputStream(str);
-        int len = paths.length(); // XXX: check that lengths matches
-        try {
-            for (int k = 0; k < len; k++) {
-                ztr.putNextEntry(new ZipEntry(paths.at(k).decode()));
-                ztr.write(bytes.at(k).raw);
+
+        int len = entries.arr.length;
+        for (int k = 0; k < len; k++) {
+            Lst entry = entries.arr[k].<Lst>as("zip entry %d", k);
+            Buf path = entry.arr[0].<Buf>as("zip entry %d's path", k);
+            Buf bytes = entry.arr[0].<Buf>as("zip entry %d's bytes", k);
+
+            try {
+                ztr.putNextEntry(new ZipEntry(path.decode()));
+                ztr.write(bytes.raw);
+            } catch (Exception e) {
+                System.err.println("ZipEncode: " + e);
+                return; // XXX: errs and such...
             }
-        } catch (Exception e) {
-            System.err.println("ZipEncode: " + e);
-            return; // XXX: errs and such...
         }
 
         raw = str.toByteArray();

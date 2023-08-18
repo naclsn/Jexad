@@ -31,24 +31,24 @@ public class At extends Fun {
 
             } else if (args[0] instanceof Lst) {
                 Lst lst = (Lst)args[0];
-                int len = lst.length();
+                int len = lst.arr.length;
 
                 if (args[1] instanceof Num) {
                     int k = ((Num)args[1]).asInt();
-                    return lst.at(k < 0 ? lst.length()+k : k); // XXX: errs and such...
+                    return lst.arr[k < 0 ? lst.arr.length+k : k]; // XXX: errs and such...
                 }
 
                 else if (args[1] instanceof Sym) {
                     Sym sym = (Sym)args[1];
                     for (int k = 0; k < len; k++) {
-                        Obj it = lst.at(k);
+                        Obj it = lst.arr[k];
                         if (!(it instanceof Lst)) break;
                         Lst pair = (Lst)it;
-                        if (pair.length() < 2) break;
-                        Obj key = pair.at(0);
+                        if (pair.arr.length < 2) break;
+                        Obj key = pair.arr[0];
                         if (!(key instanceof Sym)) break;
                         if (sym.str.equals(((Sym)key).str))
-                            return pair.at(1);
+                            return pair.arr[1];
                     }
                     // XXX: errs and such...
                     //throw new Fun.InvokeException("key not found in dictionary");
@@ -59,6 +59,17 @@ public class At extends Fun {
         throw new Fun.InvokeException("no such overload");
     }
 
+    public static boolean testBuffer() throws Fun.InvokeException {
+        return Util.cmpNum
+                ( (Num)fun.call(new Buf(new byte[] {'a', 'b', 'c', 'd'}), new Num(1))
+                , new Num('b')
+                )
+            && Util.cmpNum
+                ( (Num)fun.call(new Buf(new byte[] {'a', 'b', 'c', 'd'}), new Num(-1))
+                , new Num('d')
+                )
+            ;
+    }
     public static boolean testList() throws Fun.InvokeException {
         return Util.cmpNum
                 ( (Num)fun.call(new Lst(new Obj[]

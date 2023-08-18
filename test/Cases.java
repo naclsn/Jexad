@@ -137,12 +137,12 @@ class Cases {
         Buf binfile_buf = new Read(Buf.encode(filename));
 
         Buf list_buf = new Slice(binfile_buf, new Num(list_off), new Num(list_off + list_len*4));
-        Lst<Buf> list_32b = new Rect(list_buf, new Num(4));
-        Lst<Num> pointers = new Map<Num>(Decode.fun, list_32b);
+        Lst list_32b = new Rect(list_buf, new Num(4));
+        Lst pointers = new Map(Decode.fun, list_32b);
 
         Fun bound_lambda = (Fun)Bind.fun.call(Slice.fun, new Lst(new Obj[] {binfile_buf, new Sym("0")}));
-        Lst<Buf> strings_starts = new Map<Buf>(bound_lambda, pointers);
-        Lst<Buf> strings = new Map<Buf>(Delim.fun, strings_starts); // new Repeat<Buf>(new Buf(new byte[] {0}), new Num(list_len)));
+        Lst strings_starts = new Map(bound_lambda, pointers);
+        Lst strings = new Map(Delim.fun, strings_starts); // new Repeat<Buf>(new Buf(new byte[] {0}), new Num(list_len)));
 
         Buf result = new Join(strings, new Buf(new byte[] {'\n'}));
 
@@ -231,7 +231,7 @@ class Cases {
 
         /*
         Buf pngbuf = new PngDecode(pngfilebytes);
-        Lst<Buf> rgbbufs = new PngRGB(pngbuf);
+        Lst rgbbufs = new PngRGB(pngbuf);
         Buf r = new Nth(rgbbufs, new Num(0));
         Buf g = new Nth(rgbbufs, new Num(1));
         Buf b = new Nth(rgbbufs, new Num(2));

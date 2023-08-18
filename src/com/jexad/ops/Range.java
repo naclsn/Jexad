@@ -2,7 +2,7 @@ package com.jexad.ops;
 
 import com.jexad.base.*;
 
-public class Range extends Lst<Num> {
+public class Range extends Lst {
 
     public static final Fun fun = new Fun.ForClass(Range.class, "return a list of integral numbers, start inclusive, end exclusive, default step is 1");
 

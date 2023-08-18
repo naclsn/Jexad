@@ -4,7 +4,7 @@ import com.jexad.base.*;
 import java.util.Arrays;
 import java.util.Set;
 
-public class ZipList extends Lst<Buf> {
+public class ZipList extends Lst {
 
     public static final Fun fun = new Fun.ForClass(ZipList.class, "list the entries in the zip");
 

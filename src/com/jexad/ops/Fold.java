@@ -29,10 +29,10 @@ public class Fold extends Fun {
             Lst lst = (Lst)args[args.length-1];
 
             int k = 0;
-            Obj it = 2 == args.length ? args[1] : lst.at(k++);
+            Obj it = 2 == args.length ? args[1] : lst.arr[k++];
 
-            for (; k < lst.length(); k++)
-                it = op.call(it, lst.at(k));
+            for (; k < lst.arr.length; k++)
+                it = op.call(it, lst.arr[k]);
 
             return it;
         }
