@@ -1,6 +1,7 @@
 package com.jexad.ops.benc;
 
 import com.jexad.base.*;
+import com.jexad.util.Util;
 
 public class Base64Decode extends Buf {
 

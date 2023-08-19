@@ -1,10 +1,12 @@
 package com.jexad.ops.png;
 
 import com.jexad.base.*;
+import com.jexad.util.Decoder;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.HashMap;
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
 import javax.imageio.metadata.IIOMetadata;
@@ -16,26 +18,54 @@ public class PngDecode extends Num {
 
     public static class Handle {
 
-        private static ImageReader imr = ImageIO.getImageReadersBySuffix("png").next();
+        private int w;
+        private int h;
+        private HashMap<Integer, byte[]> chks = new HashMap<Integer, byte[]>();
 
-        private BufferedImage img;
-        private IIOMetadata ma;
-
-        private void update(byte[] raw) {
-            imr.setInput(new MemoryCacheImageInputStream(new ByteArrayInputStream(raw)));
-            try {
-                img = imr.read(0);
-                ma = imr.getImageMetadata(0);
-                // 0: eg. gif with multiple frames, also: multiple resolutions
-            } catch (Exception e) {
-                System.err.println("PngDecode: " + e);
-                // XXX: errs and such...
-            }
+        public static int toChk(byte i, byte d, byte a, byte t) {
+            return (i << 24) | (d << 16) | (a << 8) | t;
+        }
+        public static byte[] fromChk(int idat) {
+            return new byte[]
+                { (byte)((idat >> 24) & 0xff)
+                , (byte)((idat >> 16) & 0xff)
+                , (byte)((idat >> 8) & 0xff)
+                , (byte)(idat & 0xff)
+                };
         }
 
-        BufferedImage image() { return img; }
+        private class PngDecoder extends Decoder {
 
-        IIOMetadata meta() { return ma; }
+            // TODO
+
+        }
+
+        private PngDecoder d = new PngDecoder();
+
+        private void update(byte[] raw) {
+            d.bytes = raw;
+            d.index = 0;
+            chks.clear();
+        }
+
+        int width() {
+            System.out.println("NIY: Handle.width");
+            return 0;
+        }
+
+        int height() {
+            System.out.println("NIY: Handle.height");
+            return 0;
+        }
+
+        byte[] chunk(int chk) {
+            return chks.get(chk);
+        }
+
+        byte[] argb() {
+            System.out.println("NIY: Handle.argb");
+            return new byte[0];
+        }
 
     } // class Handle
 

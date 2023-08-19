@@ -2,6 +2,7 @@ package com.jexad;
 
 import com.jexad.base.*;
 import com.jexad.inter.*;
+import com.jexad.util.Util;
 import java.awt.Frame;
 import java.io.*;
 import java.util.*;

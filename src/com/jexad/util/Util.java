@@ -1,4 +1,6 @@
-package com.jexad.base;
+package com.jexad.util;
+
+import com.jexad.base.*;
 
 // as of now, the `cmp[..]` are to use with 'unit-test'-like
 public class Util {

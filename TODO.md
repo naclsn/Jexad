@@ -7,7 +7,7 @@
 
 - [~] no var-arg constructor, use lists/tuples (but keep overloading)
 - [~] .(somewhat with above): the `arguments` method
-- [ ] enum- arguments
+- [~] enum- arguments
 - [~] finish cleanup with `Lookup.ClassesUnder`
 - [~] build a list of funs (eg. build step)
     - [ ] make the classes from template (in build step)
@@ -18,7 +18,8 @@
 - [~] `(= )` and `($ )` syntaxes
 - [x] outdate() things
 - [x] find uses of `Lst.at`/`Lst.length`, remove when possible (one less virtual fn call cant do bad..)
-- [ ] symbol to enum
+- [~] symbol to enum
+- [ ] prefer symbol for handles
 
 - [ ] just noticed but, is `At` correct? does it update correctly\*?
 
